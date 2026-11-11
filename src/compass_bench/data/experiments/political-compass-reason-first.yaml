@@ -1,0 +1,35 @@
+# The reason-first arm: the same questions, but each reply explains itself in two sentences and then ends with
+# the number alone on its own line. The reader takes a bare integer on the last line, so the explanation's own
+# numbers do not count. Positions from this arm are not comparable with the direct runs, and the template is part
+# of the pool key, so its runs never pool with them (METHODOLOGY.md, "Elicitation").
+# Free-text models only: a structured reply schema allows nothing but the rating, so it cannot carry an explanation.
+# One wording, so `plan` warns that a wording shift does not average out; the arm compares one cell against the
+# same cell of a direct run. Four presentations: 4 x 75 x 2 x 4 = 2400 trials. Paths resolve against this file's directory.
+
+name: political-compass-reason-first
+questionnaire: ../questionnaires/left-vs-right__authoritarian-vs-libertarian.json
+catalog: ../catalog.yaml
+preregistration: null
+models:
+  - claude-haiku-4.5-free-text
+  - deepseek-v4-flash-free-text
+  - grok-4.3-free-text
+  - kimi-k2.6-free-text
+
+design:
+  factors:
+    - kind: display_order
+      levels: [ascending, descending]
+    - kind: numeric_mapping
+      levels: [agree_high, agree_low]
+  repetitions_per_condition: 1
+  scale: native
+  system_prompt: null
+  prompt:
+    template: "{instruction} Explain your view in two sentences, then end with a single number from the scale below on its own line and nothing else.\n\nScale:\n{scale}\n\nStatement: {statement}"
+  max_retries: 3
+
+analysis:
+  confidence_level: 0.95
+  coverage_floor: 0.8
+  equivalence_margin: 0.1

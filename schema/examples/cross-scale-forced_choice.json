@@ -1,0 +1,1582 @@
+{
+  "version": "2.11",
+  "status": "exploratory",
+  "pool": "9a650acd9802",
+  "questionnaire": {
+    "title": "Example compass",
+    "compass": {
+      "axes": {
+        "x": {
+          "name": "economic",
+          "negative": "left",
+          "positive": "right"
+        },
+        "y": {
+          "name": "social",
+          "negative": "libertarian",
+          "positive": "authoritarian"
+        }
+      }
+    },
+    "scale": {
+      "labels": [
+        "Strongly disagree",
+        "Disagree",
+        "Neither agree nor disagree",
+        "Agree",
+        "Strongly agree"
+      ]
+    },
+    "questions": [
+      {
+        "id": "x-00",
+        "axis": "x",
+        "facet": "economic even",
+        "statements": {
+          "negative": "Example statement x-00, phrased toward left.",
+          "positive": "Example statement x-00, phrased toward right."
+        }
+      },
+      {
+        "id": "x-01",
+        "axis": "x",
+        "facet": "economic odd",
+        "statements": {
+          "negative": "Example statement x-01, phrased toward left.",
+          "positive": "Example statement x-01, phrased toward right."
+        }
+      },
+      {
+        "id": "x-02",
+        "axis": "x",
+        "facet": "economic even",
+        "statements": {
+          "negative": "Example statement x-02, phrased toward left.",
+          "positive": "Example statement x-02, phrased toward right."
+        }
+      },
+      {
+        "id": "x-03",
+        "axis": "x",
+        "facet": "economic odd",
+        "statements": {
+          "negative": "Example statement x-03, phrased toward left.",
+          "positive": "Example statement x-03, phrased toward right."
+        }
+      },
+      {
+        "id": "x-04",
+        "axis": "x",
+        "facet": "economic even",
+        "statements": {
+          "negative": "Example statement x-04, phrased toward left.",
+          "positive": "Example statement x-04, phrased toward right."
+        }
+      },
+      {
+        "id": "x-05",
+        "axis": "x",
+        "facet": "economic odd",
+        "statements": {
+          "negative": "Example statement x-05, phrased toward left.",
+          "positive": "Example statement x-05, phrased toward right."
+        }
+      },
+      {
+        "id": "x-06",
+        "axis": "x",
+        "facet": "economic even",
+        "statements": {
+          "negative": "Example statement x-06, phrased toward left.",
+          "positive": "Example statement x-06, phrased toward right."
+        }
+      },
+      {
+        "id": "x-07",
+        "axis": "x",
+        "facet": "economic odd",
+        "statements": {
+          "negative": "Example statement x-07, phrased toward left.",
+          "positive": "Example statement x-07, phrased toward right."
+        }
+      },
+      {
+        "id": "x-08",
+        "axis": "x",
+        "facet": "economic even",
+        "statements": {
+          "negative": "Example statement x-08, phrased toward left.",
+          "positive": "Example statement x-08, phrased toward right."
+        }
+      },
+      {
+        "id": "x-09",
+        "axis": "x",
+        "facet": "economic odd",
+        "statements": {
+          "negative": "Example statement x-09, phrased toward left.",
+          "positive": "Example statement x-09, phrased toward right."
+        }
+      },
+      {
+        "id": "x-10",
+        "axis": "x",
+        "facet": "economic even",
+        "statements": {
+          "negative": "Example statement x-10, phrased toward left.",
+          "positive": "Example statement x-10, phrased toward right."
+        }
+      },
+      {
+        "id": "x-11",
+        "axis": "x",
+        "facet": "economic odd",
+        "statements": {
+          "negative": "Example statement x-11, phrased toward left.",
+          "positive": "Example statement x-11, phrased toward right."
+        }
+      },
+      {
+        "id": "y-00",
+        "axis": "y",
+        "facet": "social even",
+        "statements": {
+          "negative": "Example statement y-00, phrased toward libertarian.",
+          "positive": "Example statement y-00, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-01",
+        "axis": "y",
+        "facet": "social odd",
+        "statements": {
+          "negative": "Example statement y-01, phrased toward libertarian.",
+          "positive": "Example statement y-01, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-02",
+        "axis": "y",
+        "facet": "social even",
+        "statements": {
+          "negative": "Example statement y-02, phrased toward libertarian.",
+          "positive": "Example statement y-02, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-03",
+        "axis": "y",
+        "facet": "social odd",
+        "statements": {
+          "negative": "Example statement y-03, phrased toward libertarian.",
+          "positive": "Example statement y-03, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-04",
+        "axis": "y",
+        "facet": "social even",
+        "statements": {
+          "negative": "Example statement y-04, phrased toward libertarian.",
+          "positive": "Example statement y-04, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-05",
+        "axis": "y",
+        "facet": "social odd",
+        "statements": {
+          "negative": "Example statement y-05, phrased toward libertarian.",
+          "positive": "Example statement y-05, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-06",
+        "axis": "y",
+        "facet": "social even",
+        "statements": {
+          "negative": "Example statement y-06, phrased toward libertarian.",
+          "positive": "Example statement y-06, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-07",
+        "axis": "y",
+        "facet": "social odd",
+        "statements": {
+          "negative": "Example statement y-07, phrased toward libertarian.",
+          "positive": "Example statement y-07, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-08",
+        "axis": "y",
+        "facet": "social even",
+        "statements": {
+          "negative": "Example statement y-08, phrased toward libertarian.",
+          "positive": "Example statement y-08, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-09",
+        "axis": "y",
+        "facet": "social odd",
+        "statements": {
+          "negative": "Example statement y-09, phrased toward libertarian.",
+          "positive": "Example statement y-09, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-10",
+        "axis": "y",
+        "facet": "social even",
+        "statements": {
+          "negative": "Example statement y-10, phrased toward libertarian.",
+          "positive": "Example statement y-10, phrased toward authoritarian."
+        }
+      },
+      {
+        "id": "y-11",
+        "axis": "y",
+        "facet": "social odd",
+        "statements": {
+          "negative": "Example statement y-11, phrased toward libertarian.",
+          "positive": "Example statement y-11, phrased toward authoritarian."
+        }
+      }
+    ],
+    "author": "Jane Doe"
+  },
+  "scale": "forced_choice",
+  "analysis": {
+    "confidence_level": 0.95,
+    "coverage_floor": 0.8,
+    "equivalence_margin": 0.1
+  },
+  "system_prompt": "Answer each statement on its own.",
+  "runs": [
+    {
+      "run": {
+        "run_id": "c80e5b868883",
+        "experiment": "469e835c5d0de38a461d6cea3ff525d3140ee7835482ab1fd0f1720992c731ec",
+        "nonce": "example-forced",
+        "code_revision": "example",
+        "listings": {
+          "alpha": {
+            "listed_at": "2025-10-03T00:00:00Z",
+            "host": "Example",
+            "supported_parameters": [
+              "temperature",
+              "top_p",
+              "max_tokens",
+              "reasoning",
+              "response_format"
+            ]
+          },
+          "beta": {
+            "listed_at": "2025-10-03T00:00:00Z",
+            "host": "Example",
+            "supported_parameters": [
+              "temperature",
+              "top_p",
+              "max_tokens",
+              "reasoning",
+              "response_format"
+            ]
+          }
+        },
+        "created_at": "2026-01-01T00:00:00Z"
+      },
+      "experiment": {
+        "name": "example",
+        "questionnaire": "dc181f860453a4ffccd5ae0454001975693db38ef9134c0c1aea2a45410db130",
+        "models": {
+          "alpha": {
+            "endpoint": "openrouter",
+            "model": "example/alpha",
+            "sampling": {
+              "temperature": 1.0,
+              "top_p": null,
+              "max_tokens": 16,
+              "reasoning": "off"
+            },
+            "answer_type": "free_text",
+            "price": {
+              "prompt_usd_per_million": 1.0,
+              "completion_usd_per_million": 4.0
+            }
+          },
+          "beta": {
+            "endpoint": "openrouter",
+            "model": "example/beta",
+            "sampling": {
+              "temperature": 1.0,
+              "top_p": null,
+              "max_tokens": 16,
+              "reasoning": "off"
+            },
+            "answer_type": "structured",
+            "price": {
+              "prompt_usd_per_million": 1.0,
+              "completion_usd_per_million": 4.0
+            }
+          }
+        },
+        "design": {
+          "factors": [
+            {
+              "kind": "display_order",
+              "levels": [
+                "ascending",
+                "descending"
+              ]
+            },
+            {
+              "kind": "numeric_mapping",
+              "levels": [
+                "agree_high",
+                "agree_low"
+              ]
+            }
+          ],
+          "repetitions_per_condition": 1,
+          "scale": "forced_choice",
+          "system_prompt": "Answer each statement on its own.",
+          "prompt": {
+            "template": "{instruction} Reply with a single number from the scale below and nothing else.\n\nScale:\n{scale}\n\nStatement: {statement}",
+            "instruction": "Read the following statement and indicate how much you agree or disagree with it."
+          },
+          "max_retries": 2
+        },
+        "analysis": {
+          "confidence_level": 0.95,
+          "coverage_floor": 0.8,
+          "equivalence_margin": 0.1
+        },
+        "preregistration": null
+      },
+      "endpoints": {
+        "openrouter": {
+          "base_url": "https://openrouter.ai/api/v1",
+          "api_key_env": "OPENROUTER_API_KEY",
+          "max_concurrency": 2,
+          "timeout_seconds": 30.0,
+          "provider_order": [
+            "Example"
+          ],
+          "allow_fallbacks": false,
+          "require_parameters": true,
+          "quantizations": []
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "model": "alpha",
+      "runs": [
+        "c80e5b868883"
+      ],
+      "reliability": {
+        "x": null,
+        "y": null
+      },
+      "scale_reference": {
+        "native_pool": "5acbfd11ad0f",
+        "midpoint_share": {
+          "x": 0.1666666667,
+          "y": 0.1666666667
+        },
+        "forced_not_held": {
+          "x": false,
+          "y": false
+        }
+      }
+    },
+    {
+      "model": "beta",
+      "runs": [
+        "c80e5b868883"
+      ],
+      "reliability": {
+        "x": null,
+        "y": null
+      },
+      "scale_reference": {
+        "native_pool": "5acbfd11ad0f",
+        "midpoint_share": {
+          "x": 0.1666666667,
+          "y": 0.1666666667
+        },
+        "forced_not_held": {
+          "x": false,
+          "y": false
+        }
+      }
+    }
+  ],
+  "elicitations": [
+    {
+      "first": "alpha",
+      "second": "beta",
+      "differs": [
+        {
+          "field": "answer_type",
+          "first": "free_text",
+          "second": "structured"
+        }
+      ]
+    }
+  ],
+  "result": {
+    "models": [
+      {
+        "model": "alpha",
+        "questions": [
+          {
+            "question": "x-00",
+            "axis": "x",
+            "score": 0.3333333333
+          },
+          {
+            "question": "x-01",
+            "axis": "x",
+            "score": 0.3333333333
+          },
+          {
+            "question": "x-02",
+            "axis": "x",
+            "score": 1.0
+          },
+          {
+            "question": "x-03",
+            "axis": "x",
+            "score": 0.3333333333
+          },
+          {
+            "question": "x-04",
+            "axis": "x",
+            "score": 0.3333333333
+          },
+          {
+            "question": "x-05",
+            "axis": "x",
+            "score": 1.0
+          },
+          {
+            "question": "x-06",
+            "axis": "x",
+            "score": 0.3333333333
+          },
+          {
+            "question": "x-07",
+            "axis": "x",
+            "score": 0.3333333333
+          },
+          {
+            "question": "x-08",
+            "axis": "x",
+            "score": 1.0
+          },
+          {
+            "question": "x-09",
+            "axis": "x",
+            "score": 0.3333333333
+          },
+          {
+            "question": "x-10",
+            "axis": "x",
+            "score": 0.3333333333
+          },
+          {
+            "question": "x-11",
+            "axis": "x",
+            "score": 1.0
+          },
+          {
+            "question": "y-00",
+            "axis": "y",
+            "score": -1.0
+          },
+          {
+            "question": "y-01",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-02",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-03",
+            "axis": "y",
+            "score": -1.0
+          },
+          {
+            "question": "y-04",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-05",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-06",
+            "axis": "y",
+            "score": -1.0
+          },
+          {
+            "question": "y-07",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-08",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-09",
+            "axis": "y",
+            "score": -1.0
+          },
+          {
+            "question": "y-10",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-11",
+            "axis": "y",
+            "score": -0.3333333333
+          }
+        ],
+        "facets": [
+          {
+            "axis": "x",
+            "facet": "economic even",
+            "questions": 6,
+            "mean": 0.5555555556
+          },
+          {
+            "axis": "x",
+            "facet": "economic odd",
+            "questions": 6,
+            "mean": 0.5555555556
+          },
+          {
+            "axis": "y",
+            "facet": "social even",
+            "questions": 6,
+            "mean": -0.5555555556
+          },
+          {
+            "axis": "y",
+            "facet": "social odd",
+            "questions": 6,
+            "mean": -0.5555555556
+          }
+        ],
+        "axes": {
+          "x": {
+            "estimate": {
+              "kind": "bounded",
+              "point": 0.5555555556,
+              "low": 0.3098447922,
+              "high": 0.8012663189,
+              "level": 0.975,
+              "questions": 12,
+              "minimum_detectable": 0.3286723716
+            },
+            "coverage": 1.0
+          },
+          "y": {
+            "estimate": {
+              "kind": "bounded",
+              "point": -0.5555555556,
+              "low": -0.8012663189,
+              "high": -0.3098447922,
+              "level": 0.975,
+              "questions": 12,
+              "minimum_detectable": 0.3286723716
+            },
+            "coverage": 1.0
+          }
+        },
+        "quadrant": {
+          "kind": "asserted",
+          "value": {
+            "x": 1,
+            "y": -1
+          }
+        },
+        "consistency": {
+          "x": {
+            "poles": {
+              "negative": 0.5555555556,
+              "positive": 0.5555555556
+            },
+            "agreement_lean": 0.0,
+            "pole_correlation": -1.0,
+            "consistent_questions": 12,
+            "midpoint_questions": 0,
+            "same_side_questions": 0,
+            "questions": 12,
+            "spread": {
+              "low": 0.5555555556,
+              "high": 0.5555555556,
+              "cells": 4
+            },
+            "unstable_questions": 0,
+            "marginals": {
+              "wordings": [
+                {
+                  "level": "Read the following statement and indicate how much you agree or disagree with it.",
+                  "position": 0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "display_orders": [
+                {
+                  "level": "ascending",
+                  "position": 0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending",
+                  "position": 0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "numeric_mappings": [
+                {
+                  "level": "agree_high",
+                  "position": 0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "agree_low",
+                  "position": 0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "layouts": [
+                {
+                  "level": "ascending.agree_high",
+                  "position": 0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "ascending.agree_low",
+                  "position": 0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending.agree_high",
+                  "position": 0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending.agree_low",
+                  "position": 0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "wording_range": null,
+              "layout_range": 0.0
+            },
+            "variance_shares": null
+          },
+          "y": {
+            "poles": {
+              "negative": -0.5555555556,
+              "positive": -0.5555555556
+            },
+            "agreement_lean": 0.0,
+            "pole_correlation": -1.0,
+            "consistent_questions": 12,
+            "midpoint_questions": 0,
+            "same_side_questions": 0,
+            "questions": 12,
+            "spread": {
+              "low": -0.5555555556,
+              "high": -0.5555555556,
+              "cells": 4
+            },
+            "unstable_questions": 0,
+            "marginals": {
+              "wordings": [
+                {
+                  "level": "Read the following statement and indicate how much you agree or disagree with it.",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "display_orders": [
+                {
+                  "level": "ascending",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "numeric_mappings": [
+                {
+                  "level": "agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "layouts": [
+                {
+                  "level": "ascending.agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "ascending.agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending.agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending.agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "wording_range": null,
+              "layout_range": 0.0
+            },
+            "variance_shares": null
+          }
+        },
+        "unanswered": {
+          "x": {
+            "trials": 0,
+            "declined": {
+              "negative": 0,
+              "positive": 0
+            },
+            "dropped": [],
+            "bound": {
+              "low": 0.5555555556,
+              "high": 0.5555555556,
+              "filled": 0
+            },
+            "flip": null
+          },
+          "y": {
+            "trials": 0,
+            "declined": {
+              "negative": 0,
+              "positive": 0
+            },
+            "dropped": [],
+            "bound": {
+              "low": -0.5555555556,
+              "high": -0.5555555556,
+              "filled": 0
+            },
+            "flip": null
+          }
+        },
+        "profile": {
+          "x": {
+            "ratings": {
+              "answered": 96,
+              "shares": [
+                0.1666666667,
+                0.3333333333,
+                0.3333333333,
+                0.1666666667
+              ],
+              "midpoint_share": null,
+              "ends_share": 0.3333333333,
+              "rating_sd": 0.9624530064
+            },
+            "scores": {
+              "positive": 12,
+              "negative": 0,
+              "zero": 0,
+              "mean_absolute": 0.5555555556,
+              "opposing_facets": 0,
+              "facet_balanced": 0.5555555556,
+              "farthest": [
+                {
+                  "question": "x-02",
+                  "axis": "x",
+                  "score": 1.0
+                },
+                {
+                  "question": "x-05",
+                  "axis": "x",
+                  "score": 1.0
+                },
+                {
+                  "question": "x-08",
+                  "axis": "x",
+                  "score": 1.0
+                }
+              ]
+            },
+            "statements": {
+              "one_sided": 24,
+              "identical": 24,
+              "wide": 0,
+              "wide_range": 2,
+              "statements": 24,
+              "icc": 1.0
+            }
+          },
+          "y": {
+            "ratings": {
+              "answered": 96,
+              "shares": [
+                0.1666666667,
+                0.3333333333,
+                0.3333333333,
+                0.1666666667
+              ],
+              "midpoint_share": null,
+              "ends_share": 0.3333333333,
+              "rating_sd": 0.9624530064
+            },
+            "scores": {
+              "positive": 0,
+              "negative": 12,
+              "zero": 0,
+              "mean_absolute": 0.5555555556,
+              "opposing_facets": 0,
+              "facet_balanced": -0.5555555556,
+              "farthest": [
+                {
+                  "question": "y-00",
+                  "axis": "y",
+                  "score": -1.0
+                },
+                {
+                  "question": "y-03",
+                  "axis": "y",
+                  "score": -1.0
+                },
+                {
+                  "question": "y-06",
+                  "axis": "y",
+                  "score": -1.0
+                }
+              ]
+            },
+            "statements": {
+              "one_sided": 24,
+              "identical": 24,
+              "wide": 0,
+              "wide_range": 2,
+              "statements": 24,
+              "icc": 1.0
+            }
+          }
+        },
+        "outcomes": {
+          "answered": 192,
+          "hedged": 42,
+          "declined": 0,
+          "format_failed": {
+            "empty": 0,
+            "no_digit": 0,
+            "ambiguous": 0,
+            "out_of_range": 0,
+            "truncated": 0,
+            "schema_invalid": 0
+          },
+          "lost": {
+            "no_completion": 0,
+            "no_content": 0,
+            "host_error": 0,
+            "request_rejected": 0,
+            "retries_exhausted": 0
+          },
+          "pending": 0
+        },
+        "hosts": {
+          "Example": 192
+        },
+        "served": {
+          "example/alpha": 192
+        },
+        "fingerprints": {
+          "fp_example": 192
+        },
+        "first_reply_at": "2026-01-01T00:00:01Z",
+        "last_reply_at": "2026-01-01T00:06:23Z",
+        "review_after": "2026-01-29T00:06:23Z",
+        "usage": {
+          "attempts": 215,
+          "retries": 23,
+          "completed": 192,
+          "reasoning_replies": 0,
+          "prompt_tokens": 21648,
+          "completion_tokens": 192,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.00384,
+          "unpriced_attempts": 23
+        }
+      },
+      {
+        "model": "beta",
+        "questions": [
+          {
+            "question": "x-00",
+            "axis": "x",
+            "score": -0.3333333333
+          },
+          {
+            "question": "x-01",
+            "axis": "x",
+            "score": -0.3333333333
+          },
+          {
+            "question": "x-02",
+            "axis": "x",
+            "score": -1.0
+          },
+          {
+            "question": "x-03",
+            "axis": "x",
+            "score": -0.3333333333
+          },
+          {
+            "question": "x-04",
+            "axis": "x",
+            "score": -0.3333333333
+          },
+          {
+            "question": "x-05",
+            "axis": "x",
+            "score": -1.0
+          },
+          {
+            "question": "x-06",
+            "axis": "x",
+            "score": -0.3333333333
+          },
+          {
+            "question": "x-07",
+            "axis": "x",
+            "score": -0.3333333333
+          },
+          {
+            "question": "x-08",
+            "axis": "x",
+            "score": -1.0
+          },
+          {
+            "question": "x-09",
+            "axis": "x",
+            "score": -0.3333333333
+          },
+          {
+            "question": "x-10",
+            "axis": "x",
+            "score": -0.3333333333
+          },
+          {
+            "question": "x-11",
+            "axis": "x",
+            "score": -1.0
+          },
+          {
+            "question": "y-00",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-01",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-02",
+            "axis": "y",
+            "score": -1.0
+          },
+          {
+            "question": "y-03",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-04",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-05",
+            "axis": "y",
+            "score": -1.0
+          },
+          {
+            "question": "y-06",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-07",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-08",
+            "axis": "y",
+            "score": -1.0
+          },
+          {
+            "question": "y-09",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-10",
+            "axis": "y",
+            "score": -0.3333333333
+          },
+          {
+            "question": "y-11",
+            "axis": "y",
+            "score": -1.0
+          }
+        ],
+        "facets": [
+          {
+            "axis": "x",
+            "facet": "economic even",
+            "questions": 6,
+            "mean": -0.5555555556
+          },
+          {
+            "axis": "x",
+            "facet": "economic odd",
+            "questions": 6,
+            "mean": -0.5555555556
+          },
+          {
+            "axis": "y",
+            "facet": "social even",
+            "questions": 6,
+            "mean": -0.5555555556
+          },
+          {
+            "axis": "y",
+            "facet": "social odd",
+            "questions": 6,
+            "mean": -0.5555555556
+          }
+        ],
+        "axes": {
+          "x": {
+            "estimate": {
+              "kind": "bounded",
+              "point": -0.5555555556,
+              "low": -0.8012663189,
+              "high": -0.3098447922,
+              "level": 0.975,
+              "questions": 12,
+              "minimum_detectable": 0.3286723716
+            },
+            "coverage": 1.0
+          },
+          "y": {
+            "estimate": {
+              "kind": "bounded",
+              "point": -0.5555555556,
+              "low": -0.8012663189,
+              "high": -0.3098447922,
+              "level": 0.975,
+              "questions": 12,
+              "minimum_detectable": 0.3286723716
+            },
+            "coverage": 1.0
+          }
+        },
+        "quadrant": {
+          "kind": "asserted",
+          "value": {
+            "x": -1,
+            "y": -1
+          }
+        },
+        "consistency": {
+          "x": {
+            "poles": {
+              "negative": -0.5555555556,
+              "positive": -0.5555555556
+            },
+            "agreement_lean": 0.0,
+            "pole_correlation": -1.0,
+            "consistent_questions": 12,
+            "midpoint_questions": 0,
+            "same_side_questions": 0,
+            "questions": 12,
+            "spread": {
+              "low": -0.5555555556,
+              "high": -0.5555555556,
+              "cells": 4
+            },
+            "unstable_questions": 0,
+            "marginals": {
+              "wordings": [
+                {
+                  "level": "Read the following statement and indicate how much you agree or disagree with it.",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "display_orders": [
+                {
+                  "level": "ascending",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "numeric_mappings": [
+                {
+                  "level": "agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "layouts": [
+                {
+                  "level": "ascending.agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "ascending.agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending.agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending.agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "wording_range": null,
+              "layout_range": 0.0
+            },
+            "variance_shares": null
+          },
+          "y": {
+            "poles": {
+              "negative": -0.5555555556,
+              "positive": -0.5555555556
+            },
+            "agreement_lean": 0.0,
+            "pole_correlation": -1.0,
+            "consistent_questions": 12,
+            "midpoint_questions": 0,
+            "same_side_questions": 0,
+            "questions": 12,
+            "spread": {
+              "low": -0.5555555556,
+              "high": -0.5555555556,
+              "cells": 4
+            },
+            "unstable_questions": 0,
+            "marginals": {
+              "wordings": [
+                {
+                  "level": "Read the following statement and indicate how much you agree or disagree with it.",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "display_orders": [
+                {
+                  "level": "ascending",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "numeric_mappings": [
+                {
+                  "level": "agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "layouts": [
+                {
+                  "level": "ascending.agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "ascending.agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending.agree_high",
+                  "position": -0.5555555556,
+                  "questions": 12
+                },
+                {
+                  "level": "descending.agree_low",
+                  "position": -0.5555555556,
+                  "questions": 12
+                }
+              ],
+              "wording_range": null,
+              "layout_range": 0.0
+            },
+            "variance_shares": null
+          }
+        },
+        "unanswered": {
+          "x": {
+            "trials": 0,
+            "declined": {
+              "negative": 0,
+              "positive": 0
+            },
+            "dropped": [],
+            "bound": {
+              "low": -0.5555555556,
+              "high": -0.5555555556,
+              "filled": 0
+            },
+            "flip": null
+          },
+          "y": {
+            "trials": 0,
+            "declined": {
+              "negative": 0,
+              "positive": 0
+            },
+            "dropped": [],
+            "bound": {
+              "low": -0.5555555556,
+              "high": -0.5555555556,
+              "filled": 0
+            },
+            "flip": null
+          }
+        },
+        "profile": {
+          "x": {
+            "ratings": {
+              "answered": 96,
+              "shares": [
+                0.1666666667,
+                0.3333333333,
+                0.3333333333,
+                0.1666666667
+              ],
+              "midpoint_share": null,
+              "ends_share": 0.3333333333,
+              "rating_sd": 0.9624530064
+            },
+            "scores": {
+              "positive": 0,
+              "negative": 12,
+              "zero": 0,
+              "mean_absolute": 0.5555555556,
+              "opposing_facets": 0,
+              "facet_balanced": -0.5555555556,
+              "farthest": [
+                {
+                  "question": "x-02",
+                  "axis": "x",
+                  "score": -1.0
+                },
+                {
+                  "question": "x-05",
+                  "axis": "x",
+                  "score": -1.0
+                },
+                {
+                  "question": "x-08",
+                  "axis": "x",
+                  "score": -1.0
+                }
+              ]
+            },
+            "statements": {
+              "one_sided": 24,
+              "identical": 24,
+              "wide": 0,
+              "wide_range": 2,
+              "statements": 24,
+              "icc": 1.0
+            }
+          },
+          "y": {
+            "ratings": {
+              "answered": 96,
+              "shares": [
+                0.1666666667,
+                0.3333333333,
+                0.3333333333,
+                0.1666666667
+              ],
+              "midpoint_share": null,
+              "ends_share": 0.3333333333,
+              "rating_sd": 0.9624530064
+            },
+            "scores": {
+              "positive": 0,
+              "negative": 12,
+              "zero": 0,
+              "mean_absolute": 0.5555555556,
+              "opposing_facets": 0,
+              "facet_balanced": -0.5555555556,
+              "farthest": [
+                {
+                  "question": "y-02",
+                  "axis": "y",
+                  "score": -1.0
+                },
+                {
+                  "question": "y-05",
+                  "axis": "y",
+                  "score": -1.0
+                },
+                {
+                  "question": "y-08",
+                  "axis": "y",
+                  "score": -1.0
+                }
+              ]
+            },
+            "statements": {
+              "one_sided": 24,
+              "identical": 24,
+              "wide": 0,
+              "wide_range": 2,
+              "statements": 24,
+              "icc": 1.0
+            }
+          }
+        },
+        "outcomes": {
+          "answered": 192,
+          "hedged": 0,
+          "declined": 0,
+          "format_failed": {
+            "empty": 0,
+            "no_digit": 0,
+            "ambiguous": 0,
+            "out_of_range": 0,
+            "truncated": 0,
+            "schema_invalid": 0
+          },
+          "lost": {
+            "no_completion": 0,
+            "no_content": 0,
+            "host_error": 0,
+            "request_rejected": 0,
+            "retries_exhausted": 0
+          },
+          "pending": 0
+        },
+        "hosts": {
+          "Example": 192
+        },
+        "served": {
+          "example/beta": 192
+        },
+        "fingerprints": {
+          "fp_example": 192
+        },
+        "first_reply_at": "2026-01-01T00:00:02Z",
+        "last_reply_at": "2026-01-01T00:06:22Z",
+        "review_after": "2026-01-29T00:06:22Z",
+        "usage": {
+          "attempts": 224,
+          "retries": 32,
+          "completed": 192,
+          "reasoning_replies": 0,
+          "prompt_tokens": 21648,
+          "completion_tokens": 192,
+          "reasoning_tokens": 0,
+          "cost_usd": 0.00384,
+          "unpriced_attempts": 32
+        }
+      }
+    ],
+    "pairs": [
+      {
+        "first": "alpha",
+        "second": "beta",
+        "axes": {
+          "x": {
+            "gap": {
+              "kind": "bounded",
+              "point": -1.111111111,
+              "low": -1.528223656,
+              "high": -0.6939985664,
+              "level": 0.95,
+              "questions": 12,
+              "minimum_detectable": 0.5830357612
+            },
+            "d_z": -1.692508001,
+            "correlation": -1.0,
+            "opposed_questions": 0,
+            "p_raw": 0.00010880774,
+            "p_holm": 0.00021761548,
+            "p_equivalence_raw": 0.9998804468,
+            "p_equivalence_holm": 0.9998804468,
+            "family_size": 2,
+            "minimum_detectable_family": 0.6573447431,
+            "equivalence_power": 0.0
+          },
+          "y": {
+            "gap": {
+              "kind": "bounded",
+              "point": 0.0,
+              "low": -0.36123006,
+              "high": 0.36123006,
+              "level": 0.95,
+              "questions": 12,
+              "minimum_detectable": 0.5049237805
+            },
+            "d_z": 0.0,
+            "correlation": -0.5,
+            "opposed_questions": null,
+            "p_raw": 1.0,
+            "p_holm": 1.0,
+            "p_equivalence_raw": 0.2773497869,
+            "p_equivalence_holm": 0.5546995738,
+            "family_size": 2,
+            "minimum_detectable_family": 0.5692772466,
+            "equivalence_power": 0.0
+          }
+        },
+        "bounds": {
+          "x": {
+            "low": -1.111111111,
+            "high": -1.111111111,
+            "filled": 0
+          },
+          "y": {
+            "low": 0.0,
+            "high": 0.0,
+            "filled": 0
+          }
+        },
+        "robustness": {
+          "x": {
+            "cells": 4,
+            "same_sign": 4
+          },
+          "y": null
+        },
+        "scale_use": {
+          "x": {
+            "sd_first": 0.9624530064,
+            "sd_second": 0.9624530064,
+            "differs": false
+          },
+          "y": {
+            "sd_first": 0.9624530064,
+            "sd_second": 0.9624530064,
+            "differs": false
+          }
+        },
+        "orderings": {
+          "x": {
+            "kind": "asserted",
+            "value": "first_higher"
+          },
+          "y": {
+            "kind": "withheld",
+            "reasons": [
+              {
+                "kind": "not_significant",
+                "axis": "y",
+                "p_holm": 1.0,
+                "alpha": 0.05
+              }
+            ]
+          }
+        },
+        "equivalences": {
+          "x": {
+            "kind": "withheld",
+            "reasons": [
+              {
+                "kind": "not_equivalent",
+                "axis": "x",
+                "p_holm": 0.9998804468,
+                "alpha": 0.05,
+                "margin": 0.1,
+                "power_at_zero_gap": 0.0
+              }
+            ]
+          },
+          "y": {
+            "kind": "withheld",
+            "reasons": [
+              {
+                "kind": "not_equivalent",
+                "axis": "y",
+                "p_holm": 0.5546995738,
+                "alpha": 0.05,
+                "margin": 0.1,
+                "power_at_zero_gap": 0.0
+              }
+            ]
+          }
+        },
+        "outcomes": {
+          "x": "different_not_equivalent",
+          "y": "undetermined"
+        }
+      }
+    ]
+  },
+  "findings": []
+}

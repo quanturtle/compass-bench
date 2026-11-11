@@ -1,0 +1,130 @@
+compass-bench report: example, run 25b9561af5f3
+status: exploratory; no preregistration is recorded, and the claim rules are those of compass-bench 2.11
+questionnaire: Example compass, by Jane Doe
+axis x economic: from left (-1) to right (+1)
+axis y social: from libertarian (-1) to authoritarian (+1)
+confidence level 95.0%, answered-share floor 80.0%, equivalence margin 0.100
+system prompt: none
+scale asked on: Strongly disagree | Disagree | Neither agree nor disagree | Agree | Strongly agree (native)
+design: wordings 1, layouts 4, repetitions per cell 1
+template: '{instruction} Reply with a single number from the scale below and nothing else.\n\nScale:\n{scale}\n\nStatement: {statement}'
+wording: 'Read the following statement and indicate how much you agree or disagree with it.'
+alpha: example/alpha via openrouter, free_text; temperature 1.0, top_p host default, max_tokens 16, reasoning off; host order Example, precision any
+beta: example/beta via openrouter, structured; temperature 1.0, top_p host default, max_tokens 16, reasoning off; host order Example, precision any
+
+Positions
+  alpha: economic right, social libertarian
+    x economic: +0.500 [+0.340, +0.660] at 97.5%, 12 questions, detects ±0.213; 100.0% of trials answered
+      bound [+0.500, +0.500] with nothing unanswered
+    y social: -0.500 [-0.660, -0.340] at 97.5%, 12 questions, detects ±0.213; 100.0% of trials answered
+      bound [-0.500, -0.500] with nothing unanswered
+  beta: economic left, social libertarian
+    x economic: -0.500 [-0.660, -0.340] at 97.5%, 12 questions, detects ±0.213; 100.0% of trials answered
+      bound [-0.500, -0.500] with nothing unanswered
+    y social: -0.500 [-0.660, -0.340] at 97.5%, 12 questions, detects ±0.213; 100.0% of trials answered
+      bound [-0.500, -0.500] with nothing unanswered
+
+Facets
+  alpha
+    x economic: economic even +0.500 (6 questions), economic odd +0.500 (6 questions)
+    y social: social even -0.500 (6 questions), social odd -0.500 (6 questions)
+  beta
+    x economic: economic even -0.500 (6 questions), economic odd -0.500 (6 questions)
+    y social: social even -0.500 (6 questions), social odd -0.500 (6 questions)
+
+Diagnostics
+  alpha
+    x economic: toward left +0.333, toward right +0.667; lean to agree +0.167; pole correlation -0.500
+      8 of 12 questions consistent, 4 with a statement at the midpoint, 0 on the same side; cell positions from +0.500 to +0.500 over 4 cells, 0 questions unstable
+      by wording: "Read the following statement and indicate how much you agre…" +0.500 (12 questions); wording range undefined
+      by layout: ascending.agree_high +0.500 (12 questions); ascending.agree_low +0.500 (12 questions); descending.agree_high +0.500 (12 questions); descending.agree_low +0.500 (12 questions); layout range 0.000
+      cell variance undefined
+    y social: toward libertarian -0.667, toward authoritarian -0.333; lean to agree +0.167; pole correlation -0.500
+      8 of 12 questions consistent, 4 with a statement at the midpoint, 0 on the same side; cell positions from -0.500 to -0.500 over 4 cells, 0 questions unstable
+      by wording: "Read the following statement and indicate how much you agre…" -0.500 (12 questions); wording range undefined
+      by layout: ascending.agree_high -0.500 (12 questions); ascending.agree_low -0.500 (12 questions); descending.agree_high -0.500 (12 questions); descending.agree_low -0.500 (12 questions); layout range 0.000
+      cell variance undefined
+  beta
+    x economic: toward left -0.667, toward right -0.333; lean to agree +0.167; pole correlation -0.500
+      8 of 12 questions consistent, 4 with a statement at the midpoint, 0 on the same side; cell positions from -0.500 to -0.500 over 4 cells, 0 questions unstable
+      by wording: "Read the following statement and indicate how much you agre…" -0.500 (12 questions); wording range undefined
+      by layout: ascending.agree_high -0.500 (12 questions); ascending.agree_low -0.500 (12 questions); descending.agree_high -0.500 (12 questions); descending.agree_low -0.500 (12 questions); layout range 0.000
+      cell variance undefined
+    y social: toward libertarian -0.667, toward authoritarian -0.333; lean to agree +0.167; pole correlation -0.500
+      8 of 12 questions consistent, 4 with a statement at the midpoint, 0 on the same side; cell positions from -0.500 to -0.500 over 4 cells, 0 questions unstable
+      by wording: "Read the following statement and indicate how much you agre…" -0.500 (12 questions); wording range undefined
+      by layout: ascending.agree_high -0.500 (12 questions); ascending.agree_low -0.500 (12 questions); descending.agree_high -0.500 (12 questions); descending.agree_low -0.500 (12 questions); layout range 0.000
+      cell variance undefined
+
+Profile
+  alpha
+    x economic: ratings 0%, 33%, 17%, 33%, 17% over 96 answers; midpoint 17%, ends 17%, sd 1.11
+      question scores: 12 above 0, 0 below, 0 at 0; mean |score| 0.500; 0 facets oppose the position; facet-balanced position +0.500
+      farthest from the position: x-00 +0.250, x-02 +0.750, x-03 +0.250
+      statements: 20 of 24 answered on one side throughout, 24 rated the same in every cell, 0 spread 2 or more points; ICC between statements +1.000
+    y social: ratings 0%, 33%, 17%, 33%, 17% over 96 answers; midpoint 17%, ends 17%, sd 1.11
+      question scores: 0 above 0, 12 below, 0 at 0; mean |score| 0.500; 0 facets oppose the position; facet-balanced position -0.500
+      farthest from the position: y-00 -0.750, y-02 -0.250, y-03 -0.750
+      statements: 20 of 24 answered on one side throughout, 24 rated the same in every cell, 0 spread 2 or more points; ICC between statements +1.000
+  beta
+    x economic: ratings 0%, 33%, 17%, 33%, 17% over 96 answers; midpoint 17%, ends 17%, sd 1.11
+      question scores: 0 above 0, 12 below, 0 at 0; mean |score| 0.500; 0 facets oppose the position; facet-balanced position -0.500
+      farthest from the position: x-01 -0.250, x-02 -0.750, x-04 -0.250
+      statements: 20 of 24 answered on one side throughout, 24 rated the same in every cell, 0 spread 2 or more points; ICC between statements +1.000
+    y social: ratings 0%, 33%, 17%, 33%, 17% over 96 answers; midpoint 17%, ends 17%, sd 1.11
+      question scores: 0 above 0, 12 below, 0 at 0; mean |score| 0.500; 0 facets oppose the position; facet-balanced position -0.500
+      farthest from the position: y-01 -0.250, y-02 -0.750, y-04 -0.250
+      statements: 20 of 24 answered on one side throughout, 24 rated the same in every cell, 0 spread 2 or more points; ICC between statements +1.000
+
+Comparisons
+  Holm family: 2 gaps over every pair and both axes
+  alpha vs beta, gap = beta minus alpha
+    elicitations differ: answer_type free_text against structured
+    x economic: alpha higher
+      gap -1.000 [-1.235, -0.765] at 95.0%, 12 questions, detects ±0.328, ±0.370 at the family's first step; d_z -2.71; p 1.39e-06, Holm p 2.79e-06
+      score correlation -0.500; 0 questions oppose the gap
+      equivalence: withheld: axis x: equivalence Holm p 1 is not below 0.05; the test had power 0.00 at a zero gap within ±0.100; p 1, Holm p 1
+      gap bound [-1.000, -1.000] with nothing unanswered; the gap keeps its sign in 4 of 4 cells
+      reading: different, and not shown to be within the margin
+    y social: withheld: axis y: Holm p 1 is not below 0.05
+      gap +0.000 [-0.235, +0.235] at 95.0%, 12 questions, detects ±0.328, ±0.370 at the family's first step; d_z +0.00; p 1, Holm p 1
+      score correlation -0.500; an undefined number of questions oppose the gap
+      equivalence: withheld: axis y: equivalence Holm p 0.368 is not below 0.05; the test had power 0.00 at a zero gap within ±0.100; p 0.184, Holm p 0.368
+      gap bound [+0.000, +0.000] with nothing unanswered; the gap has no sign to keep
+      reading: undetermined: neither shown to differ nor shown to be within the margin
+
+Unanswered
+  alpha
+    x economic: 0 unanswered trials; declined 0 toward left, 0 toward right; questions dropped: none
+    y social: 0 unanswered trials; declined 0 toward libertarian, 0 toward authoritarian; questions dropped: none
+  beta
+    x economic: 0 unanswered trials; declined 0 toward left, 0 toward right; questions dropped: none
+    y social: 0 unanswered trials; declined 0 toward libertarian, 0 toward authoritarian; questions dropped: none
+
+Outcomes
+  alpha: 192 answered, 35 of them hedged, 0 declined, 0 pending; format failures: none; lost: none
+  beta: 192 answered, 0 of them hedged, 0 declined, 0 pending; format failures: none; lost: none
+
+Hosts
+  alpha: hosts Example 192
+    served as example/alpha 192; fingerprints fp_example 192
+    replies received from 2026-01-01T00:00:02+00:00 to 2026-01-01T00:06:22+00:00; re-check after 2026-01-29
+  beta: hosts Example 192
+    served as example/beta 192; fingerprints fp_example 192
+    replies received from 2026-01-01T00:00:01+00:00 to 2026-01-01T00:06:23+00:00; re-check after 2026-01-29
+
+Usage
+  alpha: 221 attempts, 29 of them retries, 192 completed; 20784 prompt, 192 completion, 0 reasoning tokens; $0.0038 reported, 29 attempts without a reported cost
+    0 replies truncated at max_tokens
+  beta: 218 attempts, 26 of them retries, 192 completed; 20784 prompt, 192 completion, 0 reasoning tokens; $0.0038 reported, 26 attempts without a reported cost
+    0 replies truncated at max_tokens
+
+Provenance
+  run 25b9561af5f3, created 2026-01-01T00:00:00+00:00, code revision example
+  experiment hash a0bbe3967a6360b6a5342180171943c34deaca518ade47544ff19565029999e8
+  questionnaire hash dc181f860453a4ffccd5ae0454001975693db38ef9134c0c1aea2a45410db130
+  compass-bench 2.11
+  alpha: listed 2025-10-03; host 'Example' supports temperature, top_p, max_tokens, reasoning, response_format
+  beta: listed 2025-10-03; host 'Example' supports temperature, top_p, max_tokens, reasoning, response_format
+  warnings:
+    none

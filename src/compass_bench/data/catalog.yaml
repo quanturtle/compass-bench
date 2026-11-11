@@ -1,0 +1,158 @@
+# The OpenRouter endpoints and the models experiments can name.
+# Prices are USD per million tokens, as OpenRouter listed them on 2026-10-31; check them before a run,
+# since the budget cap reserves each attempt's cost at these prices.
+
+endpoints:
+  openrouter: &openrouter
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    max_concurrency: 4
+    timeout_seconds: 60
+    provider_order: []
+    allow_fallbacks: true
+    require_parameters: true
+    quantizations: []
+
+  # Each pinned endpoint sends requests to one host only, so a rerun asks the same host at the same precision.
+  # With fallbacks off, a request the host cannot serve fails instead of moving to another host.
+  # At 4 requests at a time, Anthropic rate-limited 366 of 1943 claude-haiku attempts (429) in one 6336-trial run
+  openrouter-anthropic:
+    <<: *openrouter
+    max_concurrency: 2
+    provider_order: [anthropic]
+    allow_fallbacks: false
+
+  openrouter-xai:
+    <<: *openrouter
+    provider_order: [xai]
+    allow_fallbacks: false
+
+  # Moonshot AI's own host rejects temperature 0 for kimi-k2.6: "only 0.6 is allowed for this model"
+  openrouter-crusoe-bf16:
+    <<: *openrouter
+    provider_order: [crusoe/bf16]
+    allow_fallbacks: false
+
+  # DeepSeek does not host deepseek-v4-flash-0731 on OpenRouter; no fp32 or bf16 host supports structured replies
+  openrouter-deepinfra-fp8:
+    <<: *openrouter
+    provider_order: [deepinfra/fp8]
+    allow_fallbacks: false
+
+  # OpenAI does not host gpt-oss-20b on OpenRouter; DeepInfra serves it at full precision
+  openrouter-deepinfra-bf16:
+    <<: *openrouter
+    provider_order: [deepinfra/bf16]
+    allow_fallbacks: false
+
+  # Google serves Gemini from AI Studio and from Vertex; one host keeps a run on one of them
+  openrouter-google-ai-studio:
+    <<: *openrouter
+    provider_order: [google-ai-studio]
+    allow_fallbacks: false
+
+models:
+  # Each model is asked on one pinned host, so a run's replies come from one host at one precision.
+  claude-haiku-4.5:
+    endpoint: openrouter-anthropic
+    model: anthropic/claude-haiku-4.5
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 8, reasoning: off}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 1.0, completion_usd_per_million: 5.0}
+
+  deepseek-v4-flash:
+    endpoint: openrouter-deepinfra-fp8
+    model: deepseek/deepseek-v4-flash-0731
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 8, reasoning: off}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 0.06, completion_usd_per_million: 0.18}
+
+  # reasoning cannot be turned off on this endpoint, so it runs low and leaves room to answer
+  gemini-3.6-flash:
+    endpoint: openrouter-google-ai-studio
+    model: google/gemini-3.6-flash
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 512, reasoning: low}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 0.75, completion_usd_per_million: 3.75}
+
+  # reasoning cannot be turned off on this endpoint, so it runs low and leaves room to answer
+  gpt-oss-20b:
+    endpoint: openrouter-deepinfra-bf16
+    model: openai/gpt-oss-20b
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 64, reasoning: low}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 0.03, completion_usd_per_million: 0.14}
+
+  grok-4.3:
+    endpoint: openrouter-xai
+    model: x-ai/grok-4.3
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 8, reasoning: off}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 1.25, completion_usd_per_million: 2.5}
+
+  kimi-k2.6:
+    endpoint: openrouter-crusoe-bf16
+    model: moonshotai/kimi-k2.6
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 8, reasoning: off}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 0.7, completion_usd_per_million: 3.5}
+
+  # The same models asked for a JSON reply with reasoning off, each on one pinned host at that host's price.
+  # The reply schema limits `rating` to the displayed scale's integers, and 30 tokens leave room for the object.
+  claude-haiku-4.5-structured:
+    endpoint: openrouter-anthropic
+    model: anthropic/claude-haiku-4.5
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 30, reasoning: off}
+    answer_type: structured
+    price: {prompt_usd_per_million: 1.0, completion_usd_per_million: 5.0}
+
+  deepseek-v4-flash-structured:
+    endpoint: openrouter-deepinfra-fp8
+    model: deepseek/deepseek-v4-flash-0731
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 30, reasoning: off}
+    answer_type: structured
+    price: {prompt_usd_per_million: 0.06, completion_usd_per_million: 0.18}
+
+  grok-4.3-structured:
+    endpoint: openrouter-xai
+    model: x-ai/grok-4.3
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 30, reasoning: off}
+    answer_type: structured
+    price: {prompt_usd_per_million: 1.25, completion_usd_per_million: 2.5}
+
+  kimi-k2.6-structured:
+    endpoint: openrouter-crusoe-bf16
+    model: moonshotai/kimi-k2.6
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 30, reasoning: off}
+    answer_type: structured
+    price: {prompt_usd_per_million: 0.7, completion_usd_per_million: 3.5}
+
+  # The structured entries' models, hosts, and sampling, asked for a bare number instead of a JSON object.
+  # Nothing limits the reply, so a model can decline or explain; a reply cut off at 30 tokens is unreadable.
+  claude-haiku-4.5-free-text:
+    endpoint: openrouter-anthropic
+    model: anthropic/claude-haiku-4.5
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 30, reasoning: off}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 1.0, completion_usd_per_million: 5.0}
+
+  deepseek-v4-flash-free-text:
+    endpoint: openrouter-deepinfra-fp8
+    model: deepseek/deepseek-v4-flash-0731
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 30, reasoning: off}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 0.06, completion_usd_per_million: 0.18}
+
+  grok-4.3-free-text:
+    endpoint: openrouter-xai
+    model: x-ai/grok-4.3
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 30, reasoning: off}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 1.25, completion_usd_per_million: 2.5}
+
+  kimi-k2.6-free-text:
+    endpoint: openrouter-crusoe-bf16
+    model: moonshotai/kimi-k2.6
+    sampling: {temperature: 0.0, top_p: null, max_tokens: 30, reasoning: off}
+    answer_type: free_text
+    price: {prompt_usd_per_million: 0.7, completion_usd_per_million: 3.5}

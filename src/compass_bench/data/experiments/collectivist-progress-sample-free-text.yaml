@@ -1,0 +1,32 @@
+# The free-text sample's models, hosts, sampling, and design, asked the individualist-collectivist and
+# tradition-progress questionnaire instead of the left-right one. With 4 questions per axis, below the 10 a claim
+# needs, every claim is withheld; each position still gets its interval.
+# Each question is asked once in both phrasings under all four presentations: 4 x 8 x 2 x 4 = 256 trials.
+# Paths resolve against this file's directory.
+
+name: collectivist-progress-sample-free-text
+questionnaire: ../questionnaires/collectivist-vs-individualist__progress-vs-tradition.json
+catalog: ../catalog.yaml
+preregistration: null
+models:
+  - claude-haiku-4.5-free-text
+  - deepseek-v4-flash-free-text
+  - grok-4.3-free-text
+  - kimi-k2.6-free-text
+
+design:
+  # scale listed 1 to 5 or 5 to 1, times "strongly agree" numbered 5 or numbered 1
+  factors:
+    - kind: display_order
+      levels: [ascending, descending]
+    - kind: numeric_mapping
+      levels: [agree_high, agree_low]
+  repetitions_per_condition: 1
+  scale: native
+  system_prompt: null
+  max_retries: 3
+
+analysis:
+  confidence_level: 0.95
+  coverage_floor: 0.8
+  equivalence_margin: 0.1

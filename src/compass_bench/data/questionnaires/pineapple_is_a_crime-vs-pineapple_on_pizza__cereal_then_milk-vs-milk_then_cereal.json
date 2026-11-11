@@ -1,0 +1,623 @@
+{
+  "title": "pineapple on pizza vs pineapple is a crime, cereal then milk vs milk then cereal",
+  "compass": {
+    "axes": {
+      "x": {
+        "name": "pineapple on pizza vs pineapple is a crime",
+        "negative": "pineapple on pizza",
+        "positive": "pineapple is a crime"
+      },
+      "y": {
+        "name": "cereal then milk vs milk then cereal",
+        "negative": "cereal then milk",
+        "positive": "milk then cereal"
+      }
+    }
+  },
+  "scale": {
+    "labels": [
+      "Strongly disagree",
+      "Disagree",
+      "Neither agree nor disagree",
+      "Agree",
+      "Strongly agree"
+    ]
+  },
+  "questions": [
+    {
+      "id": "x-topping",
+      "axis": "x",
+      "facet": "practice",
+      "statements": {
+        "negative": "A pizza is better with pineapple on it.",
+        "positive": "Pineapple has no business anywhere near a pizza."
+      }
+    },
+    {
+      "id": "x-ordering",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "Ordering a Hawaiian pizza is a perfectly respectable choice.",
+        "positive": "I'd judge someone a little for ordering a Hawaiian pizza."
+      }
+    },
+    {
+      "id": "x-flavour",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "The sweet-and-savoury mix is exactly what makes it good.",
+        "positive": "Sweet and savoury have no place together on a slice."
+      }
+    },
+    {
+      "id": "x-conviction",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "Pineapple on pizza is a hill worth defending.",
+        "positive": "Pineapple on pizza is indefensible."
+      }
+    },
+    {
+      "id": "x-tradition",
+      "axis": "x",
+      "facet": "tradition",
+      "statements": {
+        "negative": "Pizza has room for toppings beyond the Italian classics.",
+        "positive": "Pizza should stick to the toppings Italian tradition gave it."
+      }
+    },
+    {
+      "id": "x-fruit",
+      "axis": "x",
+      "facet": "tradition",
+      "statements": {
+        "negative": "Fruit can belong on a pizza as much as any vegetable.",
+        "positive": "Fruit belongs in a dessert, not on a pizza."
+      }
+    },
+    {
+      "id": "x-ham",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Ham and pineapple are a natural pairing.",
+        "positive": "Ham deserves a better partner than pineapple."
+      }
+    },
+    {
+      "id": "x-texture",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Juicy pineapple chunks give a pizza a welcome bite.",
+        "positive": "Warm, wet pineapple ruins the texture of a pizza."
+      }
+    },
+    {
+      "id": "x-crust",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "A little pineapple juice in the crust only adds flavour.",
+        "positive": "Pineapple juice makes the crust soggy."
+      }
+    },
+    {
+      "id": "x-cheese",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Melted cheese and pineapple taste great together.",
+        "positive": "Melted cheese and pineapple clash."
+      }
+    },
+    {
+      "id": "x-baked_fruit",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Pineapple tastes even better once it has been baked.",
+        "positive": "Baking pineapple brings out the worst in it."
+      }
+    },
+    {
+      "id": "x-group_order",
+      "axis": "x",
+      "facet": "practice",
+      "statements": {
+        "negative": "A pineapple pizza is a safe choice when ordering for a group.",
+        "positive": "Ordering a pineapple pizza for a group is inconsiderate."
+      }
+    },
+    {
+      "id": "x-menu",
+      "axis": "x",
+      "facet": "tradition",
+      "statements": {
+        "negative": "Every pizzeria should offer pineapple as a topping.",
+        "positive": "A serious pizzeria should refuse to put pineapple on a pizza."
+      }
+    },
+    {
+      "id": "x-picking_off",
+      "axis": "x",
+      "facet": "practice",
+      "statements": {
+        "negative": "Picking the pineapple off a slice wastes the best part.",
+        "positive": "Finding pineapple on my slice means picking every piece off."
+      }
+    },
+    {
+      "id": "x-canned",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Even canned pineapple makes a pizza better.",
+        "positive": "Not even the freshest pineapple can improve a pizza."
+      }
+    },
+    {
+      "id": "x-jalapenos",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Pineapple with jalapeños is one of the best topping combinations.",
+        "positive": "Adding jalapeños cannot rescue a pineapple pizza."
+      }
+    },
+    {
+      "id": "x-acidity",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Pineapple's acidity cuts nicely through the richness of the cheese.",
+        "positive": "Pineapple's acidity overwhelms everything else on the slice."
+      }
+    },
+    {
+      "id": "x-tomato_sauce",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Pineapple and tomato sauce make a good match.",
+        "positive": "Pineapple and tomato sauce make a terrible match."
+      }
+    },
+    {
+      "id": "x-authenticity",
+      "axis": "x",
+      "facet": "tradition",
+      "statements": {
+        "negative": "A pizza does not need to be traditional to be good.",
+        "positive": "With pineapple on it, a pizza no longer deserves the name."
+      }
+    },
+    {
+      "id": "x-open_mind",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "Refusing pineapple pizza without trying it is closed-minded.",
+        "positive": "No one needs to try pineapple pizza to know it is wrong."
+      }
+    },
+    {
+      "id": "x-leftovers",
+      "axis": "x",
+      "facet": "practice",
+      "statements": {
+        "negative": "Cold pineapple pizza the next morning is a treat.",
+        "positive": "Leftover pineapple pizza belongs in the bin."
+      }
+    },
+    {
+      "id": "x-balance",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Pineapple balances the saltiness of the other toppings.",
+        "positive": "Pineapple drowns out every other topping on the pizza."
+      }
+    },
+    {
+      "id": "x-popularity",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "Pineapple pizza is popular because it tastes good.",
+        "positive": "Pineapple pizza's popularity says nothing about whether it is any good."
+      }
+    },
+    {
+      "id": "x-first_date",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "Ordering pineapple pizza on a first date says nothing bad about you.",
+        "positive": "Ordering pineapple pizza on a first date is a warning sign."
+      }
+    },
+    {
+      "id": "x-ban",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "Calls to ban pineapple on pizza are absurd.",
+        "positive": "Pizza would be better off if pineapple were banned from it."
+      }
+    },
+    {
+      "id": "x-chefs",
+      "axis": "x",
+      "facet": "tradition",
+      "statements": {
+        "negative": "A good chef can make pineapple work on a pizza.",
+        "positive": "No chef, however good, can make pineapple work on a pizza."
+      }
+    },
+    {
+      "id": "x-half_and_half",
+      "axis": "x",
+      "facet": "practice",
+      "statements": {
+        "negative": "Pineapple on half of a shared pizza is a fair compromise.",
+        "positive": "Pineapple on even half of a shared pizza spoils the whole thing."
+      }
+    },
+    {
+      "id": "x-barbecue_chicken",
+      "axis": "x",
+      "facet": "taste",
+      "statements": {
+        "negative": "Pineapple belongs on a barbecue chicken pizza.",
+        "positive": "A barbecue chicken pizza is better without pineapple."
+      }
+    },
+    {
+      "id": "x-freedom",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "People should top their pizza with whatever they enjoy.",
+        "positive": "Some toppings are simply wrong, and pineapple is one of them."
+      }
+    },
+    {
+      "id": "x-reputation",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "Pineapple pizza deserves a better reputation than it has.",
+        "positive": "Pineapple pizza deserves its bad reputation."
+      }
+    },
+    {
+      "id": "x-teasing",
+      "axis": "x",
+      "facet": "judgement",
+      "statements": {
+        "negative": "Teasing people who like pineapple pizza is just snobbery.",
+        "positive": "People who like pineapple pizza deserve the teasing they get."
+      }
+    },
+    {
+      "id": "x-first_choice",
+      "axis": "x",
+      "facet": "practice",
+      "statements": {
+        "negative": "Given the choice, I would pick a pineapple pizza.",
+        "positive": "Given the choice, I would pick almost any pizza over a pineapple one."
+      }
+    },
+    {
+      "id": "x-invention",
+      "axis": "x",
+      "facet": "tradition",
+      "statements": {
+        "negative": "Whoever first put pineapple on a pizza did the world a favour.",
+        "positive": "Whoever first put pineapple on a pizza made a mistake."
+      }
+    },
+    {
+      "id": "y-order",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Cereal goes in the bowl first, then the milk.",
+        "positive": "The correct order is milk first, then the cereal."
+      }
+    },
+    {
+      "id": "y-conviction",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "Anyone can see that cereal-first is the only sane way.",
+        "positive": "Pouring the milk before the cereal is obviously the right way."
+      }
+    },
+    {
+      "id": "y-technique",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Cereal-first is the only way to judge how much milk you need.",
+        "positive": "Milk-first gives you better control over how soggy it gets."
+      }
+    },
+    {
+      "id": "y-judgement",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "Pouring milk before the cereal is a genuine red flag.",
+        "positive": "I trust someone a bit more if they pour the milk first."
+      }
+    },
+    {
+      "id": "y-crunch",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Pouring the milk over the cereal keeps it crunchy for longer.",
+        "positive": "Putting the milk in first keeps the cereal crunchy for longer."
+      }
+    },
+    {
+      "id": "y-splash",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Cereal first means less milk splashes out of the bowl.",
+        "positive": "Milk first means nothing splashes out when the cereal goes in."
+      }
+    },
+    {
+      "id": "y-floating",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Cereal should sit in the bowl and be soaked from above.",
+        "positive": "Cereal should be dropped onto milk that is already waiting."
+      }
+    },
+    {
+      "id": "y-upbringing",
+      "axis": "y",
+      "facet": "custom",
+      "statements": {
+        "negative": "Cereal first is how breakfast is done, and that should not change.",
+        "positive": "Milk first is how breakfast should be done, whatever people were taught."
+      }
+    },
+    {
+      "id": "y-children",
+      "axis": "y",
+      "facet": "custom",
+      "statements": {
+        "negative": "Children should be taught to pour the cereal first.",
+        "positive": "Children should be taught to pour the milk first."
+      }
+    },
+    {
+      "id": "y-last_spoonful",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Cereal first leaves the last spoonful with just the right amount of milk.",
+        "positive": "Milk first leaves the last spoonful with just the right amount of cereal."
+      }
+    },
+    {
+      "id": "y-look",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "A bowl looks right when the milk is poured over the cereal.",
+        "positive": "A bowl looks right when the cereal sits on top of the milk."
+      }
+    },
+    {
+      "id": "y-coating",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Milk poured over cereal coats every piece evenly.",
+        "positive": "Cereal dropped into milk gets coated more evenly."
+      }
+    },
+    {
+      "id": "y-granola",
+      "axis": "y",
+      "facet": "variants",
+      "statements": {
+        "negative": "Granola and muesli should go in the bowl before the milk.",
+        "positive": "Granola and muesli should go into milk that is already in the bowl."
+      }
+    },
+    {
+      "id": "y-guests",
+      "axis": "y",
+      "facet": "custom",
+      "statements": {
+        "negative": "When making breakfast for guests, the cereal should go in their bowls first.",
+        "positive": "When making breakfast for guests, the milk should go in their bowls first."
+      }
+    },
+    {
+      "id": "y-housemate",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "Living with someone who pours milk first would test my patience.",
+        "positive": "Living with someone who pours cereal first would test my patience."
+      }
+    },
+    {
+      "id": "y-speed",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Cereal first is the quicker way to make a bowl.",
+        "positive": "Milk first is the quicker way to make a bowl."
+      }
+    },
+    {
+      "id": "y-late_night",
+      "axis": "y",
+      "facet": "variants",
+      "statements": {
+        "negative": "Even for a late-night bowl, the cereal goes in first.",
+        "positive": "Even for a late-night bowl, the milk goes in first."
+      }
+    },
+    {
+      "id": "y-common_sense",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "Cereal first is simply common sense.",
+        "positive": "Milk first is simply common sense."
+      }
+    },
+    {
+      "id": "y-contrarian",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "People who pour milk first are just being contrarian.",
+        "positive": "People who pour milk first have simply thought harder about breakfast."
+      }
+    },
+    {
+      "id": "y-adverts",
+      "axis": "y",
+      "facet": "custom",
+      "statements": {
+        "negative": "Cereal adverts show the right order: cereal, then milk.",
+        "positive": "Cereal adverts get the order wrong when they pour the milk last."
+      }
+    },
+    {
+      "id": "y-fruit",
+      "axis": "y",
+      "facet": "variants",
+      "statements": {
+        "negative": "Fruit goes on top of the cereal, and the milk goes on last.",
+        "positive": "The milk goes in first, and the cereal and fruit go on top."
+      }
+    },
+    {
+      "id": "y-flakes",
+      "axis": "y",
+      "facet": "variants",
+      "statements": {
+        "negative": "Flakes should be in the bowl before any milk touches them.",
+        "positive": "Flakes should be scattered onto milk that is already poured."
+      }
+    },
+    {
+      "id": "y-washing_up",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Cereal first leaves a bowl that is easier to wash.",
+        "positive": "Milk first leaves a bowl that is easier to wash."
+      }
+    },
+    {
+      "id": "y-instinct",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "Anyone making a bowl without thinking reaches for the cereal first, and rightly so.",
+        "positive": "Without habit getting in the way, people would pour the milk first."
+      }
+    },
+    {
+      "id": "y-taste",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Cereal tastes better when the milk is poured over it.",
+        "positive": "Cereal tastes better when it is dropped into the milk."
+      }
+    },
+    {
+      "id": "y-plant_milk",
+      "axis": "y",
+      "facet": "variants",
+      "statements": {
+        "negative": "With oat or soy milk, the cereal should still go in first.",
+        "positive": "With oat or soy milk, the milk should still go in first."
+      }
+    },
+    {
+      "id": "y-cafe",
+      "axis": "y",
+      "facet": "custom",
+      "statements": {
+        "negative": "A café that serves cereal should put the cereal in the bowl first.",
+        "positive": "A café that serves cereal should put the milk in the bowl first."
+      }
+    },
+    {
+      "id": "y-fair_try",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "Nothing could convince me to start pouring the milk first.",
+        "positive": "Anyone who pours cereal first should give milk first a fair try."
+      }
+    },
+    {
+      "id": "y-standard",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "Cereal first became the standard for good reason.",
+        "positive": "Cereal first became the standard by habit, not because it is better."
+      }
+    },
+    {
+      "id": "y-pouring",
+      "axis": "y",
+      "facet": "method",
+      "statements": {
+        "negative": "Watching milk pour over cereal is part of the pleasure of breakfast.",
+        "positive": "Watching cereal tumble into milk is part of the pleasure of breakfast."
+      }
+    },
+    {
+      "id": "y-rule",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "If there were a rule for making cereal, it should say cereal first.",
+        "positive": "If there were a rule for making cereal, it should say milk first."
+      }
+    },
+    {
+      "id": "y-recommendation",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "I would recommend cereal first to anyone who asked.",
+        "positive": "I would recommend milk first to anyone who asked."
+      }
+    },
+    {
+      "id": "y-habit_to_break",
+      "axis": "y",
+      "facet": "conviction",
+      "statements": {
+        "negative": "Pouring milk first is a habit worth talking someone out of.",
+        "positive": "Pouring cereal first is a habit worth talking someone out of."
+      }
+    }
+  ],
+  "author": "compass-bench v2"
+}

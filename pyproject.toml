@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "compass-bench"
+dynamic = ["version"]
+description = "Ask language models a value questionnaire and place each on its two axes, to the precision the sample supports"
+requires-python = ">=3.14"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+dependencies = [
+    "alembic>=1.19.1,<2",
+    "httpx>=0.27,<1",
+    "psycopg[binary]>=3.2,<4",
+    "pydantic>=2.12,<3",
+    "pyyaml>=6.0,<7",
+    "scipy>=1.16,<2",
+    "sqlalchemy[asyncio]>=2.0.52,<3",
+]
+
+[project.scripts]
+compass-bench = "compass_bench.cli:main"
+
+[dependency-groups]
+dev = [
+    "jsonschema>=4.26.0",
+    "mutmut>=3.8.1",
+    "mypy>=2.3.1",
+    "pytest>=9.2.0",
+    "ruff>=0.6",
+    "scipy-stubs>=1.18.1.1",
+    "types-jsonschema>=4.26.0.20261006",
+    "types-pyyaml>=6.0.12.20260815",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "compass_bench.version.VERSION" }
+
+# reinstall the package when its version changes, so the installed metadata matches VERSION
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { file = "src/compass_bench/version.py" }]
+
+[tool.setuptools.package-data]
+compass_bench = [
+    "py.typed",
+    "adapters/postgres/migrations/*",
+    "adapters/postgres/migrations/versions/*",
+    "data/*.yaml",
+    "data/experiments/*.yaml",
+    "data/questionnaires/*.json",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+# mutation testing covers the statistics and the claim gates; run with make mutate
+[tool.mutmut]
+source_paths = ["src/compass_bench/domain/stats/", "src/compass_bench/domain/claims.py"]
+pytest_add_cli_args_test_selection = ["tests/"]
+also_copy = ["src/", "scripts/", "schema/", "audits/", "version.lock.json"]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+strict = true
+strict_equality = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+mypy_path = "src"

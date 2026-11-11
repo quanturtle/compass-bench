@@ -1,0 +1,690 @@
+{
+  "title": "left vs right, libertarian vs authoritarian",
+  "compass": {
+    "axes": {
+      "x": {"name": "left vs right", "negative": "left", "positive": "right"},
+      "y": {"name": "libertarian vs authoritarian", "negative": "libertarian", "positive": "authoritarian"}
+    }
+  },
+  "scale": {
+    "labels": ["Strongly disagree", "Disagree", "Neither agree nor disagree", "Agree", "Strongly agree"]
+  },
+  "questions": [
+    {
+      "id": "x-income_redistribution",
+      "axis": "x",
+      "facet": "taxation",
+      "statements": {
+        "negative": "The state should tax higher earners to fund payments to lower earners.",
+        "positive": "Income differences that the market produces should stand as they are."
+      }
+    },
+    {
+      "id": "x-inheritance_taxation",
+      "axis": "x",
+      "facet": "taxation",
+      "statements": {
+        "negative": "The state should tax large inheritances.",
+        "positive": "Large inheritances should pass whole to the heirs."
+      }
+    },
+    {
+      "id": "x-wealth_taxation",
+      "axis": "x",
+      "facet": "taxation",
+      "statements": {
+        "negative": "The state should levy a yearly tax on every large fortune.",
+        "positive": "Every large fortune should be free of yearly tax."
+      }
+    },
+    {
+      "id": "x-corporate_profit_taxation",
+      "axis": "x",
+      "facet": "taxation",
+      "statements": {
+        "negative": "The state should take a share of corporate profits in tax.",
+        "positive": "Corporate profits should belong wholly to the company's owners."
+      }
+    },
+    {
+      "id": "x-investment_gains_taxation",
+      "axis": "x",
+      "facet": "taxation",
+      "statements": {
+        "negative": "The state should tax the gains investors make when they sell their assets.",
+        "positive": "The gains investors make when they sell their assets should go to them whole."
+      }
+    },
+    {
+      "id": "x-public_healthcare",
+      "axis": "x",
+      "facet": "public services",
+      "statements": {
+        "negative": "The state should provide healthcare to everyone, funded by taxation.",
+        "positive": "Healthcare should be bought by each person from private providers."
+      }
+    },
+    {
+      "id": "x-public_education_funding",
+      "axis": "x",
+      "facet": "public services",
+      "statements": {
+        "negative": "The state should fund every child's schooling through taxation.",
+        "positive": "Each family should pay for its own children's schooling."
+      }
+    },
+    {
+      "id": "x-public_childcare",
+      "axis": "x",
+      "facet": "public services",
+      "statements": {
+        "negative": "The state should provide childcare to every family, funded by taxation.",
+        "positive": "Each family should arrange and pay for its own childcare."
+      }
+    },
+    {
+      "id": "x-public_transport_funding",
+      "axis": "x",
+      "facet": "public services",
+      "statements": {
+        "negative": "The state should fund public transport through taxation.",
+        "positive": "Public transport should be paid for by the people who ride it, through fares."
+      }
+    },
+    {
+      "id": "x-public_housing",
+      "axis": "x",
+      "facet": "public services",
+      "statements": {
+        "negative": "The state should build and rent out housing.",
+        "positive": "Rental housing should be built and let by private landlords."
+      }
+    },
+    {
+      "id": "x-unemployment_support",
+      "axis": "x",
+      "facet": "income support",
+      "statements": {
+        "negative": "The state should pay an income to people who lose their jobs.",
+        "positive": "People who lose their jobs should live on their own savings and private insurance."
+      }
+    },
+    {
+      "id": "x-state_pensions",
+      "axis": "x",
+      "facet": "income support",
+      "statements": {
+        "negative": "The state should pay every retiree a pension.",
+        "positive": "Each person should fund their own retirement through private savings."
+      }
+    },
+    {
+      "id": "x-universal_basic_income",
+      "axis": "x",
+      "facet": "income support",
+      "statements": {
+        "negative": "The state should pay every adult a basic income.",
+        "positive": "Every adult should earn their income through work or private means."
+      }
+    },
+    {
+      "id": "x-poverty_relief",
+      "axis": "x",
+      "facet": "income support",
+      "statements": {
+        "negative": "Relieving poverty should be the state's task, funded by taxation.",
+        "positive": "Relieving poverty should be the task of private charity."
+      }
+    },
+    {
+      "id": "x-job_guarantee",
+      "axis": "x",
+      "facet": "income support",
+      "statements": {
+        "negative": "The state should guarantee a job to everyone who wants one.",
+        "positive": "Jobs should come from private employers alone."
+      }
+    },
+    {
+      "id": "x-minimum_wage",
+      "axis": "x",
+      "facet": "labour",
+      "statements": {
+        "negative": "The state should set a minimum wage.",
+        "positive": "Wages should be set by employers and workers between themselves."
+      }
+    },
+    {
+      "id": "x-union_bargaining",
+      "axis": "x",
+      "facet": "labour",
+      "statements": {
+        "negative": "The state should require employers to bargain with their workers' unions.",
+        "positive": "Each employer should decide whether to bargain with a union."
+      }
+    },
+    {
+      "id": "x-working_hours",
+      "axis": "x",
+      "facet": "labour",
+      "statements": {
+        "negative": "The state should set a limit on weekly working hours.",
+        "positive": "Weekly working hours should be agreed in each employment contract."
+      }
+    },
+    {
+      "id": "x-dismissal_protection",
+      "axis": "x",
+      "facet": "labour",
+      "statements": {
+        "negative": "The state should require employers to give a valid reason before dismissing a worker.",
+        "positive": "Employers should be free to dismiss workers at their own discretion."
+      }
+    },
+    {
+      "id": "x-worker_board_seats",
+      "axis": "x",
+      "facet": "labour",
+      "statements": {
+        "negative": "The state should require large companies to seat workers on their boards.",
+        "positive": "Company boards should be chosen by shareholders alone."
+      }
+    },
+    {
+      "id": "x-occupational_licensing",
+      "axis": "x",
+      "facet": "regulation",
+      "statements": {
+        "negative": "The state should require every person offering professional services to the public to hold a license.",
+        "positive": "Any person should be free to offer professional services to the public."
+      }
+    },
+    {
+      "id": "x-price_controls_on_essentials",
+      "axis": "x",
+      "facet": "regulation",
+      "statements": {
+        "negative": "The state should cap the prices of essential goods.",
+        "positive": "The prices of essential goods should be set by buyers and sellers."
+      }
+    },
+    {
+      "id": "x-bank_capital_rules",
+      "axis": "x",
+      "facet": "regulation",
+      "statements": {
+        "negative": "The state should set the capital reserves banks must hold.",
+        "positive": "Each bank should decide its own capital reserves."
+      }
+    },
+    {
+      "id": "x-antitrust_breakups",
+      "axis": "x",
+      "facet": "regulation",
+      "statements": {
+        "negative": "The state should break up companies that dominate their markets.",
+        "positive": "Companies that dominate their markets should be left whole."
+      }
+    },
+    {
+      "id": "x-product_safety_standards",
+      "axis": "x",
+      "facet": "regulation",
+      "statements": {
+        "negative": "The state should set safety standards that every consumer product must meet.",
+        "positive": "Consumer product safety should be settled between manufacturers and their customers."
+      }
+    },
+    {
+      "id": "x-eminent_domain",
+      "axis": "x",
+      "facet": "ownership",
+      "statements": {
+        "negative": "The state should be able to compel the sale of private land for public projects.",
+        "positive": "Owners should be able to refuse to sell their land to the state for public projects."
+      }
+    },
+    {
+      "id": "x-zoning_and_land_use",
+      "axis": "x",
+      "facet": "ownership",
+      "statements": {
+        "negative": "The state should decide what owners may build on their land through zoning rules.",
+        "positive": "Each owner should decide what to build on their own land."
+      }
+    },
+    {
+      "id": "x-electricity_network_ownership",
+      "axis": "x",
+      "facet": "ownership",
+      "statements": {
+        "negative": "Electricity networks should be owned and run by the state.",
+        "positive": "Electricity networks should be owned and run by private companies."
+      }
+    },
+    {
+      "id": "x-natural_resource_ownership",
+      "axis": "x",
+      "facet": "ownership",
+      "statements": {
+        "negative": "Natural resources in the ground should be owned by the state.",
+        "positive": "Natural resources in the ground should be owned by the landowners above them."
+      }
+    },
+    {
+      "id": "x-hospital_ownership",
+      "axis": "x",
+      "facet": "ownership",
+      "statements": {
+        "negative": "Hospitals should be owned and run by the state.",
+        "positive": "Hospitals should be owned and run by private companies."
+      }
+    },
+    {
+      "id": "x-import_tariffs",
+      "axis": "x",
+      "facet": "trade and industry",
+      "statements": {
+        "negative": "The state should put tariffs on imported goods.",
+        "positive": "Imported goods should enter the country tariff-free."
+      }
+    },
+    {
+      "id": "x-corporate_bailouts",
+      "axis": "x",
+      "facet": "trade and industry",
+      "statements": {
+        "negative": "The state should rescue large failing companies with public money.",
+        "positive": "Large failing companies should be left to collapse."
+      }
+    },
+    {
+      "id": "x-industrial_policy",
+      "axis": "x",
+      "facet": "trade and industry",
+      "statements": {
+        "negative": "The state should direct investment toward industries it judges strategic.",
+        "positive": "Investment should flow to whichever industries private investors choose."
+      }
+    },
+    {
+      "id": "x-farm_subsidies",
+      "axis": "x",
+      "facet": "trade and industry",
+      "statements": {
+        "negative": "The state should subsidize farmers' incomes.",
+        "positive": "Farmers' incomes should come from the market alone."
+      }
+    },
+    {
+      "id": "x-foreign_ownership_limits",
+      "axis": "x",
+      "facet": "trade and industry",
+      "statements": {
+        "negative": "The state should limit foreign ownership of domestic companies.",
+        "positive": "Foreign buyers should be free to buy domestic companies."
+      }
+    },
+    {
+      "id": "y-bulk_communications_surveillance",
+      "axis": "y",
+      "facet": "surveillance",
+      "statements": {
+        "negative": "Citizens' electronic communications should stay private from the state.",
+        "positive": "The state should be able to collect citizens' electronic communications in bulk."
+      }
+    },
+    {
+      "id": "y-facial_recognition_in_public",
+      "axis": "y",
+      "facet": "surveillance",
+      "statements": {
+        "negative": "People should be able to move through public places untracked by the state.",
+        "positive": "The state should be able to track people's movements in public places by facial recognition."
+      }
+    },
+    {
+      "id": "y-encryption_access",
+      "axis": "y",
+      "facet": "surveillance",
+      "statements": {
+        "negative": "Any person should be able to send messages that stay closed to the state.",
+        "positive": "The state should be able to read any encrypted message when it chooses."
+      }
+    },
+    {
+      "id": "y-national_identity_cards",
+      "axis": "y",
+      "facet": "surveillance",
+      "statements": {
+        "negative": "Carrying an identity card should be each citizen's own choice.",
+        "positive": "The state should require every citizen to carry an identity card."
+      }
+    },
+    {
+      "id": "y-dna_records",
+      "axis": "y",
+      "facet": "surveillance",
+      "statements": {
+        "negative": "Each citizen's DNA should stay their own private information.",
+        "positive": "Each citizen's DNA should be recorded by the state."
+      }
+    },
+    {
+      "id": "y-platform_takedowns",
+      "axis": "y",
+      "facet": "speech",
+      "statements": {
+        "negative": "Online platforms should decide for themselves what lawful content they host.",
+        "positive": "The state should be able to order online platforms to remove lawful content."
+      }
+    },
+    {
+      "id": "y-insulting_speech",
+      "axis": "y",
+      "facet": "speech",
+      "statements": {
+        "negative": "Speech that insults a group of people should be legal.",
+        "positive": "The state should punish speech that insults a group of people."
+      }
+    },
+    {
+      "id": "y-protest_permits",
+      "axis": "y",
+      "facet": "speech",
+      "statements": {
+        "negative": "Public protests should go ahead at the organizers' own decision.",
+        "positive": "Public protests should need a state permit."
+      }
+    },
+    {
+      "id": "y-flag_burning",
+      "axis": "y",
+      "facet": "speech",
+      "statements": {
+        "negative": "Burning the national flag should be legal.",
+        "positive": "The state should punish people who burn the national flag."
+      }
+    },
+    {
+      "id": "y-press_regulation",
+      "axis": "y",
+      "facet": "speech",
+      "statements": {
+        "negative": "News outlets should answer for what they publish to their readers alone.",
+        "positive": "A state regulator should be able to penalize news outlets for what they publish."
+      }
+    },
+    {
+      "id": "y-stop_and_search",
+      "axis": "y",
+      "facet": "policing and justice",
+      "statements": {
+        "negative": "Police should be able to stop and search a person only on specific evidence of wrongdoing.",
+        "positive": "Police should be able to stop and search any person at an officer's discretion."
+      }
+    },
+    {
+      "id": "y-pretrial_detention",
+      "axis": "y",
+      "facet": "policing and justice",
+      "statements": {
+        "negative": "An accused person should stay free until a court convicts them.",
+        "positive": "The state should be able to jail an accused person before trial on a judgment that they are dangerous."
+      }
+    },
+    {
+      "id": "y-death_penalty",
+      "axis": "y",
+      "facet": "policing and justice",
+      "statements": {
+        "negative": "The state's heaviest punishment for any crime should be imprisonment.",
+        "positive": "The state should have the power to execute a convicted criminal."
+      }
+    },
+    {
+      "id": "y-asset_forfeiture",
+      "axis": "y",
+      "facet": "policing and justice",
+      "statements": {
+        "negative": "A person's property should stay theirs until a court convicts them.",
+        "positive": "Police should be able to seize property they suspect is linked to crime before any conviction."
+      }
+    },
+    {
+      "id": "y-police_home_entry",
+      "axis": "y",
+      "facet": "policing and justice",
+      "statements": {
+        "negative": "Police should be able to enter a home only with a court's warrant.",
+        "positive": "Police should be able to enter a home at their own discretion."
+      }
+    },
+    {
+      "id": "y-entry_control",
+      "axis": "y",
+      "facet": "borders",
+      "statements": {
+        "negative": "Any person should be free to enter and settle in the country.",
+        "positive": "The state should decide who may enter and settle in the country."
+      }
+    },
+    {
+      "id": "y-work_status_checks",
+      "axis": "y",
+      "facet": "borders",
+      "statements": {
+        "negative": "Hiring should be a private matter between employer and worker.",
+        "positive": "The state should require employers to check every worker's right to work."
+      }
+    },
+    {
+      "id": "y-exit_control",
+      "axis": "y",
+      "facet": "borders",
+      "statements": {
+        "negative": "Every citizen should be free to leave the country at will.",
+        "positive": "The state should be able to bar its citizens from leaving the country."
+      }
+    },
+    {
+      "id": "y-residence_registration",
+      "axis": "y",
+      "facet": "borders",
+      "statements": {
+        "negative": "Where a citizen lives should be their own business.",
+        "positive": "The state should require every citizen to register their place of residence."
+      }
+    },
+    {
+      "id": "y-deportation",
+      "axis": "y",
+      "facet": "borders",
+      "statements": {
+        "negative": "Residents who lack legal status should be free to stay.",
+        "positive": "The state should be able to expel residents who lack legal status."
+      }
+    },
+    {
+      "id": "y-emergency_movement_restrictions",
+      "axis": "y",
+      "facet": "public health",
+      "statements": {
+        "negative": "During a declared public health emergency, people should remain free to move about.",
+        "positive": "During a declared public health emergency, the state should be able to confine people to their homes."
+      }
+    },
+    {
+      "id": "y-epidemic_vaccination_mandates",
+      "axis": "y",
+      "facet": "public health",
+      "statements": {
+        "negative": "During an epidemic, public places should stay open to people who decline vaccination.",
+        "positive": "During an epidemic, the state should be able to require vaccination as a condition of entering public places."
+      }
+    },
+    {
+      "id": "y-smoking_in_bars",
+      "axis": "y",
+      "facet": "public health",
+      "statements": {
+        "negative": "Each bar's owner should decide whether smoking is allowed on the premises.",
+        "positive": "The state should ban smoking in bars."
+      }
+    },
+    {
+      "id": "y-helmet_laws",
+      "axis": "y",
+      "facet": "public health",
+      "statements": {
+        "negative": "Each motorcyclist should decide whether to wear a helmet.",
+        "positive": "The state should require motorcyclists to wear helmets."
+      }
+    },
+    {
+      "id": "y-compulsory_treatment",
+      "axis": "y",
+      "facet": "public health",
+      "statements": {
+        "negative": "A patient with an infectious disease should decide whether to accept treatment.",
+        "positive": "The state should require every patient with an infectious disease to accept treatment."
+      }
+    },
+    {
+      "id": "y-service_refusal_on_religious_grounds",
+      "axis": "y",
+      "facet": "family and religion",
+      "statements": {
+        "negative": "Business owners should be free to decline requests that conflict with their religion.",
+        "positive": "The state should require business owners to serve customers whose requests conflict with the owners' religion."
+      }
+    },
+    {
+      "id": "y-parental_authority",
+      "axis": "y",
+      "facet": "family and religion",
+      "statements": {
+        "negative": "Parents should have the final say on how they raise their child.",
+        "positive": "The state should be able to overrule parents on how they raise their child."
+      }
+    },
+    {
+      "id": "y-home_education_curriculum",
+      "axis": "y",
+      "facet": "family and religion",
+      "statements": {
+        "negative": "Parents who educate their children at home should set the curriculum themselves.",
+        "positive": "The state should set the curriculum that home-educated children must follow."
+      }
+    },
+    {
+      "id": "y-face_coverings",
+      "axis": "y",
+      "facet": "family and religion",
+      "statements": {
+        "negative": "Each person should decide whether to cover their face in public places.",
+        "positive": "The state should be able to ban face coverings in public places."
+      }
+    },
+    {
+      "id": "y-curfews_for_minors",
+      "axis": "y",
+      "facet": "family and religion",
+      "statements": {
+        "negative": "Whether a person under 18 is out at night should be their family's decision.",
+        "positive": "The state should be able to impose a night-time curfew on people under 18."
+      }
+    },
+    {
+      "id": "y-firearm_licensing",
+      "axis": "y",
+      "facet": "personal conduct",
+      "statements": {
+        "negative": "Owning a firearm should be each adult's own decision.",
+        "positive": "The state should require a license to own a firearm."
+      }
+    },
+    {
+      "id": "y-recreational_drugs",
+      "axis": "y",
+      "facet": "personal conduct",
+      "statements": {
+        "negative": "Using recreational drugs should be each adult's own decision.",
+        "positive": "The state should prohibit recreational drug use."
+      }
+    },
+    {
+      "id": "y-assisted_dying",
+      "axis": "y",
+      "facet": "personal conduct",
+      "statements": {
+        "negative": "A terminally ill adult should be free to ask a physician's help in ending their life.",
+        "positive": "The state should prohibit physicians from helping a terminally ill adult end their life."
+      }
+    },
+    {
+      "id": "y-sex_work",
+      "axis": "y",
+      "facet": "personal conduct",
+      "statements": {
+        "negative": "Selling sexual services should be each adult's own decision.",
+        "positive": "The state should prohibit the sale of sexual services."
+      }
+    },
+    {
+      "id": "y-organ_sales",
+      "axis": "y",
+      "facet": "personal conduct",
+      "statements": {
+        "negative": "Selling one of their own organs should be each adult's own decision.",
+        "positive": "The state should prohibit people from selling their own organs."
+      }
+    },
+    {
+      "id": "y-national_service",
+      "axis": "y",
+      "facet": "civic duties",
+      "statements": {
+        "negative": "Whether to serve in a national service should be each young person's own decision.",
+        "positive": "The state should require every young person to complete a period of national service."
+      }
+    },
+    {
+      "id": "y-compulsory_voting",
+      "axis": "y",
+      "facet": "civic duties",
+      "statements": {
+        "negative": "Whether to vote should be each citizen's own decision.",
+        "positive": "The state should require every eligible citizen to vote."
+      }
+    },
+    {
+      "id": "y-jury_duty",
+      "axis": "y",
+      "facet": "civic duties",
+      "statements": {
+        "negative": "Whether to serve on a jury should be each citizen's own decision.",
+        "positive": "The state should require every citizen summoned for jury duty to serve."
+      }
+    },
+    {
+      "id": "y-census",
+      "axis": "y",
+      "facet": "civic duties",
+      "statements": {
+        "negative": "Whether to answer the census should be each household's own decision.",
+        "positive": "The state should require every household to answer the census."
+      }
+    },
+    {
+      "id": "y-pledge_in_schools",
+      "axis": "y",
+      "facet": "civic duties",
+      "statements": {
+        "negative": "Whether a schoolchild recites a pledge of allegiance should be their family's decision.",
+        "positive": "The state should require schoolchildren to recite a pledge of allegiance."
+      }
+    }
+  ],
+  "author": "compass-bench v2"
+}

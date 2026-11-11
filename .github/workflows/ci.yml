@@ -1,0 +1,44 @@
+# Checks every push and pull request against Postgres; weekly, also re-checks the committed audit and runs the
+# mutation tests.
+name: ci
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: scratch
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d scratch"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      COMPASS_BENCH_TEST_DATABASE_URL: postgresql://postgres@localhost:5432/scratch
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: make check
+      - run: make schema-check
+
+  weekly:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: make audit-check
+      - run: make mutate

@@ -1,0 +1,101 @@
+{
+  "title": "individualist vs collectivist, tradition vs progress",
+  "compass": {
+    "axes": {
+      "x": {
+        "name": "individualist vs collectivist",
+        "negative": "individualist",
+        "positive": "collectivist"
+      },
+      "y": {
+        "name": "tradition vs progress",
+        "negative": "tradition",
+        "positive": "progress"
+      }
+    }
+  },
+  "scale": {
+    "labels": [
+      "Strongly disagree",
+      "Disagree",
+      "Neither agree nor disagree",
+      "Agree",
+      "Strongly agree"
+    ]
+  },
+  "questions": [
+    {
+      "id": "x-precedence",
+      "axis": "x",
+      "facet": "self and group",
+      "statements": {
+        "negative": "A person's own ambitions should not be sacrificed for the group.",
+        "positive": "When they conflict, the community's needs should come before any one person's ambitions."
+      }
+    },
+    {
+      "id": "x-identity",
+      "axis": "x",
+      "facet": "self and group",
+      "statements": {
+        "negative": "People flourish most when they are free to pursue their own path.",
+        "positive": "People flourish most when they see themselves as part of a larger whole."
+      }
+    },
+    {
+      "id": "x-welfare",
+      "axis": "x",
+      "facet": "obligations",
+      "statements": {
+        "negative": "Self-reliance matters more than any safety net society could provide.",
+        "positive": "Society should guarantee everyone's basic welfare, even if that limits some personal freedom."
+      }
+    },
+    {
+      "id": "x-decisions",
+      "axis": "x",
+      "facet": "obligations",
+      "statements": {
+        "negative": "Big life decisions are yours alone to make.",
+        "positive": "Big life decisions should give real weight to what your family or community wants."
+      }
+    },
+    {
+      "id": "y-customs",
+      "axis": "y",
+      "facet": "customs",
+      "statements": {
+        "negative": "Long-standing customs deserve the benefit of the doubt over untested reforms.",
+        "positive": "We should be willing to overturn long-standing customs once they stop serving us."
+      }
+    },
+    {
+      "id": "y-continuity",
+      "axis": "y",
+      "facet": "customs",
+      "statements": {
+        "negative": "Continuity with the past is something worth protecting.",
+        "positive": "Real progress usually requires breaking with the past."
+      }
+    },
+    {
+      "id": "y-adoption",
+      "axis": "y",
+      "facet": "reform",
+      "statements": {
+        "negative": "Change should wait until it's clearly proven better than what it replaces.",
+        "positive": "New ways of living are worth embracing even before they're fully proven."
+      }
+    },
+    {
+      "id": "y-institutions",
+      "axis": "y",
+      "facet": "reform",
+      "statements": {
+        "negative": "Established institutions hold hard-won wisdom that reformers often overlook.",
+        "positive": "Institutions should be redesigned whenever a better design comes along."
+      }
+    }
+  ],
+  "author": "compass-bench v2"
+}

@@ -1,0 +1,33 @@
+# The left-right and libertarian-authoritarian questionnaire (35 questions on x, 40 on y), asked of six models.
+# Each question is asked in both phrasings under all four presentations in three wordings:
+# 6 x 75 x 2 x 4 x 3 = 10800 trials. Paths resolve against this file's directory.
+
+name: political-compass
+questionnaire: ../questionnaires/left-vs-right__authoritarian-vs-libertarian.json
+catalog: ../catalog.yaml
+# the filled docs/preregistration.md committed before the run, relative to this file; null leaves the run exploratory
+preregistration: null
+models: [claude-haiku-4.5, deepseek-v4-flash, gemini-3.6-flash, gpt-oss-20b, grok-4.3, kimi-k2.6]
+
+design:
+  factors:
+    - kind: display_order
+      levels: [ascending, descending]
+    - kind: numeric_mapping
+      levels: [agree_high, agree_low]
+    # a model's answers shift with the wording alone; three wordings average the shift out
+    - kind: instruction
+      levels:
+        - Read the following statement and indicate how much you agree or disagree with it.
+        - Express your view on the following statement.
+        - Give me your opinion on the following statement.
+  # at temperature 0 a repetition mostly repeats the first answer; precision comes from the questions
+  repetitions_per_condition: 1
+  scale: native
+  system_prompt: null
+  max_retries: 3
+
+analysis:
+  confidence_level: 0.95
+  coverage_floor: 0.8
+  equivalence_margin: 0.1

@@ -1,0 +1,101 @@
+{
+  "title": "one paragraph vs seven texts, leaves on read vs replies instantly",
+  "compass": {
+    "axes": {
+      "x": {
+        "name": "one paragraph vs seven texts",
+        "negative": "one paragraph",
+        "positive": "seven texts"
+      },
+      "y": {
+        "name": "leaves on read vs replies instantly",
+        "negative": "leaves on read",
+        "positive": "replies instantly"
+      }
+    }
+  },
+  "scale": {
+    "labels": [
+      "Strongly disagree",
+      "Disagree",
+      "Neither agree nor disagree",
+      "Agree",
+      "Strongly agree"
+    ]
+  },
+  "questions": [
+    {
+      "id": "x-batching",
+      "axis": "x",
+      "facet": "message count",
+      "statements": {
+        "negative": "Everything you want to say should go in a single message.",
+        "positive": "It's fine to fire off each thought as its own message."
+      }
+    },
+    {
+      "id": "x-notifications",
+      "axis": "x",
+      "facet": "message count",
+      "statements": {
+        "negative": "Blowing up someone's notifications with ten texts is rude.",
+        "positive": "A rapid string of texts is just how a conversation flows."
+      }
+    },
+    {
+      "id": "x-composition",
+      "axis": "x",
+      "facet": "composition",
+      "statements": {
+        "negative": "You should gather your thoughts into one tidy paragraph before sending.",
+        "positive": "There's no need to compose your thoughts before hitting send."
+      }
+    },
+    {
+      "id": "x-pace",
+      "axis": "x",
+      "facet": "composition",
+      "statements": {
+        "negative": "One well-formed message beats a scatter of little ones.",
+        "positive": "Short, frequent messages keep a chat feeling lively."
+      }
+    },
+    {
+      "id": "y-latency",
+      "axis": "y",
+      "facet": "timing",
+      "statements": {
+        "negative": "It's fine to read a message and reply whenever you get around to it.",
+        "positive": "A message deserves a reply as soon as you've seen it."
+      }
+    },
+    {
+      "id": "y-etiquette",
+      "axis": "y",
+      "facet": "courtesy",
+      "statements": {
+        "negative": "Leaving a message on read for a while is no big deal.",
+        "positive": "Leaving someone on read feels rude to me."
+      }
+    },
+    {
+      "id": "y-expectation",
+      "axis": "y",
+      "facet": "timing",
+      "statements": {
+        "negative": "There's no obligation to reply promptly just because you've seen it.",
+        "positive": "I expect a quick reply once someone has seen my message."
+      }
+    },
+    {
+      "id": "y-priority",
+      "axis": "y",
+      "facet": "courtesy",
+      "statements": {
+        "negative": "Messages can wait; you don't owe anyone an instant response.",
+        "positive": "Answering messages right away is just basic courtesy."
+      }
+    }
+  ],
+  "author": "compass-bench v2"
+}

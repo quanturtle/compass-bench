@@ -1,0 +1,2749 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from compass_bench.contract.v2 by scripts/generate_schema.py. Do not edit.",
+  "$defs": {
+    "AnalysisResult": {
+      "additionalProperties": false,
+      "properties": {
+        "models": {
+          "items": {
+            "$ref": "#/$defs/ModelResult"
+          },
+          "title": "Models",
+          "type": "array"
+        },
+        "pairs": {
+          "items": {
+            "$ref": "#/$defs/PairResult"
+          },
+          "title": "Pairs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "models",
+        "pairs"
+      ],
+      "title": "AnalysisResult",
+      "type": "object"
+    },
+    "AnalysisSettings": {
+      "additionalProperties": false,
+      "description": "`coverage_floor` is the smallest share of a model's trials on an axis that must be answered for a claim.\n\n`equivalence_margin` is the largest gap, in score units, that still counts as no difference between two models.",
+      "properties": {
+        "confidence_level": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Confidence Level",
+          "type": "number"
+        },
+        "coverage_floor": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Coverage Floor",
+          "type": "number"
+        },
+        "equivalence_margin": {
+          "exclusiveMaximum": 2,
+          "exclusiveMinimum": 0,
+          "title": "Equivalence Margin",
+          "type": "number"
+        }
+      },
+      "required": [
+        "confidence_level",
+        "coverage_floor",
+        "equivalence_margin"
+      ],
+      "title": "AnalysisSettings",
+      "type": "object"
+    },
+    "AnswerType": {
+      "description": "How a model is asked to answer: a bare number, or a JSON object a reply schema constrains.",
+      "enum": [
+        "free_text",
+        "structured"
+      ],
+      "title": "AnswerType",
+      "type": "string"
+    },
+    "Asserted_AxisPair_Polarity__": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "asserted",
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/AxisPair_Polarity_"
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "title": "Asserted[AxisPair[Polarity]]",
+      "type": "object"
+    },
+    "Asserted_Equivalence_": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "asserted",
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/Equivalence"
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "title": "Asserted[Equivalence]",
+      "type": "object"
+    },
+    "Asserted_Ordering_": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "asserted",
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/Ordering"
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "title": "Asserted[Ordering]",
+      "type": "object"
+    },
+    "Axis": {
+      "additionalProperties": false,
+      "description": "`negative` and `positive` are the labels of the axis's two poles.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "negative": {
+          "title": "Negative",
+          "type": "string"
+        },
+        "positive": {
+          "title": "Positive",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "negative",
+        "positive"
+      ],
+      "title": "Axis",
+      "type": "object"
+    },
+    "AxisConsistency": {
+      "additionalProperties": false,
+      "description": "One model on one axis, over the questions both of whose phrasings were answered.\n\n`poles` are the mean answer values on the statements toward each pole; a model with a position and no lean\nto agree shows the position on both, and a model that agrees with everything shows -a and +a.\n`agreement_lean` is half their difference. `pole_correlation` is Pearson's r across questions between the\nagreement with each pole's statement; content gives a negative r, a lean to agree a positive one. A question\nis consistent when its two statements draw agreement on opposite sides of the midpoint, at the midpoint when\neither statement's mean sits on it, and on the same side otherwise; the three counts sum to `questions`. A\nquestion is unstable when its score changes sign between cells.",
+      "properties": {
+        "poles": {
+          "$ref": "#/$defs/PolarityPair_Union_float__NoneType__"
+        },
+        "agreement_lean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Agreement Lean"
+        },
+        "pole_correlation": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pole Correlation"
+        },
+        "consistent_questions": {
+          "title": "Consistent Questions",
+          "type": "integer"
+        },
+        "midpoint_questions": {
+          "title": "Midpoint Questions",
+          "type": "integer"
+        },
+        "same_side_questions": {
+          "title": "Same Side Questions",
+          "type": "integer"
+        },
+        "questions": {
+          "title": "Questions",
+          "type": "integer"
+        },
+        "spread": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Spread"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unstable_questions": {
+          "title": "Unstable Questions",
+          "type": "integer"
+        },
+        "marginals": {
+          "$ref": "#/$defs/Marginals"
+        },
+        "variance_shares": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VarianceShares"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "poles",
+        "agreement_lean",
+        "pole_correlation",
+        "consistent_questions",
+        "midpoint_questions",
+        "same_side_questions",
+        "questions",
+        "spread",
+        "unstable_questions",
+        "marginals",
+        "variance_shares"
+      ],
+      "title": "AxisConsistency",
+      "type": "object"
+    },
+    "AxisKey": {
+      "enum": [
+        "x",
+        "y"
+      ],
+      "title": "AxisKey",
+      "type": "string"
+    },
+    "AxisPair_AxisConsistency_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/AxisConsistency"
+        },
+        "y": {
+          "$ref": "#/$defs/AxisConsistency"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[AxisConsistency]",
+      "type": "object"
+    },
+    "AxisPair_AxisPosition_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/AxisPosition"
+        },
+        "y": {
+          "$ref": "#/$defs/AxisPosition"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[AxisPosition]",
+      "type": "object"
+    },
+    "AxisPair_AxisProfile_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/AxisProfile"
+        },
+        "y": {
+          "$ref": "#/$defs/AxisProfile"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[AxisProfile]",
+      "type": "object"
+    },
+    "AxisPair_AxisUnanswered_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/AxisUnanswered"
+        },
+        "y": {
+          "$ref": "#/$defs/AxisUnanswered"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[AxisUnanswered]",
+      "type": "object"
+    },
+    "AxisPair_Axis_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/Axis"
+        },
+        "y": {
+          "$ref": "#/$defs/Axis"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[Axis]",
+      "type": "object"
+    },
+    "AxisPair_EquivalenceClaim_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/EquivalenceClaim"
+        },
+        "y": {
+          "$ref": "#/$defs/EquivalenceClaim"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[EquivalenceClaim]",
+      "type": "object"
+    },
+    "AxisPair_OrderingClaim_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/OrderingClaim"
+        },
+        "y": {
+          "$ref": "#/$defs/OrderingClaim"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[OrderingClaim]",
+      "type": "object"
+    },
+    "AxisPair_PairAxis_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/PairAxis"
+        },
+        "y": {
+          "$ref": "#/$defs/PairAxis"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[PairAxis]",
+      "type": "object"
+    },
+    "AxisPair_PairOutcome_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/PairOutcome"
+        },
+        "y": {
+          "$ref": "#/$defs/PairOutcome"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[PairOutcome]",
+      "type": "object"
+    },
+    "AxisPair_Polarity_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/Polarity"
+        },
+        "y": {
+          "$ref": "#/$defs/Polarity"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[Polarity]",
+      "type": "object"
+    },
+    "AxisPair_ScaleUse_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "$ref": "#/$defs/ScaleUse"
+        },
+        "y": {
+          "$ref": "#/$defs/ScaleUse"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[ScaleUse]",
+      "type": "object"
+    },
+    "AxisPair_Union_Bound__NoneType__": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Bound"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "y": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Bound"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[Union[Bound, NoneType]]",
+      "type": "object"
+    },
+    "AxisPair_Union_OrderingRobustness__NoneType__": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OrderingRobustness"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "y": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OrderingRobustness"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[Union[OrderingRobustness, NoneType]]",
+      "type": "object"
+    },
+    "AxisPosition": {
+      "additionalProperties": false,
+      "description": "A model on one axis: the mean of its question scores, and the share of its trials there that were answered.",
+      "properties": {
+        "estimate": {
+          "$ref": "#/$defs/Estimate"
+        },
+        "coverage": {
+          "title": "Coverage",
+          "type": "number"
+        }
+      },
+      "required": [
+        "estimate",
+        "coverage"
+      ],
+      "title": "AxisPosition",
+      "type": "object"
+    },
+    "AxisProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "ratings": {
+          "$ref": "#/$defs/RatingProfile"
+        },
+        "scores": {
+          "$ref": "#/$defs/ScoreSplit"
+        },
+        "statements": {
+          "$ref": "#/$defs/StatementAgreement"
+        }
+      },
+      "required": [
+        "ratings",
+        "scores",
+        "statements"
+      ],
+      "title": "AxisProfile",
+      "type": "object"
+    },
+    "AxisUnanswered": {
+      "additionalProperties": false,
+      "description": "One model's unanswered trials on one axis: how many, how many declined toward each pole, the questions\nthey drop from the position, the bound they leave on it, and the fill that would flip its side of 0.\n\n`flip` is the fill at which the interval stops clearing 0 on the side it clears with the answers given: for an\ninterval above 0, the highest tried fill at which it no longer lies above 0; for one below 0, the lowest at\nwhich it no longer lies below. None when the interval contains 0 as it stands, when no tried fill moves it\nacross, or when nothing is unanswered. `bound` is None when no question on the axis can be scored.",
+      "properties": {
+        "trials": {
+          "title": "Trials",
+          "type": "integer"
+        },
+        "declined": {
+          "$ref": "#/$defs/PolarityPair_int_"
+        },
+        "dropped": {
+          "items": {
+            "$ref": "#/$defs/DroppedQuestion"
+          },
+          "title": "Dropped",
+          "type": "array"
+        },
+        "bound": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Bound"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "flip": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Flip"
+        }
+      },
+      "required": [
+        "trials",
+        "declined",
+        "dropped",
+        "bound",
+        "flip"
+      ],
+      "title": "AxisUnanswered",
+      "type": "object"
+    },
+    "Bound": {
+      "additionalProperties": false,
+      "description": "The mean with every unanswered trial filled at either end of the score range.\n\nThe mean lies in [low, high] under any answers to the `filled` trials; with none filled both equal it.\nA question an unanswered statement dropped is scored inside the bound.",
+      "properties": {
+        "low": {
+          "title": "Low",
+          "type": "number"
+        },
+        "high": {
+          "title": "High",
+          "type": "number"
+        },
+        "filled": {
+          "title": "Filled",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "low",
+        "high",
+        "filled"
+      ],
+      "title": "Bound",
+      "type": "object"
+    },
+    "Bounded": {
+      "additionalProperties": false,
+      "description": "A mean over `questions` question scores or gaps, with its t-interval at confidence `level`.\n\n`minimum_detectable` is the smallest |mean| the test at `level` would find with 80% power, given this spread.",
+      "properties": {
+        "kind": {
+          "const": "bounded",
+          "title": "Kind",
+          "type": "string"
+        },
+        "point": {
+          "title": "Point",
+          "type": "number"
+        },
+        "low": {
+          "title": "Low",
+          "type": "number"
+        },
+        "high": {
+          "title": "High",
+          "type": "number"
+        },
+        "level": {
+          "title": "Level",
+          "type": "number"
+        },
+        "questions": {
+          "title": "Questions",
+          "type": "integer"
+        },
+        "minimum_detectable": {
+          "title": "Minimum Detectable",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "point",
+        "low",
+        "high",
+        "level",
+        "questions",
+        "minimum_detectable"
+      ],
+      "title": "Bounded",
+      "type": "object"
+    },
+    "Compass": {
+      "additionalProperties": false,
+      "properties": {
+        "axes": {
+          "$ref": "#/$defs/AxisPair_Axis_"
+        }
+      },
+      "required": [
+        "axes"
+      ],
+      "title": "Compass",
+      "type": "object"
+    },
+    "CoverageBelowFloor": {
+      "additionalProperties": false,
+      "description": "Too small a share of the model's trials on the axis were answered.",
+      "properties": {
+        "kind": {
+          "const": "coverage_below_floor",
+          "title": "Kind",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "axis": {
+          "$ref": "#/$defs/AxisKey"
+        },
+        "observed": {
+          "title": "Observed",
+          "type": "number"
+        },
+        "floor": {
+          "title": "Floor",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "model",
+        "axis",
+        "observed",
+        "floor"
+      ],
+      "title": "CoverageBelowFloor",
+      "type": "object"
+    },
+    "CrossesMidpoint": {
+      "additionalProperties": false,
+      "description": "The axis interval contains 0, so it clears neither pole.",
+      "properties": {
+        "kind": {
+          "const": "crosses_midpoint",
+          "title": "Kind",
+          "type": "string"
+        },
+        "axis": {
+          "$ref": "#/$defs/AxisKey"
+        }
+      },
+      "required": [
+        "kind",
+        "axis"
+      ],
+      "title": "CrossesMidpoint",
+      "type": "object"
+    },
+    "Design": {
+      "additionalProperties": false,
+      "description": "Each factor lists its levels; design_conditions gives the conditions, and a kind not listed stays at baseline.\n\nA system prompt is absent or not empty, since an empty one is still sent as a system message.",
+      "properties": {
+        "factors": {
+          "items": {
+            "$ref": "#/$defs/Factor"
+          },
+          "title": "Factors",
+          "type": "array"
+        },
+        "repetitions_per_condition": {
+          "exclusiveMinimum": 0,
+          "title": "Repetitions Per Condition",
+          "type": "integer"
+        },
+        "scale": {
+          "$ref": "#/$defs/ScaleChoice"
+        },
+        "system_prompt": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "System Prompt"
+        },
+        "prompt": {
+          "$ref": "#/$defs/PromptSettings"
+        },
+        "max_retries": {
+          "minimum": 0,
+          "title": "Max Retries",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "factors",
+        "repetitions_per_condition",
+        "scale",
+        "system_prompt",
+        "prompt",
+        "max_retries"
+      ],
+      "title": "Design",
+      "type": "object"
+    },
+    "DisplayOrder": {
+      "description": "The order the scale lines are listed in.",
+      "enum": [
+        "ascending",
+        "descending"
+      ],
+      "title": "DisplayOrder",
+      "type": "string"
+    },
+    "DisplayOrderFactor": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "display_order",
+          "title": "Kind",
+          "type": "string"
+        },
+        "levels": {
+          "items": {
+            "$ref": "#/$defs/DisplayOrder"
+          },
+          "title": "Levels",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "levels"
+      ],
+      "title": "DisplayOrderFactor",
+      "type": "object"
+    },
+    "DroppedQuestion": {
+      "additionalProperties": false,
+      "description": "A question left unscored because one of its statements drew no answer; `unanswered` counts its trials.",
+      "properties": {
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "unanswered": {
+          "title": "Unanswered",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "question",
+        "unanswered"
+      ],
+      "title": "DroppedQuestion",
+      "type": "object"
+    },
+    "ElicitationDifference": {
+      "additionalProperties": false,
+      "description": "One field of the elicitation on which two models differ, with each model's value as the report prints it.",
+      "properties": {
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "first": {
+          "title": "First",
+          "type": "string"
+        },
+        "second": {
+          "title": "Second",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "first",
+        "second"
+      ],
+      "title": "ElicitationDifference",
+      "type": "object"
+    },
+    "EndpointSettings": {
+      "additionalProperties": false,
+      "description": "How to reach an OpenRouter endpoint and route its requests across OpenRouter's upstream providers.\n\nThe settings carry no id: every mapping that holds them is keyed by EndpointId. `quantizations` lists the\nprecisions a host may serve at, such as `bf16` or `fp8`; empty allows any. OpenRouter filters hosts by it and\ndoes not report the precision served, so it is recorded as the filter sent.",
+      "properties": {
+        "base_url": {
+          "title": "Base Url",
+          "type": "string"
+        },
+        "api_key_env": {
+          "title": "Api Key Env",
+          "type": "string"
+        },
+        "max_concurrency": {
+          "exclusiveMinimum": 0,
+          "title": "Max Concurrency",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "provider_order": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Provider Order",
+          "type": "array"
+        },
+        "allow_fallbacks": {
+          "title": "Allow Fallbacks",
+          "type": "boolean"
+        },
+        "require_parameters": {
+          "title": "Require Parameters",
+          "type": "boolean"
+        },
+        "quantizations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Quantizations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "base_url",
+        "api_key_env",
+        "max_concurrency",
+        "timeout_seconds",
+        "provider_order",
+        "allow_fallbacks",
+        "require_parameters",
+        "quantizations"
+      ],
+      "title": "EndpointSettings",
+      "type": "object"
+    },
+    "Endpoints": {
+      "additionalProperties": {
+        "$ref": "#/$defs/EndpointSettings"
+      },
+      "type": "object"
+    },
+    "Equivalence": {
+      "additionalProperties": false,
+      "description": "Two models' gap on an axis lies within `margin`, in score units.",
+      "properties": {
+        "margin": {
+          "title": "Margin",
+          "type": "number"
+        }
+      },
+      "required": [
+        "margin"
+      ],
+      "title": "Equivalence",
+      "type": "object"
+    },
+    "EquivalenceClaim": {
+      "discriminator": {
+        "mapping": {
+          "asserted": "#/$defs/Asserted_Equivalence_",
+          "withheld": "#/$defs/Withheld"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Asserted_Equivalence_"
+        },
+        {
+          "$ref": "#/$defs/Withheld"
+        }
+      ]
+    },
+    "Estimate": {
+      "discriminator": {
+        "mapping": {
+          "bounded": "#/$defs/Bounded",
+          "not_estimable": "#/$defs/NotEstimable"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Bounded"
+        },
+        {
+          "$ref": "#/$defs/NotEstimable"
+        }
+      ]
+    },
+    "ExperimentSpec": {
+      "additionalProperties": false,
+      "description": "`preregistration` is the path of the filled preregistration committed before the run, relative to the\nexperiment file, or None; a report is confirmatory only when the stored spec names one.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "questionnaire": {
+          "title": "Questionnaire",
+          "type": "string"
+        },
+        "models": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ModelSpec"
+          },
+          "title": "Models",
+          "type": "object"
+        },
+        "design": {
+          "$ref": "#/$defs/Design"
+        },
+        "analysis": {
+          "$ref": "#/$defs/AnalysisSettings"
+        },
+        "preregistration": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Preregistration"
+        }
+      },
+      "required": [
+        "name",
+        "questionnaire",
+        "models",
+        "design",
+        "analysis",
+        "preregistration"
+      ],
+      "title": "ExperimentSpec",
+      "type": "object"
+    },
+    "FacetScore": {
+      "additionalProperties": false,
+      "description": "A model's mean question score over one facet of an axis; None when none of the facet's questions is scored.\n\nFacets hold few questions, so no interval is given and nothing is claimed from them.",
+      "properties": {
+        "axis": {
+          "$ref": "#/$defs/AxisKey"
+        },
+        "facet": {
+          "title": "Facet",
+          "type": "string"
+        },
+        "questions": {
+          "title": "Questions",
+          "type": "integer"
+        },
+        "mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mean"
+        }
+      },
+      "required": [
+        "axis",
+        "facet",
+        "questions",
+        "mean"
+      ],
+      "title": "FacetScore",
+      "type": "object"
+    },
+    "Factor": {
+      "discriminator": {
+        "mapping": {
+          "display_order": "#/$defs/DisplayOrderFactor",
+          "instruction": "#/$defs/InstructionFactor",
+          "numeric_mapping": "#/$defs/NumericMappingFactor"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/DisplayOrderFactor"
+        },
+        {
+          "$ref": "#/$defs/NumericMappingFactor"
+        },
+        {
+          "$ref": "#/$defs/InstructionFactor"
+        }
+      ]
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "code": {
+          "$ref": "#/$defs/FindingCode"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "severity",
+        "code",
+        "message"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "FindingCode": {
+      "enum": [
+        "duplicate_question",
+        "empty_axis",
+        "scale_too_short",
+        "duplicate_model",
+        "no_models",
+        "unknown_model",
+        "unknown_endpoint",
+        "empty_factor",
+        "duplicate_level",
+        "duplicate_factor",
+        "invalid_prompt_template",
+        "below_question_floor",
+        "unvaried_factor",
+        "facet_on_both_axes",
+        "negated_statement",
+        "justifying_clause",
+        "unequal_facets",
+        "unpinned_endpoint",
+        "single_wording",
+        "no_listing",
+        "unsupported_parameter",
+        "fresh_listing",
+        "mixed_served_models",
+        "runs_far_apart",
+        "mixed_elicitations",
+        "mixed_routing",
+        "preregistration_missing"
+      ],
+      "title": "FindingCode",
+      "type": "string"
+    },
+    "FormatFailureKind": {
+      "enum": [
+        "empty",
+        "no_digit",
+        "ambiguous",
+        "out_of_range",
+        "truncated",
+        "schema_invalid"
+      ],
+      "title": "FormatFailureKind",
+      "type": "string"
+    },
+    "InstructionFactor": {
+      "additionalProperties": false,
+      "description": "Each level is an instruction that fills the prompt template's {instruction}.",
+      "properties": {
+        "kind": {
+          "const": "instruction",
+          "title": "Kind",
+          "type": "string"
+        },
+        "levels": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Levels",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "levels"
+      ],
+      "title": "InstructionFactor",
+      "type": "object"
+    },
+    "LevelPosition": {
+      "additionalProperties": false,
+      "description": "The axis position recomputed from the answers at one level of a factor, pooled over the other factors.\n\n`position` is None below two scored questions; `level` is the wording's text or the layout level's name.",
+      "properties": {
+        "level": {
+          "title": "Level",
+          "type": "string"
+        },
+        "position": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Position"
+        },
+        "questions": {
+          "title": "Questions",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "level",
+        "position",
+        "questions"
+      ],
+      "title": "LevelPosition",
+      "type": "object"
+    },
+    "LossReason": {
+      "enum": [
+        "no_completion",
+        "no_content",
+        "host_error",
+        "request_rejected",
+        "retries_exhausted"
+      ],
+      "title": "LossReason",
+      "type": "string"
+    },
+    "Marginals": {
+      "additionalProperties": false,
+      "description": "The position at each level of each presentation factor; a layout is one display order and numbering.\n\nEach range is the highest level position minus the lowest, or None below two level positions.",
+      "properties": {
+        "wordings": {
+          "items": {
+            "$ref": "#/$defs/LevelPosition"
+          },
+          "title": "Wordings",
+          "type": "array"
+        },
+        "display_orders": {
+          "items": {
+            "$ref": "#/$defs/LevelPosition"
+          },
+          "title": "Display Orders",
+          "type": "array"
+        },
+        "numeric_mappings": {
+          "items": {
+            "$ref": "#/$defs/LevelPosition"
+          },
+          "title": "Numeric Mappings",
+          "type": "array"
+        },
+        "layouts": {
+          "items": {
+            "$ref": "#/$defs/LevelPosition"
+          },
+          "title": "Layouts",
+          "type": "array"
+        },
+        "wording_range": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Wording Range"
+        },
+        "layout_range": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Layout Range"
+        }
+      },
+      "required": [
+        "wordings",
+        "display_orders",
+        "numeric_mappings",
+        "layouts",
+        "wording_range",
+        "layout_range"
+      ],
+      "title": "Marginals",
+      "type": "object"
+    },
+    "ModelListing": {
+      "additionalProperties": false,
+      "description": "What the provider listed for a slug: when it was listed, and what the pinned host accepts.\n\n`host` is the host whose parameters were read, None when the endpoint pins none; `supported_parameters` is\nwhat that host accepts, None when the host is not among the slug's or no host was pinned.",
+      "properties": {
+        "listed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Listed At"
+        },
+        "host": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Host"
+        },
+        "supported_parameters": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Supported Parameters"
+        }
+      },
+      "required": [
+        "listed_at",
+        "host",
+        "supported_parameters"
+      ],
+      "title": "ModelListing",
+      "type": "object"
+    },
+    "ModelResult": {
+      "additionalProperties": false,
+      "description": "Everything the report says about one model: its question scores, its position per axis, its quadrant,\nand the consistency diagnostics behind the position.\n\n`hosts`, `served`, and `fingerprints` count the model's replied trials per upstream host, per model string the\nendpoint reported serving, and per system fingerprint, each with `unknown` for a reply that reported none.\n`first_reply_at` and `last_reply_at` bound when the ledger received the model's replies; None without one.",
+      "properties": {
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "questions": {
+          "items": {
+            "$ref": "#/$defs/QuestionScore"
+          },
+          "title": "Questions",
+          "type": "array"
+        },
+        "facets": {
+          "items": {
+            "$ref": "#/$defs/FacetScore"
+          },
+          "title": "Facets",
+          "type": "array"
+        },
+        "axes": {
+          "$ref": "#/$defs/AxisPair_AxisPosition_"
+        },
+        "quadrant": {
+          "$ref": "#/$defs/QuadrantClaim"
+        },
+        "consistency": {
+          "$ref": "#/$defs/AxisPair_AxisConsistency_"
+        },
+        "unanswered": {
+          "$ref": "#/$defs/AxisPair_AxisUnanswered_"
+        },
+        "profile": {
+          "$ref": "#/$defs/AxisPair_AxisProfile_"
+        },
+        "outcomes": {
+          "$ref": "#/$defs/OutcomeCounts"
+        },
+        "hosts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Hosts",
+          "type": "object"
+        },
+        "served": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Served",
+          "type": "object"
+        },
+        "fingerprints": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Fingerprints",
+          "type": "object"
+        },
+        "first_reply_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Reply At"
+        },
+        "last_reply_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Reply At"
+        },
+        "review_after": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Review After"
+        },
+        "usage": {
+          "$ref": "#/$defs/ModelUsage"
+        }
+      },
+      "required": [
+        "model",
+        "questions",
+        "facets",
+        "axes",
+        "quadrant",
+        "consistency",
+        "unanswered",
+        "profile",
+        "outcomes",
+        "hosts",
+        "served",
+        "fingerprints",
+        "first_reply_at",
+        "last_reply_at",
+        "review_after",
+        "usage"
+      ],
+      "title": "ModelResult",
+      "type": "object"
+    },
+    "ModelSpec": {
+      "additionalProperties": false,
+      "description": "What to ask a model with; how to reach its endpoint is transport configuration.\n\nIt carries no id: every mapping that holds it is keyed by ModelId.",
+      "properties": {
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "sampling": {
+          "$ref": "#/$defs/Sampling"
+        },
+        "answer_type": {
+          "$ref": "#/$defs/AnswerType"
+        },
+        "price": {
+          "$ref": "#/$defs/Price"
+        }
+      },
+      "required": [
+        "endpoint",
+        "model",
+        "sampling",
+        "answer_type",
+        "price"
+      ],
+      "title": "ModelSpec",
+      "type": "object"
+    },
+    "ModelUsage": {
+      "additionalProperties": false,
+      "description": "`completed` counts the attempts that got a reply, and `reasoning_replies` those whose reply carried reasoning\ntokens, so an endpoint that asked for reasoning and got none shows it.",
+      "properties": {
+        "attempts": {
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "retries": {
+          "title": "Retries",
+          "type": "integer"
+        },
+        "completed": {
+          "title": "Completed",
+          "type": "integer"
+        },
+        "reasoning_replies": {
+          "title": "Reasoning Replies",
+          "type": "integer"
+        },
+        "prompt_tokens": {
+          "title": "Prompt Tokens",
+          "type": "integer"
+        },
+        "completion_tokens": {
+          "title": "Completion Tokens",
+          "type": "integer"
+        },
+        "reasoning_tokens": {
+          "title": "Reasoning Tokens",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "title": "Cost Usd",
+          "type": "number"
+        },
+        "unpriced_attempts": {
+          "title": "Unpriced Attempts",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "attempts",
+        "retries",
+        "completed",
+        "reasoning_replies",
+        "prompt_tokens",
+        "completion_tokens",
+        "reasoning_tokens",
+        "cost_usd",
+        "unpriced_attempts"
+      ],
+      "title": "ModelUsage",
+      "type": "object"
+    },
+    "NotEquivalent": {
+      "additionalProperties": false,
+      "description": "The two one-sided tests' Holm-adjusted p-value is at least alpha, so the gap is not shown to be small.\n\n`power_at_zero_gap` is the unadjusted tests' power to show a true gap of 0 within the margin, given the\nobserved spread, None when the gap is not estimable; a low value says the questions could not have shown\nequivalence whatever the gap.",
+      "properties": {
+        "kind": {
+          "const": "not_equivalent",
+          "title": "Kind",
+          "type": "string"
+        },
+        "axis": {
+          "$ref": "#/$defs/AxisKey"
+        },
+        "p_holm": {
+          "title": "P Holm",
+          "type": "number"
+        },
+        "alpha": {
+          "title": "Alpha",
+          "type": "number"
+        },
+        "margin": {
+          "title": "Margin",
+          "type": "number"
+        },
+        "power_at_zero_gap": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Power At Zero Gap"
+        }
+      },
+      "required": [
+        "kind",
+        "axis",
+        "p_holm",
+        "alpha",
+        "margin",
+        "power_at_zero_gap"
+      ],
+      "title": "NotEquivalent",
+      "type": "object"
+    },
+    "NotEstimable": {
+      "additionalProperties": false,
+      "description": "Fewer than two questions, so there is no spread and no interval.",
+      "properties": {
+        "kind": {
+          "const": "not_estimable",
+          "title": "Kind",
+          "type": "string"
+        },
+        "questions": {
+          "title": "Questions",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "questions"
+      ],
+      "title": "NotEstimable",
+      "type": "object"
+    },
+    "NotSignificant": {
+      "additionalProperties": false,
+      "description": "The gap's Holm-adjusted p-value is at least alpha.",
+      "properties": {
+        "kind": {
+          "const": "not_significant",
+          "title": "Kind",
+          "type": "string"
+        },
+        "axis": {
+          "$ref": "#/$defs/AxisKey"
+        },
+        "p_holm": {
+          "title": "P Holm",
+          "type": "number"
+        },
+        "alpha": {
+          "title": "Alpha",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "axis",
+        "p_holm",
+        "alpha"
+      ],
+      "title": "NotSignificant",
+      "type": "object"
+    },
+    "NumericMapping": {
+      "description": "Which end of the scale the highest number means.",
+      "enum": [
+        "agree_high",
+        "agree_low"
+      ],
+      "title": "NumericMapping",
+      "type": "string"
+    },
+    "NumericMappingFactor": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "numeric_mapping",
+          "title": "Kind",
+          "type": "string"
+        },
+        "levels": {
+          "items": {
+            "$ref": "#/$defs/NumericMapping"
+          },
+          "title": "Levels",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "levels"
+      ],
+      "title": "NumericMappingFactor",
+      "type": "object"
+    },
+    "Ordering": {
+      "enum": [
+        "first_higher",
+        "second_higher"
+      ],
+      "title": "Ordering",
+      "type": "string"
+    },
+    "OrderingClaim": {
+      "discriminator": {
+        "mapping": {
+          "asserted": "#/$defs/Asserted_Ordering_",
+          "withheld": "#/$defs/Withheld"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Asserted_Ordering_"
+        },
+        {
+          "$ref": "#/$defs/Withheld"
+        }
+      ]
+    },
+    "OrderingRobustness": {
+      "additionalProperties": false,
+      "description": "Over the `cells` in which both models score two or more shared questions, how many have a mean gap on the\nheadline gap's side of 0.",
+      "properties": {
+        "cells": {
+          "title": "Cells",
+          "type": "integer"
+        },
+        "same_sign": {
+          "title": "Same Sign",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "cells",
+        "same_sign"
+      ],
+      "title": "OrderingRobustness",
+      "type": "object"
+    },
+    "OutcomeCounts": {
+      "additionalProperties": false,
+      "description": "How a model's trials ended; `hedged` counts the answered trials whose reply also carried decline wording.",
+      "properties": {
+        "answered": {
+          "title": "Answered",
+          "type": "integer"
+        },
+        "hedged": {
+          "title": "Hedged",
+          "type": "integer"
+        },
+        "declined": {
+          "title": "Declined",
+          "type": "integer"
+        },
+        "format_failed": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/FormatFailureKind"
+          },
+          "title": "Format Failed",
+          "type": "object"
+        },
+        "lost": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/LossReason"
+          },
+          "title": "Lost",
+          "type": "object"
+        },
+        "pending": {
+          "title": "Pending",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "answered",
+        "hedged",
+        "declined",
+        "format_failed",
+        "lost",
+        "pending"
+      ],
+      "title": "OutcomeCounts",
+      "type": "object"
+    },
+    "PairAxis": {
+      "additionalProperties": false,
+      "description": "The second model minus the first on one axis, over the questions both scored, with the paired t-test.\n\nThe gap's interval is at confidence_level, unadjusted. A gap that is not estimable enters Holm at p = 1.\n`p_equivalence_raw` is the two one-sided tests' p that the gap lies within the equivalence margin, and\n`p_equivalence_holm` its Holm adjustment over every pair and axis as a family of its own.\n`d_z` is the mean gap over the gaps' standard deviation; None below two gaps or when every gap is equal.\n`correlation` is Pearson's r between the two models' scores on the shared questions; None below three or\nwithout spread. `opposed_questions` counts shared questions whose gap opposes the mean gap's sign; None when\nthe gap is not estimable or its mean is 0. `family_size` is the number of gaps Holm adjusts together, and\n`minimum_detectable_family` the smallest |gap| the test at the family's first step, alpha over that size,\nwould detect with 80% power; None when the gap is not estimable. `equivalence_power` is the power of the\ntwo one-sided tests at alpha, unadjusted, to show a true gap of 0 within the margin, given the observed\nspread; None when the gap is not estimable.",
+      "properties": {
+        "gap": {
+          "$ref": "#/$defs/Estimate"
+        },
+        "d_z": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "D Z"
+        },
+        "correlation": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Correlation"
+        },
+        "opposed_questions": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Opposed Questions"
+        },
+        "p_raw": {
+          "title": "P Raw",
+          "type": "number"
+        },
+        "p_holm": {
+          "title": "P Holm",
+          "type": "number"
+        },
+        "p_equivalence_raw": {
+          "title": "P Equivalence Raw",
+          "type": "number"
+        },
+        "p_equivalence_holm": {
+          "title": "P Equivalence Holm",
+          "type": "number"
+        },
+        "family_size": {
+          "title": "Family Size",
+          "type": "integer"
+        },
+        "minimum_detectable_family": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Minimum Detectable Family"
+        },
+        "equivalence_power": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Equivalence Power"
+        }
+      },
+      "required": [
+        "gap",
+        "d_z",
+        "correlation",
+        "opposed_questions",
+        "p_raw",
+        "p_holm",
+        "p_equivalence_raw",
+        "p_equivalence_holm",
+        "family_size",
+        "minimum_detectable_family",
+        "equivalence_power"
+      ],
+      "title": "PairAxis",
+      "type": "object"
+    },
+    "PairElicitation": {
+      "additionalProperties": false,
+      "description": "Two models of an experiment, in canonical model-id order, and the elicitation fields on which they differ;\nan empty `differs` means the pair shares its elicitation.",
+      "properties": {
+        "first": {
+          "title": "First",
+          "type": "string"
+        },
+        "second": {
+          "title": "Second",
+          "type": "string"
+        },
+        "differs": {
+          "items": {
+            "$ref": "#/$defs/ElicitationDifference"
+          },
+          "title": "Differs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "first",
+        "second",
+        "differs"
+      ],
+      "title": "PairElicitation",
+      "type": "object"
+    },
+    "PairOutcome": {
+      "description": "Lakens's (2017) four readings of an ordering test beside an equivalence test on one gap.",
+      "enum": [
+        "different_not_equivalent",
+        "different_and_equivalent",
+        "equivalent_not_different",
+        "undetermined"
+      ],
+      "title": "PairOutcome",
+      "type": "string"
+    },
+    "PairResult": {
+      "additionalProperties": false,
+      "description": "Everything the report says about two models, in canonical model-id order: each axis's gap, its bound under\nany answers to the unanswered trials, how many cells keep its sign, whether the two use the scale unequally,\nordering, equivalence, and the reading of the two claims together.",
+      "properties": {
+        "first": {
+          "title": "First",
+          "type": "string"
+        },
+        "second": {
+          "title": "Second",
+          "type": "string"
+        },
+        "axes": {
+          "$ref": "#/$defs/AxisPair_PairAxis_"
+        },
+        "bounds": {
+          "$ref": "#/$defs/AxisPair_Union_Bound__NoneType__"
+        },
+        "robustness": {
+          "$ref": "#/$defs/AxisPair_Union_OrderingRobustness__NoneType__"
+        },
+        "scale_use": {
+          "$ref": "#/$defs/AxisPair_ScaleUse_"
+        },
+        "orderings": {
+          "$ref": "#/$defs/AxisPair_OrderingClaim_"
+        },
+        "equivalences": {
+          "$ref": "#/$defs/AxisPair_EquivalenceClaim_"
+        },
+        "outcomes": {
+          "$ref": "#/$defs/AxisPair_PairOutcome_"
+        }
+      },
+      "required": [
+        "first",
+        "second",
+        "axes",
+        "bounds",
+        "robustness",
+        "scale_use",
+        "orderings",
+        "equivalences",
+        "outcomes"
+      ],
+      "title": "PairResult",
+      "type": "object"
+    },
+    "Polarity": {
+      "description": "The pole an answer or a position points to: -1 is the negative pole, +1 the positive one.",
+      "enum": [
+        -1,
+        1
+      ],
+      "title": "Polarity",
+      "type": "integer"
+    },
+    "PolarityPair_Union_float__NoneType__": {
+      "additionalProperties": false,
+      "properties": {
+        "negative": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Negative"
+        },
+        "positive": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Positive"
+        }
+      },
+      "required": [
+        "negative",
+        "positive"
+      ],
+      "title": "PolarityPair[Union[float, NoneType]]",
+      "type": "object"
+    },
+    "PolarityPair_int_": {
+      "additionalProperties": false,
+      "properties": {
+        "negative": {
+          "title": "Negative",
+          "type": "integer"
+        },
+        "positive": {
+          "title": "Positive",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "negative",
+        "positive"
+      ],
+      "title": "PolarityPair[int]",
+      "type": "object"
+    },
+    "PolarityPair_str_": {
+      "additionalProperties": false,
+      "properties": {
+        "negative": {
+          "title": "Negative",
+          "type": "string"
+        },
+        "positive": {
+          "title": "Positive",
+          "type": "string"
+        }
+      },
+      "required": [
+        "negative",
+        "positive"
+      ],
+      "title": "PolarityPair[str]",
+      "type": "object"
+    },
+    "Price": {
+      "additionalProperties": false,
+      "properties": {
+        "prompt_usd_per_million": {
+          "minimum": 0,
+          "title": "Prompt Usd Per Million",
+          "type": "number"
+        },
+        "completion_usd_per_million": {
+          "minimum": 0,
+          "title": "Completion Usd Per Million",
+          "type": "number"
+        }
+      },
+      "required": [
+        "prompt_usd_per_million",
+        "completion_usd_per_million"
+      ],
+      "title": "Price",
+      "type": "object"
+    },
+    "PromptSettings": {
+      "additionalProperties": false,
+      "description": "The user message's template, and the instruction for {instruction} when no instruction factor is listed.\n\nEvery answer type sends the same prompt; a structured model's reply schema goes beside it, in the request.",
+      "properties": {
+        "template": {
+          "title": "Template",
+          "type": "string"
+        },
+        "instruction": {
+          "minLength": 1,
+          "title": "Instruction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "template",
+        "instruction"
+      ],
+      "title": "PromptSettings",
+      "type": "object"
+    },
+    "QuadrantClaim": {
+      "discriminator": {
+        "mapping": {
+          "asserted": "#/$defs/Asserted_AxisPair_Polarity__",
+          "withheld": "#/$defs/Withheld"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Asserted_AxisPair_Polarity__"
+        },
+        {
+          "$ref": "#/$defs/Withheld"
+        }
+      ]
+    },
+    "Question": {
+      "additionalProperties": false,
+      "description": "One question on one axis, phrased twice: agreeing with `statements.negative` pulls toward the negative pole.\n\nAveraging the two phrasings cancels the question's own slant and a model's general lean to agree. `facet` names\nthe part of the axis the question covers, so the report can show a position per facet.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "axis": {
+          "$ref": "#/$defs/AxisKey"
+        },
+        "facet": {
+          "minLength": 1,
+          "title": "Facet",
+          "type": "string"
+        },
+        "statements": {
+          "$ref": "#/$defs/PolarityPair_str_"
+        }
+      },
+      "required": [
+        "id",
+        "axis",
+        "facet",
+        "statements"
+      ],
+      "title": "Question",
+      "type": "object"
+    },
+    "QuestionScore": {
+      "additionalProperties": false,
+      "description": "A model's score on one question: the mean of its two phrasing means, each over every condition and repetition.\n\nScored only when both phrasings have an answer, so leaning to a list position, a number, or agreeing cancels.",
+      "properties": {
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "axis": {
+          "$ref": "#/$defs/AxisKey"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "question",
+        "axis",
+        "score"
+      ],
+      "title": "QuestionScore",
+      "type": "object"
+    },
+    "Questionnaire": {
+      "additionalProperties": false,
+      "description": "`author` is the author's name.",
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "compass": {
+          "$ref": "#/$defs/Compass"
+        },
+        "scale": {
+          "$ref": "#/$defs/Scale"
+        },
+        "questions": {
+          "items": {
+            "$ref": "#/$defs/Question"
+          },
+          "title": "Questions",
+          "type": "array"
+        },
+        "author": {
+          "title": "Author",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "compass",
+        "scale",
+        "questions",
+        "author"
+      ],
+      "title": "Questionnaire",
+      "type": "object"
+    },
+    "RatingProfile": {
+      "additionalProperties": false,
+      "description": "How a model uses the scale's points on one axis, over its answered trials there.\n\n`shares` run from the scale's first point to its last; `midpoint_share` is None on a scale without a\nmidpoint; `rating_sd` is the sample standard deviation of the ratings, None below two.",
+      "properties": {
+        "answered": {
+          "title": "Answered",
+          "type": "integer"
+        },
+        "shares": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Shares",
+          "type": "array"
+        },
+        "midpoint_share": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Midpoint Share"
+        },
+        "ends_share": {
+          "title": "Ends Share",
+          "type": "number"
+        },
+        "rating_sd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rating Sd"
+        }
+      },
+      "required": [
+        "answered",
+        "shares",
+        "midpoint_share",
+        "ends_share",
+        "rating_sd"
+      ],
+      "title": "RatingProfile",
+      "type": "object"
+    },
+    "Reason": {
+      "discriminator": {
+        "mapping": {
+          "coverage_below_floor": "#/$defs/CoverageBelowFloor",
+          "crosses_midpoint": "#/$defs/CrossesMidpoint",
+          "not_equivalent": "#/$defs/NotEquivalent",
+          "not_significant": "#/$defs/NotSignificant",
+          "run_incomplete": "#/$defs/RunIncomplete",
+          "too_few_questions": "#/$defs/TooFewQuestions"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/CrossesMidpoint"
+        },
+        {
+          "$ref": "#/$defs/TooFewQuestions"
+        },
+        {
+          "$ref": "#/$defs/CoverageBelowFloor"
+        },
+        {
+          "$ref": "#/$defs/NotSignificant"
+        },
+        {
+          "$ref": "#/$defs/NotEquivalent"
+        },
+        {
+          "$ref": "#/$defs/RunIncomplete"
+        }
+      ]
+    },
+    "ReasoningEffort": {
+      "enum": [
+        "off",
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "ReasoningEffort",
+      "type": "string"
+    },
+    "ReportStatus": {
+      "enum": [
+        "exploratory",
+        "confirmatory"
+      ],
+      "title": "ReportStatus",
+      "type": "string"
+    },
+    "RunIncomplete": {
+      "additionalProperties": false,
+      "description": "Trials are still pending, so the result can change when the run resumes.",
+      "properties": {
+        "kind": {
+          "const": "run_incomplete",
+          "title": "Kind",
+          "type": "string"
+        },
+        "pending": {
+          "title": "Pending",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "pending"
+      ],
+      "title": "RunIncomplete",
+      "type": "object"
+    },
+    "RunListings": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ModelListing"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "type": "object"
+    },
+    "RunRecord": {
+      "additionalProperties": false,
+      "description": "The experiment snapshot fixes the questionnaire, so the run names only the experiment.\n\n`created_at` is when the database inserted the run row.",
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "experiment": {
+          "title": "Experiment",
+          "type": "string"
+        },
+        "nonce": {
+          "title": "Nonce",
+          "type": "string"
+        },
+        "code_revision": {
+          "title": "Code Revision",
+          "type": "string"
+        },
+        "listings": {
+          "$ref": "#/$defs/RunListings"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "experiment",
+        "nonce",
+        "code_revision",
+        "listings",
+        "created_at"
+      ],
+      "title": "RunRecord",
+      "type": "object"
+    },
+    "Sampling": {
+      "additionalProperties": false,
+      "description": "No sampling seed: one fixed seed would let a provider return the same reply for every repetition.",
+      "properties": {
+        "temperature": {
+          "minimum": 0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "top_p": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Top P"
+        },
+        "max_tokens": {
+          "exclusiveMinimum": 0,
+          "title": "Max Tokens",
+          "type": "integer"
+        },
+        "reasoning": {
+          "$ref": "#/$defs/ReasoningEffort"
+        }
+      },
+      "required": [
+        "temperature",
+        "top_p",
+        "max_tokens",
+        "reasoning"
+      ],
+      "title": "Sampling",
+      "type": "object"
+    },
+    "Scale": {
+      "additionalProperties": false,
+      "description": "An odd label count has a neutral midpoint; an even count forces a side, as a 4-point scale does.",
+      "properties": {
+        "labels": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "array"
+        }
+      },
+      "required": [
+        "labels"
+      ],
+      "title": "Scale",
+      "type": "object"
+    },
+    "ScaleChoice": {
+      "enum": [
+        "native",
+        "forced_choice"
+      ],
+      "title": "ScaleChoice",
+      "type": "string"
+    },
+    "ScaleUse": {
+      "additionalProperties": false,
+      "description": "Two models' rating spreads on one axis, in canonical model order; `differs` when the larger standard deviation\nis at least SCALE_USE_RATIO times the smaller, so their gap is partly one of scale use.",
+      "properties": {
+        "sd_first": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sd First"
+        },
+        "sd_second": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sd Second"
+        },
+        "differs": {
+          "title": "Differs",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "sd_first",
+        "sd_second",
+        "differs"
+      ],
+      "title": "ScaleUse",
+      "type": "object"
+    },
+    "ScoreSplit": {
+      "additionalProperties": false,
+      "description": "How the question scores split around 0: a position near 0 from scores near 0 and one from scores that\ncancel each other look alike until `mean_absolute` is read beside |position|.\n\n`opposing_facets` counts facets whose mean sits on the other side of 0 from the position. `facet_balanced` is\nthe mean of the facet means, each facet weighing the same; None while any facet of the axis is unscored.\n`farthest` holds the FARTHEST_SHOWN question scores farthest from the position, farthest first and in\nquestionnaire order on a tie: the ones that pull it most. It is empty below two scores, where the position has\nno interval.",
+      "properties": {
+        "positive": {
+          "title": "Positive",
+          "type": "integer"
+        },
+        "negative": {
+          "title": "Negative",
+          "type": "integer"
+        },
+        "zero": {
+          "title": "Zero",
+          "type": "integer"
+        },
+        "mean_absolute": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mean Absolute"
+        },
+        "opposing_facets": {
+          "title": "Opposing Facets",
+          "type": "integer"
+        },
+        "facet_balanced": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Facet Balanced"
+        },
+        "farthest": {
+          "items": {
+            "$ref": "#/$defs/QuestionScore"
+          },
+          "title": "Farthest",
+          "type": "array"
+        }
+      },
+      "required": [
+        "positive",
+        "negative",
+        "zero",
+        "mean_absolute",
+        "opposing_facets",
+        "facet_balanced",
+        "farthest"
+      ],
+      "title": "ScoreSplit",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "error",
+        "warning"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "Spread": {
+      "additionalProperties": false,
+      "description": "The axis position recomputed inside each cell from that cell's answers alone: its lowest and highest.",
+      "properties": {
+        "low": {
+          "title": "Low",
+          "type": "number"
+        },
+        "high": {
+          "title": "High",
+          "type": "number"
+        },
+        "cells": {
+          "title": "Cells",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "low",
+        "high",
+        "cells"
+      ],
+      "title": "Spread",
+      "type": "object"
+    },
+    "StatementAgreement": {
+      "additionalProperties": false,
+      "description": "How far each statement's answers agree with each other across the layouts and wordings it was asked in.\n\nAmong the `statements` with two or more answers, `one_sided` counts those whose answers all lie on one side\nof the scale's center, `identical` those whose answers are all one rating, and `wide` those whose answers\nspan `wide_range` or more rating points, WIDE_RANGE. `icc` is ICC(1) with statements as groups over canonical\nratings: the share of the rating variance that lies between statements rather than within them; None below\ntwo statements with answers or without spread.",
+      "properties": {
+        "one_sided": {
+          "title": "One Sided",
+          "type": "integer"
+        },
+        "identical": {
+          "title": "Identical",
+          "type": "integer"
+        },
+        "wide": {
+          "title": "Wide",
+          "type": "integer"
+        },
+        "wide_range": {
+          "title": "Wide Range",
+          "type": "integer"
+        },
+        "statements": {
+          "title": "Statements",
+          "type": "integer"
+        },
+        "icc": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Icc"
+        }
+      },
+      "required": [
+        "one_sided",
+        "identical",
+        "wide",
+        "wide_range",
+        "statements",
+        "icc"
+      ],
+      "title": "StatementAgreement",
+      "type": "object"
+    },
+    "TooFewQuestions": {
+      "additionalProperties": false,
+      "description": "The position or gap rests on fewer questions than the minimum.",
+      "properties": {
+        "kind": {
+          "const": "too_few_questions",
+          "title": "Kind",
+          "type": "string"
+        },
+        "axis": {
+          "$ref": "#/$defs/AxisKey"
+        },
+        "observed": {
+          "title": "Observed",
+          "type": "integer"
+        },
+        "minimum": {
+          "title": "Minimum",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "axis",
+        "observed",
+        "minimum"
+      ],
+      "title": "TooFewQuestions",
+      "type": "object"
+    },
+    "VarianceShares": {
+      "additionalProperties": false,
+      "description": "How the cell positions' variance splits over the full grid of wordings and layouts.\n\nEach factor's share is eta squared for its main effect; `residual` holds every interaction. It needs a\nposition in every cell of the grid, and spread between them.",
+      "properties": {
+        "wording": {
+          "title": "Wording",
+          "type": "number"
+        },
+        "display_order": {
+          "title": "Display Order",
+          "type": "number"
+        },
+        "numeric_mapping": {
+          "title": "Numeric Mapping",
+          "type": "number"
+        },
+        "residual": {
+          "title": "Residual",
+          "type": "number"
+        },
+        "cells": {
+          "title": "Cells",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "wording",
+        "display_order",
+        "numeric_mapping",
+        "residual",
+        "cells"
+      ],
+      "title": "VarianceShares",
+      "type": "object"
+    },
+    "Version": {
+      "description": "The version a report document carries; reports are derived on demand, so only the current one exists.",
+      "enum": [
+        "2.11"
+      ],
+      "title": "Version",
+      "type": "string"
+    },
+    "Withheld": {
+      "additionalProperties": false,
+      "description": "Never empty: a withheld claim always says why.",
+      "properties": {
+        "kind": {
+          "const": "withheld",
+          "title": "Kind",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "$ref": "#/$defs/Reason"
+          },
+          "minItems": 1,
+          "title": "Reasons",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "reasons"
+      ],
+      "title": "Withheld",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "`run` is the run the report derives from; the document is built on demand and stored nowhere.\n\n`status` is confirmatory only when the stored spec names a preregistration. `endpoints` are the run's endpoint\nsettings as stored, by the ids `experiment.models` name. `elicitations` say for each pair of models which\nelicitation fields differ between them. `findings` are the warnings the run's model listings raise: a missing\nlisting, a sent parameter the pinned host does not list, or a slug listed shortly before the run.",
+  "properties": {
+    "version": {
+      "$ref": "#/$defs/Version"
+    },
+    "status": {
+      "$ref": "#/$defs/ReportStatus"
+    },
+    "run": {
+      "$ref": "#/$defs/RunRecord"
+    },
+    "questionnaire": {
+      "$ref": "#/$defs/Questionnaire"
+    },
+    "experiment": {
+      "$ref": "#/$defs/ExperimentSpec"
+    },
+    "endpoints": {
+      "$ref": "#/$defs/Endpoints"
+    },
+    "elicitations": {
+      "items": {
+        "$ref": "#/$defs/PairElicitation"
+      },
+      "title": "Elicitations",
+      "type": "array"
+    },
+    "result": {
+      "$ref": "#/$defs/AnalysisResult"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "version",
+    "status",
+    "run",
+    "questionnaire",
+    "experiment",
+    "endpoints",
+    "elicitations",
+    "result",
+    "findings"
+  ],
+  "title": "ReportDocument",
+  "type": "object"
+}

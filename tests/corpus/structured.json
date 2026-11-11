@@ -1,0 +1,13 @@
+[
+  {"text": "{\"rating\": 4}", "finish": "stop", "expected": {"kind": "rating", "rule": "rating_member", "displayed": 4, "hedged": false, "failure": null}},
+  {"text": "```json\n{\"rating\": 4}\n```", "finish": "stop", "expected": {"kind": "format_failure", "rule": "invalid_json", "displayed": null, "hedged": false, "failure": "schema_invalid"}},
+  {"text": "{\"rating\": 1, \"rating\": 5}", "finish": "stop", "expected": {"kind": "format_failure", "rule": "repeated_member", "displayed": null, "hedged": false, "failure": "schema_invalid"}},
+  {"text": "{\"score\": 4}", "finish": "stop", "expected": {"kind": "format_failure", "rule": "missing_rating", "displayed": null, "hedged": false, "failure": "schema_invalid"}},
+  {"text": "[4]", "finish": "stop", "expected": {"kind": "format_failure", "rule": "missing_rating", "displayed": null, "hedged": false, "failure": "schema_invalid"}},
+  {"text": "{\"rating\": \"4\"}", "finish": "stop", "expected": {"kind": "format_failure", "rule": "rating_member", "displayed": null, "hedged": false, "failure": "schema_invalid"}},
+  {"text": "{\"rating\": true}", "finish": "stop", "expected": {"kind": "format_failure", "rule": "rating_member", "displayed": null, "hedged": false, "failure": "schema_invalid"}},
+  {"text": "{\"rating\": 4.0}", "finish": "stop", "expected": {"kind": "format_failure", "rule": "rating_member", "displayed": null, "hedged": false, "failure": "schema_invalid"}},
+  {"text": "{\"rating\": 6}", "finish": "stop", "expected": {"kind": "format_failure", "rule": "rating_member", "displayed": null, "hedged": false, "failure": "out_of_range"}},
+  {"text": "", "finish": "stop", "expected": {"kind": "format_failure", "rule": "blank_reply", "displayed": null, "hedged": false, "failure": "empty"}},
+  {"text": "{\"rat", "finish": "length", "expected": {"kind": "format_failure", "rule": "truncated_reply", "displayed": null, "hedged": false, "failure": "truncated"}}
+]

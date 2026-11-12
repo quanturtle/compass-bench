@@ -2,7 +2,9 @@ import asyncio
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
+from typing import Self
 
+import httpx
 import pytest
 from pydantic import JsonValue
 from sqlalchemy.exc import OperationalError
@@ -91,6 +93,17 @@ class NullEngine:
         return
 
 
+class NullClient:
+    """Stands in for the HTTP client, which no fake here uses. Building a real one reads the system proxy
+    settings, and that call crashes in a forked test process on macOS, as the mutation tests run them."""
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(self, *error: object) -> None:
+        return
+
+
 class FailingLedgerStore(FakeLedgerStore):
     """The fake ledger, whose every write of a result fails as a dropped connection does."""
 
@@ -107,6 +120,7 @@ def test_a_database_error_during_collection_exits_resumable_with_one_stderr_line
     write_documents(tmp_path, experiment_documents(questionnaire, models=("free",)))
     transport = ScriptedTransport((), replied_result("4"), None, None)
     endpoint = EndpointId("openrouter")
+    monkeypatch.setattr(httpx, "AsyncClient", NullClient)
     monkeypatch.setattr(cli, "connect_store", lambda settings: FailingLedgerStore())
     monkeypatch.setattr(
         cli,

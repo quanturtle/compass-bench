@@ -134,3 +134,10 @@ def is_retryable(error: TransportError) -> bool:
         TransportError.RATE_LIMITED,
         TransportError.SERVER_ERROR,
     }
+
+
+def counts_toward_circuit(error: TransportError) -> bool:
+    """A failure that opens the endpoint's circuit once it repeats with no other result between.
+
+    A retryable one, or a response that is no completion at all, as a wrong base_url or a proxy page answers."""
+    return is_retryable(error) or error is TransportError.MALFORMED_BODY

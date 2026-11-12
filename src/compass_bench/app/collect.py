@@ -36,7 +36,7 @@ from compass_bench.domain.ledger import (
     LedgerEntryKind,
     TransportError,
     TransportFailed,
-    is_retryable,
+    counts_toward_circuit,
     opens_circuit,
     opens_model_circuit,
 )
@@ -230,7 +230,7 @@ def next_attempt(
 
 
 def circuit_after(circuit: Circuit, failure: TransportError | None) -> Circuit:
-    """An endpoint's circuit after one attempt: an endpoint-level error opens it, and a retryable one adds to the count.
+    """An endpoint's circuit after one attempt: an endpoint-level error opens it, and a counted one adds to the count.
 
     Any other result resets the count; an open circuit stays open until the run resumes."""
     match circuit:
@@ -239,7 +239,7 @@ def circuit_after(circuit: Circuit, failure: TransportError | None) -> Circuit:
         case ClosedCircuit(consecutive_failures=failures):
             if failure is not None and opens_circuit(failure):
                 return OpenCircuit(kind=CircuitKind.OPEN, error=failure)
-            if failure is not None and is_retryable(failure):
+            if failure is not None and counts_toward_circuit(failure):
                 if failures + 1 >= CIRCUIT_FAILURE_LIMIT:
                     return OpenCircuit(kind=CircuitKind.OPEN, error=failure)
                 return ClosedCircuit(kind=CircuitKind.CLOSED, consecutive_failures=failures + 1)

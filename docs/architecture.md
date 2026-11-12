@@ -66,7 +66,7 @@ Seven steps take a questionnaire to positions and comparisons. The code for each
 
 ```mermaid
 flowchart LR
-  F[questionnaire.json + experiment.yaml + models.yaml] --> P[compile]
+  F[questionnaire.json + experiment.yaml + catalog.yaml] --> P[compile]
   P --> S[(snapshots + run + trials)]
   S --> C[collect: async I/O]
   C <--> M[provider adapters]
@@ -89,14 +89,18 @@ flowchart LR
 | Package | May import |
 |---|---|
 | `domain/` | `domain/` |
-| `contract/` | `domain/` |
+| `contract/` | `domain/`, `version.py` |
 | `ports/` | `domain/`, `contract/` |
 | `app/` | `domain/`, `contract/`, `ports/` |
-| `adapters/` | `domain/`, `contract/`, `ports/`, and I/O libraries such as httpx, SQLAlchemy, and PyYAML |
+| `adapters/` | `domain/`, `contract/`, `ports/`, `version.py`, and I/O libraries such as httpx, SQLAlchemy, and PyYAML |
+| `version.py` | nothing from the package |
+| `version_lock.py` | `domain/`, `contract/`, `adapters/files/`, `version.py`. Only `scripts/update_lock.py` and the tests import it. |
 | `settings.py` | nothing from the package |
 | `cli.py` | everything. It is the composition root and the only module that names a concrete adapter. |
 
 Each package may also import from itself, the standard library, and pydantic. `domain/stats/student_t.py` also imports `scipy.stats`, for the t distribution.
+
+One import breaks the table: `contract/schema.py` imports `pooled_documents` from `app/pool.py`, to build the pooled example documents. Moving the example builders out of `contract/` would remove it.
 
 ### Component patterns
 
@@ -418,8 +422,8 @@ compass-bench-v2/
 ├── uv.lock                      uv lockfile; run every tool through `uv run`
 ├── LICENSE                      Apache-2.0
 ├── README.md                    product copy: what it is, install, run, an example
-├── METHODOLOGY.md               estimand, estimators, gates, missing-data policy, calibration, limits
-├── Makefile                     check, schema, lock, audit, mutate
+├── METHODOLOGY.md               estimand, estimators, gates, missing-data policy, calibration, related work, limits
+├── Makefile                     check, schema, lock, audit, audit-check, schema-check, replicate, mutate
 ├── version.lock.json            generated: each locked component's digest under VERSION
 ├── .github/workflows/ci.yml     make check against Postgres 18 and a stale-schema check; weekly audit and mutate
 ├── audits/                      generated: statistical-audit.json, the latest calibration results
@@ -443,7 +447,9 @@ compass-bench-v2/
 │   │   ├── axis_pair.py         AxisKey, Polarity, AxisPair[T], PolarityPair[T]
 │   │   ├── findings.py          Finding, Severity, FindingCode
 │   │   ├── instrument/          compass.py, scale.py, questionnaire.py
-│   │   ├── design/              factors.py, conditions.py, experiment.py, endpoint.py, schedule.py, preflight.py
+│   │   ├── design/              factors.py, conditions.py, experiment.py, endpoint.py, schedule.py, preflight.py,
+│   │   │                        configuration.py (the elicitation two models share or not),
+│   │   │                        preregistration.py (confirmatory or exploratory)
 │   │   ├── elicitation/         prompts.py, answer_types.py (Strategy)
 │   │   ├── ledger.py            Attempt, AttemptResult, Reply, Usage, LedgerEntry, TransportError
 │   │   ├── listing.py           ModelListing, the parameters a model sends, listing_findings
@@ -454,7 +460,8 @@ compass-bench-v2/
 │   │   │                        RunOverview
 │   │   ├── scoring.py           question scores and axis coverage
 │   │   ├── consistency.py       pole balance, pair consistency, spread and marginals across cells
-│   │   ├── stats/               student_t.py, corrections.py, correlation.py, seeds.py
+│   │   ├── stats/               student_t.py, corrections.py, correlation.py, seeds.py,
+│   │   │                        icc.py (ICC(1) and ICC(3,1)), agreement.py (Cohen's κ)
 │   │   ├── inference.py         positions and pair gaps
 │   │   ├── missing.py           unanswered trials, dropped questions, bounds, and flips
 │   │   ├── profile.py           use of the scale, split of question scores, statement agreement
@@ -464,11 +471,12 @@ compass-bench-v2/
 │   │   ├── pooling.py           PoolKey, pools, model settings check, pooled_analyses()
 │   │   └── budget.py            Price, estimates, BudgetLedger
 │   ├── contract/                v2.py (ReportDocument), schema.py, examples.py (synthetic runs with
-│   │                            scripted replies: the schema examples, which the version lock holds)
+│   │                            scripted replies: the schema examples, which the version lock holds),
+│   │                            corpus.py (corpus rows, shared by the tests and the reader sample)
 │   ├── ports/                   transport.py, ledger_store.py (ledger), listings.py, sources.py,
 │   │                            run_observer.py
 │   ├── app/                     compile.py, collect.py (circuit state), analyze.py,
-│   │                            runs.py, export.py, pool.py
+│   │                            runs.py, export.py, pool.py, reader_sample.py (the second reader's sample)
 │   ├── adapters/
 │   │   ├── transport/           openrouter.py (wire mapping and transport), openrouter_listings.py,
 │   │   │                        errors.py (HTTP → TransportError)
@@ -502,14 +510,14 @@ compass-bench-v2/
 - **Fault injection.** The collector gets a 400, a 429 with `Retry-After`, a database outage, and SIGTERM.
 - **End to end.** A run is killed partway, then resumed. The test asserts no duplicate attempts, no lost results, and the same report as an uninterrupted run with the same nonce.
 - **Calibration and mutation.** The calibration suite, `scripts/statistical_audit.py`, runs with `make audit` and writes `audits/statistical-audit.json`. `tests/test_statistical_audit.py` checks its arithmetic and that a simulated lean toward the first-listed choice cancels exactly without noise; `tests/test_methodology_table.py` checks that METHODOLOGY's calibration table repeats the committed JSON row for row, as `scripts/statistical_audit.py --table` prints it. The audit computes each scenario's population position exactly from its integer effects and the clamping (`population_position`), measures coverage against it and against the stance, and counts the ordering and equivalence assertions; its scenarios run on every core (`--workers`). `make mutate` mutation-tests `stats/` and `claims.py` with mutmut, and a surviving mutant is a missing test.
-- **Replication.** `make replicate` is what a reviewer can rebuild from the repository alone: `schema-check` regenerates the schema and examples and fails when the checked-in files or the version lock differ, and `audit-check` re-runs every scenario of the committed audit with its stored seed, capped at 2,000 runs, and fails when a rate moved by more than three combined Monte Carlo errors (the cap adds sampling noise the combined error allows for; a full re-run with `--check-runs` omitted is deterministic, so any move is a changed simulator). CI runs `schema-check` on every push and `audit-check` weekly; the full audit takes about 3.3 CPU-hours, 22 minutes on 14 cores. Reports cannot be replicated from the repository: they derive from the user's ledger, which is not committed.
+- **Replication.** `make replicate` is what a reviewer can rebuild from the repository alone: `schema-check` regenerates the schema and examples and fails when the checked-in files differ (the version lock is held by `tests/test_version_lock.py`, not by this target), and `audit-check` re-runs every scenario of the committed audit with its stored seed, capped at 2,000 runs, and fails when a rate moved by more than three combined Monte Carlo errors (the cap adds sampling noise the combined error allows for; a full re-run with `--check-runs` omitted is deterministic, so any move is a changed simulator). CI runs `schema-check` on every push and `audit-check` weekly; the full audit takes about 3.3 CPU-hours, 22 minutes on 14 cores. Reports cannot be replicated from the repository: they derive from the user's ledger, which is not committed.
 - **Assertions.** Tests assert on contract documents. Text output has a few snapshots and no substring assertions.
 
 ## Delivery order
 
 Each story is one PR and ends in something runnable.
 
-0. **Foundation** (done). The signature skeleton, the uv lockfile, the Makefile, and CI with Postgres (`.github/workflows/ci.yml`). The workflow runs once the repository has a GitHub remote.
+0. **Foundation** (done). The signature skeleton, the uv lockfile, the Makefile, and CI with Postgres (`.github/workflows/ci.yml`). The workflow runs on every push and pull request of the GitHub repository, and weekly.
 1. **Instrument and design** (done). Parse the questionnaire, experiment, and catalog. Add `compile` and `plan`, with the cost estimate. No database or key needed.
 2. **Ledger and collection** (done). Postgres schema, migrations, budget, and the OpenRouter transport. Add `run`, `resume`, and `runs`. The circuit breaker from story 5 landed here, since collection needs it.
 3. **Reading and scoring** (done). Reader, corpus, and outcomes (ahead of story 2, whose `run` and `runs` fold outcomes). `analyze` prints the report.

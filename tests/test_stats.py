@@ -79,7 +79,7 @@ def test_the_equivalence_p_value_is_the_larger_of_the_two_one_sided_tests() -> N
 
 
 def test_the_equivalence_power_at_a_zero_gap_is_the_noncentral_t_mass_the_two_tests_leave() -> None:
-    # 33 gaps spread 0.19, the spread METHODOLOGY names for 80% power at the 0.1 margin
+    # 33 gaps spread 0.19 give about 80% power at the 0.1 margin; METHODOLOGY quotes about 0.20 for 35 questions
     quantiles = [float(stats.norm.ppf((index + 0.5) / 33)) for index in range(33)]
     gaps = [quantile * 0.19 / stdev(quantiles) for quantile in quantiles]
 

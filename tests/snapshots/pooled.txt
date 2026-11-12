@@ -204,6 +204,6 @@ Usage
 Provenance
   pool 8f11dc981d39
   questionnaire hash dc181f860453a4ffccd5ae0454001975693db38ef9134c0c1aea2a45410db130
-  compass-bench 2.12
+  compass-bench 2.13
   warnings:
     warning: runs_far_apart: the pool's runs were created 30 days apart; a hosted model can change between them

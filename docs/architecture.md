@@ -296,7 +296,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
 
 ## Report contract
 
-- **Source of truth.** The pydantic `ReportDocument` and `PooledReportDocument` in `contract/v2.py` (`version: "2.11"`).
+- **Source of truth.** The pydantic `ReportDocument` and `PooledReportDocument` in `contract/v2.py` (`version: "2.12"`).
   - It composes domain values directly. A domain change that alters the schema fails the schema diff in `tests/test_schema.py`.
   - Every union is a named `type` alias, so the schema and the generated TypeScript types use its name.
   - Each union's variant tags come from one `StrEnum` named after it, such as `ReasonKind`. Pydantic requires a tag field typed `Literal[ReasonKind.CROSSES_MIDPOINT]`; no tag is a bare string.
@@ -305,7 +305,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
 - **Construction.** `analyze_run` in `app/analyze.py` loads the run, its endpoint settings, and its ledger, and `report_document` in `contract/v2.py` builds the document from the run, both snapshots, the endpoints, the `AnalysisResult`, and the version. The document carries `endpoints` and `elicitations`: `domain/design/configuration.pair_elicitations` compares every pair of models on `ELICITATION_FIELDS` (answer type, temperature, top_p, max_tokens, reasoning, host order, precision filter) and lists each differing field with both values (`PairElicitation(first, second, differs)`); `elicitation_findings` gives `plan` a `MIXED_ELICITATIONS` warning per field that differs across the experiment's models. A pooled document compares each model under the first run that asked it (`PooledRun.endpoints`).
 - **Pooled report.** `PooledReportDocument` in `contract/v2.py` is one pool's report: its `pool` id, the questionnaire, the scale, the analysis settings, each run with its experiment (`PooledRun`), each model with the runs its answers come from and its reliability between them (`PooledModel`; `RunReliability(icc, band, questions, runs)` is ICC(3,1) over the questions every run scored, None for a model asked once), and the `AnalysisResult` over the pooled answers. A forced-choice pool's `PooledModel` also carries a `ScaleReference(native_pool, midpoint_share, forced_not_held)` when a native-scale pool of the same questionnaire, settings, and system prompt holds the model: `pooling.scale_references` pairs the pools, and `forced_not_held` is whether the native midpoint share reaches `MIDPOINT_SHARE_FLOOR`. `app/pool.pooled_documents` builds every pool's document from `pooling.pooled_analyses` so the pairing sees them all; the examples `cross-scale-native` and `cross-scale-forced_choice` cover it.
 - **Generated files.**
-  - `make schema` generates `schema/report-2.11.json` and `schema/pooled-report-2.11.json`, named after the version, and `schema/examples/*.json`.
+  - `make schema` generates `schema/report-2.12.json` and `schema/pooled-report-2.12.json`, named after the version, and `schema/examples/*.json`.
   - An example's floats are written and hashed at 10 significant digits (`example_json` in `contract/schema.py`), because platforms differ in a float's last digits. An exported report keeps full precision.
   - The examples cover an asserted claim, a withheld claim, a partial run, a confirmatory run with asserted equivalences and listing warnings (`preregistered`), a pool of two runs 30 days apart in which one model draws on both, and a native and a forced-choice pool under a system prompt. `tests/test_schema.py` checks that the examples hold both statuses, an asserted equivalence, run warnings, and a pool warning, and that no two pooled examples share a pool id.
   - The schema carries a `$comment` saying it is generated. The examples carry no header, because the schema forbids extra keys and they must validate against it.
@@ -426,7 +426,7 @@ compass-bench-v2/
 │   ├── preregistration.md       the template to fill in and commit before a paid run
 │   ├── references.md            every cited work with a DOI or URL
 │   └── reference/               planned, generated: config schema, CLI help
-├── schema/                      generated: report-2.11.json, pooled-report-2.11.json, examples/
+├── schema/                      generated: report-2.12.json, pooled-report-2.12.json, examples/
 ├── scripts/
 │   ├── generate_schema.py       writes schema/ from the contract models
 │   ├── update_lock.py           records version.lock.json under VERSION
@@ -520,3 +520,4 @@ Each story is one PR and ends in something runnable.
 11. **Version 2.9** (done). The release review of 2.8 resolved: the questions' sampling frame stated as fixed facets with a facet-balanced position beside the item-weighted one; a label on each pair whose models use the scale unequally or were asked under different elicitations, with the pinned host and precision filter in the report; a `preregistration` field in the experiment and an exploratory or confirmatory status on every report, with migration 0011; consistent questions split three ways, the gap's detectable effect at the Holm family's first step, and the equivalence test's power at a zero gap; the political questionnaire rebuilt with five contradictory pairs per facet; the audit extended past the null with per-run Monte Carlo errors; and the document corrections, references, and terminology.
 12. **Version 2.10** (done). Follow-ups from the frontend: the farthest question scores and the wide-range threshold carried in the report rather than computed by the text view; examples with a confirmatory status, an asserted equivalence, run and pool warnings, and a pool id of their own each; the architecture's field lists matched to the schema, and every stored run of the retired questionnaire named.
 13. **Version 2.11** (done). The example reports written and hashed at 10 significant digits, so the checked-in examples and the version lock hold on macOS and Linux alike.
+14. **Version 2.12** (done). The fill that flips a position's side of 0 found on the side the fills fail from, with a note when fills at both ends fail; gaps equal up to float rounding read as zero spread; a confirmatory status only for a preregistration file committed and unmodified in git; the reason-first experiment asked under a token limit that holds two sentences and the number.

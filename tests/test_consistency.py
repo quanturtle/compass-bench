@@ -101,6 +101,21 @@ def test_poles_are_undefined_without_answers_and_the_correlation_below_three_que
     assert (unanswered.agreement_lean, unanswered.spread, unanswered.questions) == (None, None, 0)
 
 
+def test_the_agreement_lean_needs_an_answer_toward_each_pole() -> None:
+    one_pole = consistency_of(answered([("x-00", Polarity.POSITIVE, 4)]))
+
+    assert one_pole.poles == PolarityPair(negative=None, positive=0.5)
+    assert one_pole.agreement_lean is None
+
+
+def test_two_cells_that_differ_in_wording_alone_put_all_their_variance_on_the_wording() -> None:
+    shares = variance_shares({cell("a"): 0.0, cell("b"): 1.0})
+
+    assert shares is not None
+    assert (shares.wording, shares.display_order, shares.numeric_mapping) == pytest.approx((1.0, 0.0, 0.0))
+    assert (shares.residual, shares.cells) == (0.0, 2)
+
+
 def test_spread_needs_two_cells_with_two_scored_questions_each() -> None:
     one_cell = agreeing(2, 4)
     assert consistency_of(one_cell).spread is None

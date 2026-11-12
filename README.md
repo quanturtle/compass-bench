@@ -4,7 +4,7 @@ compass-bench asks language models the questions of a two-axis value questionnai
 
 ## Why use it
 
-- **Presentation bias cancels.** A model's answer depends on how a question is asked: which end of the list comes first, whether "strongly agree" is 1 or 5, and which way the statement leans. compass-bench asks every question both ways under every presentation, and averages the leans out.
+- **First-option and numbering leans are balanced by design.** A model's answer depends on how a question is asked: which end of the list comes first, whether "strongly agree" is 1 or 5, and which way the statement leans. compass-bench asks every question both ways under every presentation and averages over them. A lean toward agreeing cancels only when it is equal on both statements of a pair; [METHODOLOGY.md](METHODOLOGY.md) says what does not cancel.
 - **No paid reply is lost.** Each request is stored before it is sent and each reply as it arrives. An interrupted or over-budget run resumes where it stopped, without asking a question twice.
 - **Claims carry their reasons.** A quadrant or an ordering is printed only when its interval or test clears the bar. Otherwise the report lists every reason it was withheld: too few questions, too many unanswered trials, an interval across the midpoint, or a gap that is not significant.
 
@@ -31,7 +31,14 @@ uv sync
    uv run compass-bench db migrate
    ```
 
-3. Write down what you expect before you pay: copy `docs/preregistration.md`, fill it in, commit it, and name it in the experiment file's `preregistration` field. The run records the commit it ran from, so the plan is dated before any reply was seen, and its report reads "confirmatory". A run without one reads "exploratory".
+3. Write down what you expect before you pay. A run without a preregistration reads "exploratory"; to make it "confirmatory":
+
+   1. Copy the experiment file to a directory outside `src/compass_bench/data/`, such as `experiments/`. The bundled files are locked to the version, and `make check` fails when one is edited.
+   2. In the copy, point `questionnaire` and `catalog` at the bundled files; paths resolve against the experiment file's directory.
+   3. Copy `docs/preregistration.md`, fill it in, and set the copy's path in the experiment's `preregistration` field, relative to the experiment file.
+   4. Commit both files, and pass your experiment file to `plan` and `run` in place of the bundled one.
+
+   The run records the commit it ran from, so a committed plan is dated before any reply was seen.
 
 4. Run the experiment under a spending cap. The run id prints first:
 
@@ -244,6 +251,23 @@ Two bundled experiments vary the elicitation instead and have not been run: `pol
 Run `plan` after every edit. It reports every problem at once and prints each resolved value.
 
 How positions, intervals, and claims are computed, and what they cannot tell you, is in [METHODOLOGY.md](METHODOLOGY.md).
+
+## Development
+
+Format, lint, type-check, and test:
+
+```sh
+make check
+```
+
+The Postgres contract tests are skipped unless `COMPASS_BENCH_TEST_DATABASE_URL` names a scratch database. The tests migrate that database and write to it, so do not point it at a database that holds runs:
+
+```sh
+export COMPASS_BENCH_TEST_DATABASE_URL=postgresql://<user>@localhost:5432/scratch
+make check
+```
+
+`make schema-check` regenerates `schema/` and fails when the checked-in files differ.
 
 ## Maintenance
 

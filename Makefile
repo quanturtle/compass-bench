@@ -24,7 +24,8 @@ audit:
 audit-check:
 	uv run python scripts/statistical_audit.py --check audits/statistical-audit.json --check-runs 2000
 
-# regenerate the schema and examples, and fail when the checked-in files or the version lock differ
+# regenerate the schema and examples, and fail when the checked-in files differ; the generator never writes
+# version.lock.json, which tests/test_version_lock.py holds
 schema-check:
 	uv run python scripts/generate_schema.py
 	git diff --exit-code schema/ version.lock.json

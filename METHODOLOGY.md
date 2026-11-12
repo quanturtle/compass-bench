@@ -1,6 +1,6 @@
 # Methodology
 
-This document says what compass-bench estimates, how, when it withholds a claim, and what its numbers cannot tell you. Every work it cites is listed with a DOI or URL in `docs/references.md`.
+This document says what compass-bench estimates, how, when it withholds a claim, how it relates to earlier work, and what its numbers cannot tell you. Every work it cites is listed with a DOI or URL in `docs/references.md`.
 
 ## What is estimated
 
@@ -146,6 +146,18 @@ A wording shift that moves every question alike is not covered. The shifts are i
 The two responders without effects are the floor a position is read against. A model that answers the midpoint every time scores 0 on every question, so its interval is the point 0, no ordering is ever asserted against another such model, and two of them are equivalent by construction. A model that answers at random covers at 0.949 and is wrongly ordered at 0.050, with 40% of its ratings at the scale's ends: its position is 0 with an interval of the width `plan` prints for the experiment, and nothing in the interval alone tells it from a model that holds the centre. Two random responders are declared equivalent in 80% of runs: their gap is 0 and the 24 draws behind each question score leave it little spread, so an asserted equivalence says two models' forced answers agree, not that either holds a view. The use-of-the-scale, split, and statement-agreement diagnostics do.
 
 Away from the null, the interval keeps covering the population position, which is not the stance. A stance of +0.5 with the observed spreads has a population position of +0.472: clamping at the scale's end pulls it 0.028 toward 0, and the interval covers the stance in 92.5% of runs instead of 95%. With strong question effects the same stance reads as +0.300, a bias of −0.200, and the interval covers the stance in 52% of runs; a model whose ratings sit at the ends 56% of the time, as a stored model's do, is read a fifth of a score unit nearer the centre than it stands. Two models of equal stance that use the scale unequally are not ordered when both sit at 0, but at a stance of +0.5 the broader model reads as +0.362 against +0.472, and an ordering between them, which is one of style, is asserted in 24% of runs; the per-pair scale-use warning marks such a pair. A lean of one point toward agreeing with the negative-pole statements alone gives a model with no stance a population position of −0.236, which its interval covers in 95% of runs and which lies on the wrong side of 0: the interval is right about what the forced answers average to and says nothing about the stance, and no diagnostic separates the two. The equivalence test's power at a true gap of 0 rests on how alike the two models order the questions: two models sharing none of the question effect are never declared equivalent, two sharing 90% of it are in 74% of runs, and the same two with a true gap of 0.2 are ordered in 98% of runs and declared equivalent in 0.03%. Questions fixed in seven facets at offsets of a point cover at 0.998: the t-interval over questions carries the variance between facets that a fixed frame leaves out, as "What the interval covers" says, so it is conservative there, not wrong.
+
+## Related work
+
+- **Human-facing tests.** The Political Compass Test, 8values, SapplyValues, and the Political Coordinates Test ask one statement per topic and print a point with no interval. compass-bench takes their two-axis form and none of their items.
+- **Nearest design.** Ceron et al. (TACL 2024) ask language models 239 voting-advice statements from seven European countries. Each statement comes with three paraphrases, a negation, and a semantic opposite. Each is asked under six prompt templates in both label orders, with 30 sampled responses per prompt. A stance is read only for a statement that passes every reliability test: a bootstrap interval on the sampled responses, the same stance under paraphrase and label order, and the reverse stance under negation and opposite.
+- **What is shared and what differs.** compass-bench shares the opposite statement and the label-order variation. It asks on a five-point scale where Ceron et al. read a binary stance. It infers a position on an axis with a t-interval over questions, and compares models with Holm-adjusted tests and equivalence tests. It keeps every item in the mean, where Ceron et al. filter unreliable statements out first.
+- **What compass-bench omits.**
+  - *Statement paraphrases.* Each pole has one statement. The instruction wordings an experiment lists vary the request, not the statement.
+  - *Answer distributions.* Each cell holds one reply at temperature 0, the modal answer, not a sample of answers.
+  - *Open-ended elicitation.* Every reply is a forced number. Models answer differently in an open-ended setting (Röttger et al., ACL 2024).
+  - *Refusal as an outcome.* A decline counts as unanswered and enters the bound under "Missing data"; it is not scored or modelled.
+  - *Human or party anchors.* No person, party, or population has answered these items, so the scale has no external reference point.
 
 ## Limits
 

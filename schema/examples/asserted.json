@@ -724,7 +724,8 @@
               "high": 0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           },
           "y": {
             "trials": 0,
@@ -738,7 +739,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           }
         },
         "profile": {
@@ -1234,7 +1236,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           },
           "y": {
             "trials": 0,
@@ -1248,7 +1251,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           }
         },
         "profile": {

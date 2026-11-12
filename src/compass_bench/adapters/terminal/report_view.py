@@ -218,9 +218,18 @@ def flip_text(unanswered: AxisUnanswered) -> str:
     """How the unanswered trials could move the position's side of 0, or that they cannot."""
     if unanswered.trials == 0:
         return ""
-    if unanswered.flip is None:
-        return "; no fill of them moves the interval across 0"
-    return f"; the interval crosses 0 if they averaged {unanswered.flip:+.2f} or past it"
+    match unanswered.flip, unanswered.widening_flip:
+        case None, None:
+            return "; no fill of them moves the interval across 0"
+        case flip, None:
+            return f"; the interval crosses 0 if they averaged {flip:+.2f} or past it"
+        case None, widening:
+            return f"; the interval widens across 0 if they averaged {widening:+.2f} or past it"
+        case flip, widening:
+            return (
+                f"; the interval crosses 0 if they averaged {flip:+.2f} or past it, "
+                f"and widens across 0 at {widening:+.2f} or past it"
+            )
 
 
 def position_lines(compass: Compass, analysis: AnalysisResult) -> tuple[str, ...]:

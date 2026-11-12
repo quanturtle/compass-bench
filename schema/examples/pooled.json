@@ -913,7 +913,8 @@
               "high": 0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           },
           "y": {
             "trials": 0,
@@ -927,7 +928,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           }
         },
         "profile": {
@@ -1423,7 +1425,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           },
           "y": {
             "trials": 0,
@@ -1437,7 +1440,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           }
         },
         "profile": {
@@ -1948,7 +1952,8 @@
               "high": 0.0,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           },
           "y": {
             "trials": 29,
@@ -1962,7 +1967,8 @@
               "high": 0.640625,
               "filled": 29
             },
-            "flip": -0.6
+            "flip": -0.6,
+            "widening_flip": null
           }
         },
         "profile": {

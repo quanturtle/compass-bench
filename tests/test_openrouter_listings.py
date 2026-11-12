@@ -60,3 +60,12 @@ def test_a_failed_request_or_a_body_without_data_gives_no_listing() -> None:
     assert asyncio.run(listings_over(httpx.MockTransport(refuse)).listing("vendor/model", "Pinned")) is None
     assert asyncio.run(missing.listing("vendor/model", "Pinned")) is None
     assert asyncio.run(empty.listing("vendor/model", "Pinned")) is None
+
+
+def test_a_listing_date_outside_the_datetime_range_is_left_unset() -> None:
+    body: dict[str, JsonValue] = {"data": {"id": "vendor/model", "created": 1735689600000, "endpoints": []}}
+    reader = listings_over(httpx.MockTransport(lambda request: httpx.Response(200, json=body)))
+
+    listing = asyncio.run(reader.listing("vendor/model", None))
+
+    assert listing is not None and listing.listed_at is None

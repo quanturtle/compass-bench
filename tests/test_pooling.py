@@ -16,7 +16,7 @@ from compass_bench.contract.examples import (
 )
 from compass_bench.contract.v2 import PooledReportDocument
 from compass_bench.domain.analysis import REVIEW_AFTER_DAYS
-from compass_bench.domain.axis_pair import AxisPair
+from compass_bench.domain.axis_pair import AxisKey, AxisPair
 from compass_bench.domain.budget import Price
 from compass_bench.domain.design.experiment import ScaleChoice
 from compass_bench.domain.findings import FindingCode
@@ -27,11 +27,14 @@ from compass_bench.domain.pooling import (
     check_model_settings,
     pool_findings,
     pool_id,
+    pool_reliability,
     pooled_analyses,
     pools,
     routing_findings,
     scale_reference,
     scale_references,
+    served_findings,
+    span_findings,
 )
 from compass_bench.domain.run import PlannedRun
 from compass_bench.domain.stats.icc import ReliabilityBand
@@ -69,6 +72,18 @@ def test_a_model_asked_in_two_runs_carries_its_reliability_between_them_and_one_
     assert (beta.x, beta.y) == (None, None)
 
 
+def test_an_axis_reliability_counts_that_axis_questions_every_run_scored() -> None:
+    (first, first_entries), (rerun, rerun_entries) = pooled_example_runs()["pooled"]
+    question = next(question.id for question in first.questionnaire.questions if question.axis is AxisKey.X)
+    dropped = {trial.key for trial in rerun.trials if trial.model == ALPHA and trial.question == question}
+    answered = {key: entries for key, entries in rerun_entries.items() if key not in dropped}
+
+    alpha = pool_reliability([(first, first_entries), (rerun, answered)])[ALPHA]
+
+    assert alpha.x is not None and alpha.y is not None
+    assert (alpha.x.questions, alpha.y.questions) == (11, 12)
+
+
 def test_a_run_on_another_scale_system_prompt_or_template_forms_its_own_pool() -> None:
     planned, _ = example_runs()["asserted"]
     rerun, _ = pooled_example_runs()["pooled"][1]
@@ -103,6 +118,31 @@ def test_a_pool_warns_about_mixed_served_model_strings_and_runs_far_apart() -> N
     assert codes == [FindingCode.MIXED_SERVED_MODELS, FindingCode.RUNS_FAR_APART]
 
 
+def test_a_mixed_served_model_warning_names_each_served_string() -> None:
+    ((_, _, result, _),) = pooled_analyses(pooled_example_runs()["pooled"])
+    alpha = next(model for model in result.models if model.model == ALPHA)
+    mixed = result.model_copy(
+        update={"models": (alpha.model_copy(update={"served": {"example/alpha": 100, "example/alpha-2": 92}}),)}
+    )
+
+    (finding,) = served_findings(mixed)
+
+    assert finding.message == (
+        "model 'alpha' was served as example/alpha, example/alpha-2; "
+        "its pooled answers may come from different versions"
+    )
+
+
+def test_runs_created_exactly_the_review_span_apart_are_far_apart() -> None:
+    ((_, members, _, _),) = pooled_analyses(pooled_example_runs()["pooled"])
+    first, rerun = (planned.run for planned in members)
+    at_span = rerun.model_copy(update={"created_at": first.created_at + timedelta(days=REVIEW_AFTER_DAYS)})
+
+    (finding,) = span_findings([first, at_span])
+
+    assert finding.code is FindingCode.RUNS_FAR_APART
+
+
 def test_a_pool_warns_about_a_model_whose_runs_pinned_different_hosts_or_precisions() -> None:
     ((_, members, _, _),) = pooled_analyses(pooled_example_runs()["pooled"])
     first, second = (planned.run.run_id for planned in members)
@@ -116,6 +156,19 @@ def test_a_pool_warns_about_a_model_whose_runs_pinned_different_hosts_or_precisi
     assert finding.message.startswith(
         f"model 'alpha' was asked through different host orders or precision filters in runs {first}, {second}"
     )
+
+
+def test_a_pools_warnings_include_mixed_routing_only_when_the_runs_endpoints_are_given() -> None:
+    ((_, members, result, _),) = pooled_analyses(pooled_example_runs()["pooled"])
+    first, second = (planned.run for planned in members)
+    sooner = second.model_copy(update={"created_at": first.created_at})
+    repinned = EXAMPLE_ENDPOINT.model_copy(update={"provider_order": ("Other",)})
+    differing = {first.run_id: example_endpoints(), second.run_id: {ENDPOINT: repinned}}
+
+    with_endpoints = pool_findings([first, sooner], result, members, differing)
+
+    assert [finding.code for finding in with_endpoints] == [FindingCode.MIXED_ROUTING]
+    assert pool_findings([first, sooner], result, members) == ()
 
 
 async def pool_stored_examples(questionnaire: QuestionnaireHash) -> tuple[PooledReportDocument, ...]:
@@ -142,8 +195,12 @@ def test_a_model_pools_across_prices_but_not_across_other_settings() -> None:
     repriced = with_alpha(planned, {"price": Price(prompt_usd_per_million=9.0, completion_usd_per_million=9.0)})
 
     check_model_settings([planned, repriced])
-    with pytest.raises(ModelSettingsDiffer, match="model alpha has different settings"):
+    with pytest.raises(ModelSettingsDiffer) as raised:
         check_model_settings([planned, with_alpha(planned, {"sampling": sampling})])
+    run = planned.run.run_id
+    assert str(raised.value) == (
+        f"model alpha has different settings in runs {run} and {run}; give one of them its own catalog name"
+    )
 
 
 def test_a_forced_choice_pool_reads_each_shared_model_against_its_native_pool_and_a_native_pool_reads_nothing() -> None:
@@ -165,5 +222,8 @@ def test_a_forced_choice_position_is_not_held_once_the_native_midpoint_share_rea
     at_floor = scale_reference(PoolId("native"), AxisPair(x=MIDPOINT_SHARE_FLOOR, y=MIDPOINT_SHARE_FLOOR - 0.01))
     unscored = scale_reference(PoolId("native"), AxisPair(x=None, y=0.9))
 
+    y_at_floor = scale_reference(PoolId("native"), AxisPair(x=MIDPOINT_SHARE_FLOOR - 0.01, y=MIDPOINT_SHARE_FLOOR))
+
     assert at_floor.forced_not_held == AxisPair(x=True, y=False)
+    assert y_at_floor.forced_not_held == AxisPair(x=False, y=True)
     assert unscored.forced_not_held == AxisPair(x=False, y=True)

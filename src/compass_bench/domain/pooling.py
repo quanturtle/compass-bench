@@ -130,9 +130,9 @@ def run_scores(planned: PlannedRun, entries: RunEntries) -> Mapping[ModelId, Map
 
 
 def axis_reliability(
-    axis: AxisKey, scores: Sequence[Mapping[QuestionId, float]], questions: Sequence[QuestionId]
+    scores: Sequence[Mapping[QuestionId, float]], questions: Sequence[QuestionId]
 ) -> RunReliability | None:
-    """ICC(3,1) over the axis's questions every run scored; None below two runs, two such questions, or spread."""
+    """ICC(3,1) over the axis's `questions` every run scored; None below two runs, two such questions, or spread."""
     shared = [question for question in questions if all(question in run for run in scores)]
     rows = [[run[question] for run in scores] for question in shared]
     icc = icc_consistency(rows) if len(scores) >= 2 else None
@@ -149,8 +149,8 @@ def pool_reliability(runs: Sequence[tuple[PlannedRun, RunEntries]]) -> PoolRelia
     models = sorted({model for scores in per_run for model in scores})
     return {
         model: AxisPair(
-            x=axis_reliability(AxisKey.X, [scores[model] for scores in per_run if model in scores], by_axis[AxisKey.X]),
-            y=axis_reliability(AxisKey.Y, [scores[model] for scores in per_run if model in scores], by_axis[AxisKey.Y]),
+            x=axis_reliability([scores[model] for scores in per_run if model in scores], by_axis[AxisKey.X]),
+            y=axis_reliability([scores[model] for scores in per_run if model in scores], by_axis[AxisKey.Y]),
         )
         for model in models
     }

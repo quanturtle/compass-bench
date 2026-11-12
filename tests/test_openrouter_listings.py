@@ -14,11 +14,25 @@ LISTING_BODY: Final[dict[str, JsonValue]] = {
         "id": "vendor/model",
         "created": 1735689600,
         "endpoints": [
-            {"provider_name": "Pinned", "supported_parameters": ["temperature", "max_tokens", "top_p"]},
-            {"provider_name": "Other", "supported_parameters": ["temperature"]},
+            {
+                "name": "Host | vendor/model",
+                "provider_name": "Host",
+                "tag": "host/fp8",
+                "quantization": "fp8",
+                "supported_parameters": ["temperature", "max_tokens", "top_p"],
+            },
+            {
+                "name": "Host | vendor/model",
+                "provider_name": "Host",
+                "tag": "host/bf16",
+                "quantization": "bf16",
+                "supported_parameters": ["temperature"],
+            },
         ],
     }
 }
+# the fields of a listed endpoint as OpenRouter serves them: one provider name covers several tags
+PINNED: Final = "host/fp8"
 
 
 def listings_over(handler: httpx.MockTransport) -> OpenRouterListings:
@@ -32,22 +46,22 @@ def test_the_listing_carries_the_listing_date_and_the_pinned_hosts_parameters() 
         requested.append(str(request.url))
         return httpx.Response(200, json=LISTING_BODY)
 
-    listing = asyncio.run(listings_over(httpx.MockTransport(answer)).listing("vendor/model", "Pinned"))
+    listing = asyncio.run(listings_over(httpx.MockTransport(answer)).listing("vendor/model", PINNED))
 
     assert requested == ["https://openrouter.ai/api/v1/models/vendor/model/endpoints"]
     assert listing is not None
     assert listing.listed_at == datetime(2025, 1, 1, tzinfo=UTC)
-    assert (listing.host, listing.supported_parameters) == ("Pinned", ("temperature", "max_tokens", "top_p"))
+    assert (listing.host, listing.supported_parameters) == (PINNED, ("temperature", "max_tokens", "top_p"))
 
 
 def test_an_unpinned_endpoint_or_an_unlisted_host_leaves_the_parameters_unknown() -> None:
     reader = listings_over(httpx.MockTransport(lambda request: httpx.Response(200, json=LISTING_BODY)))
 
     unpinned = asyncio.run(reader.listing("vendor/model", None))
-    unlisted = asyncio.run(reader.listing("vendor/model", "Absent"))
+    unlisted = asyncio.run(reader.listing("vendor/model", "Host"))
 
     assert unpinned is not None and (unpinned.host, unpinned.supported_parameters) == (None, None)
-    assert unlisted is not None and (unlisted.host, unlisted.supported_parameters) == ("Absent", None)
+    assert unlisted is not None and (unlisted.host, unlisted.supported_parameters) == ("Host", None)
 
 
 def test_a_failed_request_or_a_body_without_data_gives_no_listing() -> None:

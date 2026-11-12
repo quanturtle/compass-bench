@@ -14,6 +14,8 @@ from compass_bench.domain.findings import has_errors
 from compass_bench.domain.instrument.questionnaire import Questionnaire, find_problems
 
 DATA_DIRECTORY: Final = Path(__file__).parent.parent / "src" / "compass_bench" / "data"
+# two sentences of up to 40 words each at about 1.3 tokens a word, plus the line break and the number
+TWO_SENTENCES_AND_A_NUMBER: Final = 110
 
 
 @pytest.mark.parametrize("experiment", sorted(DATA_DIRECTORY.glob("experiments/*.yaml")), ids=lambda path: path.stem)
@@ -21,6 +23,14 @@ def test_a_bundled_experiment_plans_without_errors(experiment: Path) -> None:
     compiled = compile_experiment(experiment, SourceFiles(Path.cwd()))
 
     assert not has_errors(compiled.findings + plan_findings(compiled.spec, compiled.questionnaire))
+
+
+def test_the_reason_first_arm_leaves_room_for_two_sentences_and_the_number() -> None:
+    experiment = DATA_DIRECTORY / "experiments" / "political-compass-reason-first.yaml"
+
+    models = compile_experiment(experiment, SourceFiles(Path.cwd())).spec.models
+
+    assert all(model.sampling.max_tokens >= TWO_SENTENCES_AND_A_NUMBER for model in models.values())
 
 
 def test_the_political_questionnaire_passes_every_item_check_with_five_questions_per_facet() -> None:

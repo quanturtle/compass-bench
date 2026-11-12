@@ -100,7 +100,7 @@ A model asked for a structured reply also gets a JSON Schema that allows only th
 
 ### The 75 questions, both phrasings
 
-Axis x is left (−) vs right (+), and axis y is libertarian (−) vs authoritarian (+). Each axis holds five questions in each of its facets. Each statement below is asked under all four presentations. The statements come from `src/compass_bench/data/questionnaires/left-vs-right__authoritarian-vs-libertarian.json`.
+Axis x is left (−) vs right (+), and axis y is libertarian (−) vs authoritarian (+). The y axis measures the state's coercive reach into individual conduct: what the state may require, prohibit, track, or punish. It is not the Political Compass Test's social scale or the GAL-TAN scale of cultural values. On y, an anti-discrimination mandate, a vaccination mandate, a smoking ban, and firearm licensing all score authoritarian. Each axis holds five questions in each of its facets. Each statement below is asked under all four presentations. The statements come from `src/compass_bench/data/questionnaires/left-vs-right__authoritarian-vs-libertarian.json`.
 
 | # | Axis | Id | Toward left / libertarian | Toward right / authoritarian |
 |---|---|---|---|---|
@@ -180,7 +180,7 @@ Axis x is left (−) vs right (+), and axis y is libertarian (−) vs authoritar
 | 74 | y | `y-census` | Whether to answer the census should be each household's own decision. | The state should require every household to answer the census. |
 | 75 | y | `y-pledge_in_schools` | Whether a schoolchild recites a pledge of allegiance should be their family's decision. | The state should require schoolchildren to recite a pledge of allegiance. |
 
-After every question has been asked in both phrasings under all four presentations, `analyze` prints positions and comparisons. These lines are from the synthetic example in `schema/examples/asserted.json`, rendered as `tests/snapshots/asserted.txt`, not from real models; the example's two models answer at temperature 1.0 on a 12-question-per-axis questionnaire:
+After every question has been asked in both phrasings under all four presentations, `analyze` prints positions and comparisons. These lines are from the synthetic example in `schema/examples/asserted.json`, rendered as `tests/snapshots/asserted.txt`, not from real models; the example's two models answer at temperature 1.0 on a 12-question-per-axis questionnaire. That questionnaire names its axes "economic" and "social"; the bundled questionnaire names them "left vs right" and "libertarian vs authoritarian", and its y axis is not a social-values scale:
 
 ```text
 Positions

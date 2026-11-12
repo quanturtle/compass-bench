@@ -2423,7 +2423,7 @@
       "type": "string"
     },
     "ReliabilityBand": {
-      "description": "Koo and Li's (2016) reading of an ICC: below 0.5, 0.5 to 0.75, 0.75 to 0.9, and above 0.9.",
+      "description": "Koo and Li's (2016) bands: below 0.5, 0.5 to 0.75, 0.75 to 0.9, and above 0.9. They read an absolute-agreement\nICC's 95% interval on them; the point estimate of the consistency form is read here.",
       "enum": [
         "poor",
         "moderate",
@@ -2517,7 +2517,7 @@
     },
     "RunReliability": {
       "additionalProperties": false,
-      "description": "How alike a model's question scores on one axis come out across its runs of the pool.\n\n`icc` is ICC(3,1) over the questions every run scored, with the runs as the repeated measures: 1 when the\nruns order the questions alike and differ by at most a shift, 0 when they agree no more than chance, below 0\nwhen they disagree. `band` reads it as Koo and Li (2016) do. It needs two scored questions and two runs.",
+      "description": "How alike a model's question scores on one axis come out across its runs of the pool.\n\n`icc` is ICC(3,1) over the questions every run scored, with the runs as the repeated measures: 1 when the\nruns order the questions alike and differ by at most a shift, 0 when they agree no more than chance, below 0\nwhen they disagree. `band` reads the point estimate on Koo and Li's (2016) bands, which they apply to an\nabsolute-agreement ICC's 95% interval. It needs two scored questions and two runs.",
       "properties": {
         "icc": {
           "title": "Icc",

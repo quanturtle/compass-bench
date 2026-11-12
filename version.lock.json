@@ -3,7 +3,7 @@
   "version": "2.13",
   "digests": {
     "report schema": "7094982d82d45b756a21575acf44f0e6d34929b742c2a10f4a9a7f1d44f2be03",
-    "pooled report schema": "7f11962ce3e9e6aa283e66f83c3a5a0c3d1b364007e40c0adf06bc70ec49eba8",
+    "pooled report schema": "d6d69e46ed3732e3781d41a1bd6307ab40ea4dbf3a4c1105c9ecedf08a8addff",
     "example report asserted": "6366823f69bcad37e96057fb7ed31747b35847df40035a4ddfa108f976361a1a",
     "example report withheld": "cce6d58b3ce990cc9764547b3241c4c908ff5d772c7668179505b63397bedd6e",
     "example report partial": "5ce96076efc564dee7887dce45e5788919be0679422f6c01f5588e1deb218fdd",

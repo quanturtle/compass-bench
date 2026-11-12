@@ -351,6 +351,7 @@ def trial_entries(
                 attempt=Attempt(trial=trial.key, seq=0, prompt=prompt, reserved_usd=reserved),
                 result=answer,
                 received_at=received_at,
+                in_outage=False,
             ),
         )
     timeout = TransportFailed(
@@ -362,12 +363,14 @@ def trial_entries(
             attempt=Attempt(trial=trial.key, seq=0, prompt=prompt, reserved_usd=reserved),
             result=timeout,
             received_at=received_at,
+            in_outage=False,
         ),
         Finished(
             kind=LedgerEntryKind.FINISHED,
             attempt=Attempt(trial=trial.key, seq=1, prompt=prompt, reserved_usd=reserved),
             result=answer,
             received_at=received_at + timedelta(seconds=1),
+            in_outage=False,
         ),
     )
 

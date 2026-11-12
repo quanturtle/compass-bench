@@ -65,7 +65,13 @@ def failed_result(error: TransportError) -> TransportFailed:
 
 
 def finished_entry(seq: int, result: AttemptResult) -> Finished:
-    return Finished(kind=LedgerEntryKind.FINISHED, attempt=build_attempt(seq), result=result, received_at=RECEIVED_AT)
+    return Finished(
+        kind=LedgerEntryKind.FINISHED,
+        attempt=build_attempt(seq),
+        result=result,
+        received_at=RECEIVED_AT,
+        in_outage=False,
+    )
 
 
 def replied_entry(seq: int, text: str) -> Finished:
@@ -78,6 +84,11 @@ def priced_entry(seq: int, text: str, cost_usd: float) -> Finished:
 
 def failed_entry(seq: int, error: TransportError) -> Finished:
     return finished_entry(seq, failed_result(error))
+
+
+def outage_entry(seq: int, error: TransportError) -> Finished:
+    """A failure a `retries_spared` event names."""
+    return failed_entry(seq, error).model_copy(update={"in_outage": True})
 
 
 def orphaned_entry(seq: int) -> Orphaned:

@@ -4,11 +4,11 @@ import asyncio
 
 import pytest
 
-from compass_bench.domain.ids import attempt_id
-from compass_bench.domain.ledger import Finished, LedgerEntryKind, Orphaned
-from compass_bench.domain.run import RecordedEvent, RunEventKind, RunInterrupted, RunStarted
+from compass_bench.domain.ids import EndpointId, attempt_id
+from compass_bench.domain.ledger import Finished, LedgerEntryKind, Orphaned, TransportError
+from compass_bench.domain.run import RecordedEvent, RetriesSpared, RunEventKind, RunInterrupted, RunStarted
 from compass_bench.ports.ledger_store import LedgerConflict, RunLocked, UnknownReference
-from tests.builders.ledger import attempt_on, exchange_of, replied_result
+from tests.builders.ledger import attempt_on, exchange_of, failed_result, replied_result
 from tests.builders.stores import (
     NEEDS_POSTGRES,
     STORE_KINDS,
@@ -80,6 +80,35 @@ async def append_events(kind: str) -> None:
 @pytest.mark.parametrize("kind", STORE_KINDS)
 def test_events_come_back_in_order_and_a_taken_seq_conflicts(kind: str) -> None:
     asyncio.run(append_events(kind))
+
+
+async def spare_one_of_two_failures(kind: str) -> None:
+    inputs = run_inputs()
+    run = inputs.run.run_id
+    spared, counted = (attempt_on(trial.key, 0) for trial in inputs.trials[:2])
+    named = (attempt_id(spared.trial, 0),)
+    event = RetriesSpared(kind=RunEventKind.RETRIES_SPARED, endpoint=EndpointId("openrouter"), attempts=named)
+    async with ledger_store(kind) as store:
+        await store.create_run(inputs.run, inputs.questionnaire, inputs.spec, inputs.trials, inputs.endpoints)
+        async with store.lock_run(run):
+            for attempt in (spared, counted):
+                await store.record_attempt(attempt, {"model": "vendor/model"})
+                result = exchange_of(failed_result(TransportError.TIMEOUT))
+                await store.record_result(attempt_id(attempt.trial, 0), result)
+        before = await store.load_entries(run)
+        await store.append_event(run, RecordedEvent(seq=0, event=event))
+        after = await store.load_entries(run)
+        events = await store.load_events(run)
+    assert events == (RecordedEvent(seq=0, event=event),)
+    assert not any(isinstance(entry, Finished) and entry.in_outage for key in before for entry in before[key])
+    assert {key for key in after for entry in after[key] if isinstance(entry, Finished) and entry.in_outage} == {
+        spared.trial
+    }
+
+
+@pytest.mark.parametrize("kind", STORE_KINDS)
+def test_a_failure_is_in_an_outage_only_once_a_retries_spared_event_names_its_attempt(kind: str) -> None:
+    asyncio.run(spare_one_of_two_failures(kind))
 
 
 async def lose_the_lock(kind: str) -> None:

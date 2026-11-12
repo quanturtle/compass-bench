@@ -59,7 +59,7 @@ from compass_bench.domain.ledger import (
     Orphaned,
 )
 from compass_bench.domain.listing import ModelListing
-from compass_bench.domain.run import NewRun, PlannedRun, RecordedEvent, RunEvent, RunRecord
+from compass_bench.domain.run import NewRun, PlannedRun, RecordedEvent, RunEvent, RunRecord, spared_attempts
 from compass_bench.ports.ledger_store import LedgerConflict, RunLocked, UnknownReference, UnknownRun, UnlockedRun
 from compass_bench.ports.transport import Exchange
 
@@ -128,8 +128,8 @@ def result_row(attempt: AttemptId, exchange: Exchange) -> dict[str, object]:
     }
 
 
-def entry_from_rows(attempt: RowMapping, result: RowMapping | None) -> LedgerEntry:
-    """An attempt row without a result row is an Orphaned entry."""
+def entry_from_rows(attempt: RowMapping, result: RowMapping | None, spared: frozenset[AttemptId]) -> LedgerEntry:
+    """An attempt row without a result row is an Orphaned entry; an attempt in `spared` finished in an outage."""
     recorded = Attempt(
         trial=TrialKey(attempt["trial_key"]),
         seq=attempt["seq"],
@@ -138,8 +138,13 @@ def entry_from_rows(attempt: RowMapping, result: RowMapping | None) -> LedgerEnt
     )
     if result is None:
         return Orphaned(kind=LedgerEntryKind.ORPHANED, attempt=recorded)
-    outcome = ATTEMPT_RESULT.validate_json(result["result"])
-    return Finished(kind=LedgerEntryKind.FINISHED, attempt=recorded, result=outcome, received_at=result["received_at"])
+    return Finished(
+        kind=LedgerEntryKind.FINISHED,
+        attempt=recorded,
+        result=ATTEMPT_RESULT.validate_json(result["result"]),
+        received_at=result["received_at"],
+        in_outage=attempt_id(recorded.trial, recorded.seq) in spared,
+    )
 
 
 def run_record(row: RowMapping) -> RunRecord:
@@ -432,6 +437,8 @@ class PostgresLedgerStore:
         return await self.committed(lambda connection: insert_result(connection, row, attempt))
 
     async def load_entries(self, run: RunId) -> Mapping[TrialKey, tuple[LedgerEntry, ...]]:
+        """Each trial's attempts in seq order; the run's `retries_spared` events mark the ones in an outage."""
+        spared = spared_attempts(await self.load_events(run))
         query = (
             select(
                 attempts.c.trial_key,
@@ -451,7 +458,8 @@ class PostgresLedgerStore:
             rows = (await connection.execute(query)).mappings().all()
         grouped: defaultdict[TrialKey, list[LedgerEntry]] = defaultdict(list)
         for row in rows:
-            grouped[TrialKey(row["trial_key"])].append(entry_from_rows(row, row if row["result"] is not None else None))
+            result = row if row["result"] is not None else None
+            grouped[TrialKey(row["trial_key"])].append(entry_from_rows(row, result, spared))
         return {key: tuple(entries) for key, entries in grouped.items()}
 
     async def append_event(self, run: RunId, event: RecordedEvent) -> None:

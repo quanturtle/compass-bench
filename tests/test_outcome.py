@@ -4,7 +4,7 @@ from compass_bench.domain.outcome import LossReason, Lost, Pending, Replied, Tri
 from compass_bench.domain.reading.reading import RatingRead
 from tests.builders.corpus import BASELINE_CONTEXT
 from tests.builders.design import BOTH_FACTORS, build_design, build_model_spec
-from tests.builders.ledger import failed_entry, orphaned_entry, replied_entry
+from tests.builders.ledger import failed_entry, orphaned_entry, outage_entry, replied_entry
 
 MODEL = build_model_spec(AnswerType.FREE_TEXT)
 DESIGN = build_design(BOTH_FACTORS, repetitions=1)
@@ -25,6 +25,18 @@ def test_retryable_failures_past_max_retries_lose_the_trial() -> None:
         kind=TrialOutcomeKind.PENDING, attempts=DESIGN.max_retries
     )
     assert fold_outcome(failures, MODEL, BASELINE_CONTEXT, DESIGN) == Lost(
+        kind=TrialOutcomeKind.LOST, loss=LossReason.RETRIES_EXHAUSTED
+    )
+
+
+def test_failures_in_an_outage_use_up_no_retry() -> None:
+    outage = tuple(outage_entry(seq, TransportError.TIMEOUT) for seq in range(2 * DESIGN.max_retries))
+    counted = tuple(failed_entry(len(outage) + seq, TransportError.TIMEOUT) for seq in range(DESIGN.max_retries + 1))
+
+    assert fold_outcome((*outage, *counted[:-1]), MODEL, BASELINE_CONTEXT, DESIGN) == Pending(
+        kind=TrialOutcomeKind.PENDING, attempts=3 * DESIGN.max_retries
+    )
+    assert fold_outcome((*outage, *counted), MODEL, BASELINE_CONTEXT, DESIGN) == Lost(
         kind=TrialOutcomeKind.LOST, loss=LossReason.RETRIES_EXHAUSTED
     )
 

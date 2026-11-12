@@ -2,7 +2,7 @@
 
 import asyncio
 import heapq
-from collections.abc import Coroutine, Mapping, Sequence
+from collections.abc import Coroutine, Mapping, Sequence, Set
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Annotated, Final, Literal
@@ -24,7 +24,7 @@ from compass_bench.domain.design.experiment import (
 from compass_bench.domain.design.schedule import Trial, build_schedule
 from compass_bench.domain.elicitation.answer_types import answer_type_strategy
 from compass_bench.domain.elicitation.prompts import Prompt
-from compass_bench.domain.ids import EndpointId, ModelId, RunId, TrialKey, attempt_id, run_id
+from compass_bench.domain.ids import AttemptId, EndpointId, ModelId, RunId, TrialKey, attempt_id, run_id
 from compass_bench.domain.instrument.questionnaire import Questionnaire, question_index
 from compass_bench.domain.instrument.scale import Scale
 from compass_bench.domain.ledger import (
@@ -51,6 +51,7 @@ from compass_bench.domain.run import (
     NewRun,
     PlannedRun,
     RecordedEvent,
+    RetriesSpared,
     RunEvent,
     RunEventKind,
     RunInterrupted,
@@ -90,8 +91,10 @@ class CircuitKind(StrEnum):
 
 
 class ClosedCircuit(Value):
+    """`streak` is the endpoint's latest attempts that failed retryably, with no other result between them."""
+
     kind: Literal[CircuitKind.CLOSED]
-    consecutive_failures: int
+    streak: tuple[AttemptId, ...]
 
 
 class OpenCircuit(Value):
@@ -229,21 +232,47 @@ def next_attempt(
     return Attempt(trial=trial.key, seq=seq, prompt=prompt, reserved_usd=reserved)
 
 
-def circuit_after(circuit: Circuit, failure: TransportError | None) -> Circuit:
-    """An endpoint's circuit after one attempt: an endpoint-level error opens it, and a retryable one adds to the count.
+def circuit_after(circuit: Circuit, attempt: AttemptId, failure: TransportError | None) -> Circuit:
+    """An endpoint's circuit after one attempt: an endpoint-level error opens it, and a retryable one joins the streak.
 
-    Any other result resets the count; an open circuit stays open until the run resumes."""
+    Any other result empties the streak; an open circuit stays open until the run resumes."""
     match circuit:
         case OpenCircuit():
             return circuit
-        case ClosedCircuit(consecutive_failures=failures):
+        case ClosedCircuit(streak=streak):
             if failure is not None and opens_circuit(failure):
                 return OpenCircuit(kind=CircuitKind.OPEN, error=failure)
             if failure is not None and is_retryable(failure):
-                if failures + 1 >= CIRCUIT_FAILURE_LIMIT:
+                if len(streak) + 1 >= CIRCUIT_FAILURE_LIMIT:
                     return OpenCircuit(kind=CircuitKind.OPEN, error=failure)
-                return ClosedCircuit(kind=CircuitKind.CLOSED, consecutive_failures=failures + 1)
-            return ClosedCircuit(kind=CircuitKind.CLOSED, consecutive_failures=0)
+                return ClosedCircuit(kind=CircuitKind.CLOSED, streak=(*streak, attempt))
+            return ClosedCircuit(kind=CircuitKind.CLOSED, streak=())
+
+
+def outage_failures(
+    before: Circuit, after: Circuit, attempt: AttemptId, failure: TransportError | None
+) -> tuple[AttemptId, ...]:
+    """The attempts one result puts in an outage: the streak when the circuit opens, the attempt when it is open.
+
+    Only a retryable failure counts; a closed circuit that stays closed puts none there."""
+    failed = (attempt,) if failure is not None and is_retryable(failure) else ()
+    match before, after:
+        case ClosedCircuit(streak=streak), OpenCircuit():
+            return (*streak, *failed)
+        case OpenCircuit(), _:
+            return failed
+        case _:
+            return ()
+
+
+def marked_in_outage(entries: Sequence[LedgerEntry], spared: Set[AttemptId]) -> tuple[LedgerEntry, ...]:
+    """The entries, with each finished attempt in `spared` marked `in_outage`."""
+    return tuple(
+        entry.model_copy(update={"in_outage": True})
+        if isinstance(entry, Finished) and attempt_id(entry.attempt.trial, entry.attempt.seq) in spared
+        else entry
+        for entry in entries
+    )
 
 
 def completion_request(
@@ -307,7 +336,13 @@ async def dispatch_attempt(
     observer.on_attempt_finished(attempt, exchange)
 
     # decide the trial's next step from its ledger with this attempt folded in
-    entry = Finished(kind=LedgerEntryKind.FINISHED, attempt=attempt, result=exchange.result, received_at=received_at)
+    entry = Finished(
+        kind=LedgerEntryKind.FINISHED,
+        attempt=attempt,
+        result=exchange.result,
+        received_at=received_at,
+        in_outage=False,
+    )
     _, condition, scale = trial_context(trial, spec, questionnaire)
     context = ReadContext(scale=scale, condition=condition)
     if is_terminal(fold_outcome((*entries, entry), spec.models[trial.model], context, spec.design)):
@@ -360,7 +395,7 @@ class Collector:
         # each endpoint's ready trials, a heap on schedule position so dispatch follows round order
         self.ready: dict[EndpointId, list[tuple[int, Trial]]] = {endpoint: [] for endpoint in endpoints}
         self.circuits: dict[EndpointId, Circuit] = {
-            endpoint: ClosedCircuit(kind=CircuitKind.CLOSED, consecutive_failures=0) for endpoint in endpoints
+            endpoint: ClosedCircuit(kind=CircuitKind.CLOSED, streak=()) for endpoint in endpoints
         }
         # models with an open circuit; their trials stay pending while the endpoint's other models continue
         self.open_model_circuits: set[ModelId] = set()
@@ -432,16 +467,32 @@ class Collector:
                 self.running[group.create_task(released_after(runtime.slots, work))] = trial
         return
 
+    async def spare_retries(self, endpoint: EndpointId, attempts: tuple[AttemptId, ...]) -> None:
+        """Record the attempts as failures of the endpoint's outage, and mark their entries, so none uses up a retry.
+
+        A crash between a failure's result and this event leaves the failure counted."""
+        if not attempts or self.taken_over:
+            return
+        await self.record_event(RetriesSpared(kind=RunEventKind.RETRIES_SPARED, endpoint=endpoint, attempts=attempts))
+        spared = frozenset(attempts)
+        for key, entries in self.entries.items():
+            self.entries[key] = marked_in_outage(entries, spared)
+        return
+
     async def update_circuits(self, trial: Trial, entry: Finished) -> None:
-        """Update the endpoint's circuit, and open the model's on a model-level error; each opening is an event."""
+        """Update the endpoint's circuit, and open the model's on a model-level error; each opening is an event.
+
+        An endpoint circuit that opens, or is open, spares the retries of the outage's failures."""
         endpoint = self.endpoint_of(trial)
         failure = entry_failure(entry)
+        attempt = attempt_id(entry.attempt.trial, entry.attempt.seq)
         before = self.circuits[endpoint]
-        after = circuit_after(before, failure)
+        after = circuit_after(before, attempt, failure)
         self.circuits[endpoint] = after
         if isinstance(before, ClosedCircuit) and isinstance(after, OpenCircuit):
             opened = CircuitOpened(kind=RunEventKind.CIRCUIT_OPENED, endpoint=endpoint, error=after.error)
             await self.record_event(opened)
+        await self.spare_retries(endpoint, outage_failures(before, after, attempt, failure))
         if failure is not None and opens_model_circuit(failure) and trial.model not in self.open_model_circuits:
             self.open_model_circuits.add(trial.model)
             model_opened = ModelCircuitOpened(kind=RunEventKind.MODEL_CIRCUIT_OPENED, model=trial.model, error=failure)
@@ -509,9 +560,8 @@ class Collector:
         planned = self.planned
         if self.taken_over:
             return CollectionEnd.TAKEN_OVER
-        # a pass whose endpoint failed until its circuit opened is not complete, even with every trial settled
-        endpoint_open = any(circuit.kind is CircuitKind.OPEN for circuit in self.circuits.values())
-        if not endpoint_open and not pending_trials(planned.trials, self.entries, planned.spec, planned.questionnaire):
+        # an opened circuit leaves the trial of the failure that opened it pending, so its pass is never complete
+        if not pending_trials(planned.trials, self.entries, planned.spec, planned.questionnaire):
             return CollectionEnd.COMPLETE
         if self.stop.is_set():
             return CollectionEnd.INTERRUPTED

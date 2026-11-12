@@ -173,7 +173,7 @@ One import breaks the table: `contract/schema.py` imports `pooled_documents` fro
   - `FinishReason` and `TransportError` are Enums.
 - `Usage` carries `cost_usd | None`: the cost the provider reported, or `None`. The ledger never stores an estimate there; the budget counts an unknown cost at the attempt's reservation.
 - `LedgerEntry = Finished(attempt, result, received_at) | Orphaned(attempt)`. An orphan was sent and has no recorded result; `received_at` is the ledger's own stamp, which `record_result` returns.
-- `ModelListing(listed_at, host, supported_parameters)` in `domain/listing.py` is what the provider listed for a model's slug when the run started, read through `ports/listings.ModelListings` by `app/collect.start_run` for the host the endpoint pins, and stored on the run. `listing_findings` warns (`NO_LISTING`, `UNSUPPORTED_PARAMETER`, `FRESH_LISTING`) when a listing is missing, when the pinned host does not list a parameter the model's settings send, or when the slug was listed under `FRESH_LISTING_DAYS` before the run; `run` prints them, and the report carries them as `findings`. `plan` reads no listing, since it is offline.
+- `ModelListing(listed_at, host, supported_parameters)` in `domain/listing.py` is what the provider listed for a model's slug when the run started, read through `ports/listings.ModelListings` by `app/collect.start_run` for the host the endpoint pins, and stored on the run. The pinned host is the first entry of `provider_order`, and the OpenRouter adapter matches it against a listed endpoint's `tag` (`deepinfra/fp8`), not its `provider_name` (`DeepInfra`), which several tags share. `listing_findings` warns (`NO_LISTING`, `UNSUPPORTED_PARAMETER`, `FRESH_LISTING`) when a listing is missing, when the pinned host does not list a parameter the model's settings send, or when the slug was listed under `FRESH_LISTING_DAYS` before the run; `run` prints them, and the report carries them as `findings`. `plan` reads no listing, since it is offline.
 
 ### Reading and outcome
 
@@ -365,7 +365,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
 | `pool <questionnaire> [--out DIR]` | Pool every run that asked the questionnaire file's questionnaire, one pool per scale and analysis settings, and print each pool's report as text; with `--out`, write each as JSON. No run prints one line and exits 0 |
 | `db migrate` | Run Alembic to head |
 
-`cli.execute` turns a known failure into one stderr line and an exit code. An invalid input exits with the invalid-input code: an experiment or source file, a missing setting, a database URL that does not parse, an unknown run, or an output directory that cannot be written. A database error, such as an unreachable server, exits `FAILED` with the first line of the driver's message.
+`cli.execute` turns a known failure into one stderr line and an exit code. An invalid input exits with the invalid-input code: an experiment or source file, a missing setting, a database URL that does not parse, an unknown run, or an output directory that cannot be written. A database error, such as an unreachable server, exits `FAILED` with the first line of the driver's message. A database error raised while collecting arrives wrapped by the collector's task group; it prints the same line and exits with the resumable code, since the ledger holds what was recorded and `resume` asks the attempts left without a result again.
 
 ## Call paths
 

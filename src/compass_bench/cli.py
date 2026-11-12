@@ -399,6 +399,22 @@ def run_db_migrate(environ: Mapping[str, str]) -> ExitCode:
     return ExitCode.OK
 
 
+def database_error_line(error: SQLAlchemyError) -> str:
+    """The driver's message runs over several lines; its first says what failed and holds no password."""
+    return f"compass-bench: database error: {str(error).splitlines()[0]}"
+
+
+def only_database_error(group: BaseExceptionGroup[BaseException]) -> SQLAlchemyError | None:
+    """The group's first database error when every error in it, at any depth, is one; None otherwise."""
+    matched, rest = group.split(SQLAlchemyError)
+    if matched is None or rest is not None:
+        return None
+    first = matched.exceptions[0]
+    while isinstance(first, BaseExceptionGroup):
+        first = first.exceptions[0]
+    return first if isinstance(first, SQLAlchemyError) else None
+
+
 def execute(command: Command, environ: Mapping[str, str]) -> ExitCode:
     """Dispatch to the command's handler; domain errors become an exit code and one stderr line here."""
     try:
@@ -428,9 +444,15 @@ def execute(command: Command, environ: Mapping[str, str]) -> ExitCode:
         print(f"compass-bench: {error}", file=sys.stderr)
         return ExitCode.FAILED
     except SQLAlchemyError as error:
-        # the driver's message runs over several lines; its first says what failed and holds no password
-        print(f"compass-bench: database error: {str(error).splitlines()[0]}", file=sys.stderr)
+        print(database_error_line(error), file=sys.stderr)
         return ExitCode.FAILED
+    except ExceptionGroup as group:
+        # collection's task group wraps what its workers raise; the ledger holds what was recorded, so resume continues
+        database_error = only_database_error(group)
+        if database_error is None:
+            raise
+        print(database_error_line(database_error), file=sys.stderr)
+        return ExitCode.RESUMABLE
 
 
 def main() -> None:

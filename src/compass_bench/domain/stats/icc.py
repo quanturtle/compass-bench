@@ -5,6 +5,8 @@ from enum import StrEnum
 from statistics import fmean
 
 
+# Koo and Li read the 95% interval of an absolute-agreement ICC on these bands; the point estimate of the
+# consistency form is read here, and the class docstring below is part of the report schema
 class ReliabilityBand(StrEnum):
     """Koo and Li's (2016) reading of an ICC: below 0.5, 0.5 to 0.75, 0.75 to 0.9, and above 0.9."""
 

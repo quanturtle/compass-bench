@@ -74,7 +74,7 @@ def equivalence_power(values: Sequence[float], margin: float, alpha: float) -> f
 
     1 minus twice the noncentral t's mass below the one-sided critical value, with noncentrality margin over the
     standard error: exact when the standard error is at most the margin over the critical value, else a lower
-    bound, floored at 0 (Lakens, 2017). 1 with zero spread."""
+    bound, floored at 0; Lakens (2017) gives a normal approximation for the same tests. 1 with zero spread."""
     _, deviation = spread(values)
     if deviation == 0:
         return 1.0

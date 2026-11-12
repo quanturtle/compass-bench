@@ -92,7 +92,7 @@ None found by the rule: each pair carries the same quantifier on both sides. Two
 
 ## Reader agreement
 
-The reader that turns a reply into a rating, a decline, or a format failure was written by one author and checked against the hand-labelled corpus under `tests/corpus/` (27 free-text and 11 structured rows). `scripts/sample_replies.py` draws a sample from stored runs for a second reader: every reply the tool marked hedged, every reply it read as a decline or a format failure, and 100 plain ratings per run drawn by the run's nonce. The second reader fills in the blinded copy by hand, and `scripts/reader_agreement.py` prints Cohen's κ per category.
+The reader that turns a reply into a rating, a decline, or a format failure was written by one author and checked against the hand-labelled corpus under `tests/corpus/` (35 free-text and 11 structured rows). `scripts/sample_replies.py` draws a sample from stored runs for a second reader: every reply the tool marked hedged, every reply it read as a decline or a format failure, and 100 plain ratings per run drawn by the run's nonce. The second reader fills in the blinded copy by hand, and `scripts/reader_agreement.py` prints Cohen's κ per category.
 
 Two caveats go with any result: the strata are defined by the tool's own readings, so each κ is conditional on the tool's partition rather than a random-sample figure; and the hedged and unanswered strata are small in the stored runs, so their κ carry wide intervals. Report n beside each κ. The decline rules have fired on one live reply so far, and the format-failure rules on one, among 11,955 answered in the finished stored runs, so a decline-against-the-rest κ from them would rest on a single row.
 

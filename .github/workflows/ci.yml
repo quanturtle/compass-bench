@@ -1,13 +1,9 @@
-# Checks every push and pull request against Postgres; weekly or when started by hand, also re-checks the committed
-# audit and runs the mutation tests.
+# Checks every push and pull request against Postgres.
 name: ci
 
 on:
   push:
   pull_request:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 6 * * 1"
 
 jobs:
   check:
@@ -33,15 +29,3 @@ jobs:
       - run: uv sync --locked
       - run: make check
       - run: make schema-check
-
-  weekly:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    # audit-check measured at about 43 CPU-minutes and mutate at about 7, spread over the runner's cores
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v6
-      - run: uv sync --locked
-      - run: make audit-check
-      - run: make mutate

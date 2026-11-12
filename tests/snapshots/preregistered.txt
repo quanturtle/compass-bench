@@ -123,7 +123,7 @@ Provenance
   run 461800058efe, created 2026-01-01T00:00:00+00:00, code revision example
   experiment hash 17a61527bfaf716002a1c76e308dbbf4e50b745cf90e2a5c8b16fbdda69e3027
   questionnaire hash ccf53a999f32ef985b4ed192d871f7de905d8f0279e10ec6f9ddacb59c4032fd
-  compass-bench 2.13
+  compass-bench 2.14
   alpha: listed 2025-10-03; host 'Example' supports temperature, top_p, max_tokens, reasoning, response_format
   delta: listed 2025-12-22; host 'Example' supports temperature, top_p, max_tokens, reasoning
   warnings:

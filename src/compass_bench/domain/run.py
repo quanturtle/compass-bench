@@ -11,7 +11,7 @@ from pydantic import Field
 from compass_bench.domain.budget import spent_usd
 from compass_bench.domain.design.experiment import ExperimentSpec
 from compass_bench.domain.design.schedule import Trial
-from compass_bench.domain.ids import EndpointId, ExperimentHash, ModelId, RunId, TrialKey
+from compass_bench.domain.ids import AttemptId, EndpointId, ExperimentHash, ModelId, RunId, TrialKey
 from compass_bench.domain.instrument.questionnaire import Questionnaire
 from compass_bench.domain.ledger import LedgerEntry, Orphaned, TransportError
 from compass_bench.domain.listing import RunListings
@@ -62,6 +62,7 @@ class RunEventKind(StrEnum):
     BUDGET_EXHAUSTED = "budget_exhausted"
     CIRCUIT_OPENED = "circuit_opened"
     MODEL_CIRCUIT_OPENED = "model_circuit_opened"
+    RETRIES_SPARED = "retries_spared"
 
 
 class RunStarted(Value):
@@ -102,8 +103,17 @@ class ModelCircuitOpened(Value):
     error: TransportError
 
 
+class RetriesSpared(Value):
+    """Retryable failures of an endpoint outage: the unbroken run of them before its circuit opened, or one that
+    finished while it was open. The fold counts none of `attempts` toward its trial's max_retries."""
+
+    kind: Literal[RunEventKind.RETRIES_SPARED]
+    endpoint: EndpointId
+    attempts: tuple[AttemptId, ...]
+
+
 type RunEvent = Annotated[
-    RunStarted | RunResumed | RunInterrupted | BudgetExhausted | CircuitOpened | ModelCircuitOpened,
+    RunStarted | RunResumed | RunInterrupted | BudgetExhausted | CircuitOpened | ModelCircuitOpened | RetriesSpared,
     Field(discriminator="kind"),
 ]
 
@@ -174,6 +184,12 @@ def open_circuits(events: Sequence[RecordedEvent]) -> tuple[EndpointId, ...]:
 def open_model_circuits(events: Sequence[RecordedEvent]) -> tuple[ModelId, ...]:
     """Models whose circuit opened after the latest started or resumed event."""
     return tuple(sorted({event.model for event in events_since_start(events) if isinstance(event, ModelCircuitOpened)}))
+
+
+def spared_attempts(events: Sequence[RecordedEvent]) -> frozenset[AttemptId]:
+    """Every attempt a `retries_spared` event of the run names, in any pass."""
+    spared = (recorded.event for recorded in events if isinstance(recorded.event, RetriesSpared))
+    return frozenset(attempt for event in spared for attempt in event.attempts)
 
 
 def run_progress(

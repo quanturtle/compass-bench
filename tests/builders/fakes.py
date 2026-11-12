@@ -15,7 +15,16 @@ from compass_bench.domain.ids import AttemptId, EndpointId, RunId, TrialKey, att
 from compass_bench.domain.instrument.questionnaire import Questionnaire, questionnaire_hash
 from compass_bench.domain.ledger import Attempt, AttemptResult, Finished, LedgerEntry, LedgerEntryKind, Orphaned
 from compass_bench.domain.listing import ModelListing
-from compass_bench.domain.run import CollectionEnd, NewRun, PlannedRun, RecordedEvent, RunEvent, RunProgress, RunRecord
+from compass_bench.domain.run import (
+    CollectionEnd,
+    NewRun,
+    PlannedRun,
+    RecordedEvent,
+    RunEvent,
+    RunProgress,
+    RunRecord,
+    spared_attempts,
+)
 from compass_bench.ports.ledger_store import LedgerConflict, RunLocked, UnknownReference, UnknownRun, UnlockedRun
 from compass_bench.ports.transport import CompletionRequest, Exchange
 
@@ -132,13 +141,20 @@ class FakeLedgerStore:
         store_once(self.results, attempt, row)
         return self.results[attempt][3]
 
-    def entry(self, key: AttemptId, attempt: Attempt) -> LedgerEntry:
+    def entry(self, key: AttemptId, attempt: Attempt, spared: frozenset[AttemptId]) -> LedgerEntry:
         if key not in self.results:
             return Orphaned(kind=LedgerEntryKind.ORPHANED, attempt=attempt)
         result, _, _, received_at = self.results[key]
-        return Finished(kind=LedgerEntryKind.FINISHED, attempt=attempt, result=result, received_at=received_at)
+        return Finished(
+            kind=LedgerEntryKind.FINISHED,
+            attempt=attempt,
+            result=result,
+            received_at=received_at,
+            in_outage=key in spared,
+        )
 
     async def load_entries(self, run: RunId) -> Mapping[TrialKey, tuple[LedgerEntry, ...]]:
+        spared = spared_attempts(await self.load_events(run))
         keys = {trial.key for trial in self.trials.get(run, ())}
         recorded = sorted(
             ((key, attempt) for key, (attempt, _) in self.attempts.items() if attempt.trial in keys),
@@ -146,7 +162,7 @@ class FakeLedgerStore:
         )
         grouped: dict[TrialKey, tuple[LedgerEntry, ...]] = {}
         for key, attempt in recorded:
-            grouped[attempt.trial] = (*grouped.get(attempt.trial, ()), self.entry(key, attempt))
+            grouped[attempt.trial] = (*grouped.get(attempt.trial, ()), self.entry(key, attempt, spared))
         return grouped
 
     async def append_event(self, run: RunId, event: RecordedEvent) -> None:

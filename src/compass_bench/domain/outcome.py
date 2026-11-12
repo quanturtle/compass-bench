@@ -96,11 +96,13 @@ def fold_outcome(
 ) -> TrialOutcome:
     """The first completed reply decides the outcome, read by its model's answer type; nothing re-asks it if unreadable.
 
-    A transport failure loses the trial unless it is retryable and max_retries is not used up."""
+    A transport failure loses the trial unless it is retryable with retries left, or `in_outage`, which uses up none."""
     retryable_failures = 0
     for entry in sorted(entries, key=lambda entry: entry.attempt.seq):
         match entry:
             case Orphaned():
+                continue
+            case Finished(result=TransportFailed(), in_outage=True):
                 continue
             case Finished(result=Completed(reply=reply)) if reply.finish is FinishReason.HOST_ERROR:
                 return Lost(kind=TrialOutcomeKind.LOST, loss=LossReason.HOST_ERROR)

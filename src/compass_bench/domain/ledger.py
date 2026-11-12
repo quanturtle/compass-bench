@@ -98,12 +98,15 @@ class LedgerEntryKind(StrEnum):
 
 
 class Finished(Value):
-    """`received_at` is when the ledger recorded the result, by the ledger's clock."""
+    """`received_at` is when the ledger recorded the result, by the ledger's clock.
+
+    `in_outage`: a `retries_spared` event of the run names the attempt, so its failure uses up no retry."""
 
     kind: Literal[LedgerEntryKind.FINISHED]
     attempt: Attempt
     result: AttemptResult
     received_at: datetime
+    in_outage: bool
 
 
 class Orphaned(Value):

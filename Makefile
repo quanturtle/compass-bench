@@ -33,10 +33,12 @@ schema-check:
 # everything a reviewer can replicate from the repository: the schema, the examples, and the audit
 replicate: schema-check audit-check
 
-# mutation-test the statistics, the scoring, and the claim gates; fail on a mutant that is not killed, unless
-# tests/equivalent_mutants.json lists it with the reason no test can tell it from the original
+# mutation-test the statistics, the scoring, the claim gates, and the pooling; fail on a mutant that is not killed,
+# unless tests/equivalent_mutants.json lists it with the reason no test can tell it from the original. The run leaves
+# the Postgres tests out: mutmut's parallel workers would share the one test database, and their collisions fail tests
+# no mutant broke
 mutate:
 	rm -rf mutants
-	uv run mutmut run
+	env -u COMPASS_BENCH_TEST_DATABASE_URL uv run mutmut run
 	uv run mutmut results --all true > mutants/results.txt
 	uv run python scripts/check_mutants.py mutants/results.txt

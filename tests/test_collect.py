@@ -15,7 +15,7 @@ from compass_bench.app.collect import (
 )
 from compass_bench.domain.ledger import Finished, Orphaned, TransportError
 from compass_bench.domain.outcome import LossReason, Lost, Pending, Replied, TrialOutcome, TrialOutcomeKind
-from compass_bench.domain.run import CollectionEnd, RunEventKind
+from compass_bench.domain.run import CollectionEnd, RunEventKind, spared_attempts
 from tests.builders.collection import (
     TRIAL_COUNT,
     compiled_experiment,
@@ -113,27 +113,51 @@ def test_resume_asks_again_the_trials_an_unusable_body_answered(slots: int) -> N
     assert len(working.sent) == TRIAL_COUNT and all(isinstance(outcome, Replied) for outcome in trial_outcomes)
 
 
-def test_four_passes_against_unusable_bodies_never_end_complete_and_lose_only_trials_out_of_retries() -> None:
-    passes = [unusable_transport() for _ in range(4)]
+async def collect_through_outages(passes: int, slots: int) -> None:
+    """`passes` passes against an endpoint that only times out: each opens its circuit and uses up no retry."""
+    store = FakeLedgerStore()
+    run = (await start_run(compiled_experiment(), store, no_listings(), "nonce", "test")).run_id
+    transports = [ScriptedTransport((), failed_result(TransportError.TIMEOUT), None, None) for _ in range(passes)]
+    ends = [
+        await collect(run, 1.0, store, slotted_runtimes(transport, slots), SilentObserver(), asyncio.Event())
+        for transport in transports
+    ]
 
-    ends, trial_outcomes = asyncio.run(collect_passes(passes, slots=4))
+    entries = [entry for trial_entries in (await store.load_entries(run)).values() for entry in trial_entries]
+    spared = spared_attempts(await store.load_events(run))
+    assert ends == [CollectionEnd.CIRCUITS_OPEN] * passes
+    assert all(CIRCUIT_FAILURE_LIMIT <= len(transport.sent) < CIRCUIT_FAILURE_LIMIT + slots for transport in transports)
+    assert len(entries) == len(spared) == sum(len(transport.sent) for transport in transports)
+    assert all(isinstance(entry, Finished) and entry.in_outage for entry in entries)
+    assert all(isinstance(outcome, Pending) for outcome in await outcomes(store, run))
+    return
 
-    lost = [outcome for outcome in trial_outcomes if isinstance(outcome, Lost)]
-    assert ends == [CollectionEnd.CIRCUITS_OPEN] * 4
-    assert len(lost) <= CIRCUIT_FAILURE_LIMIT - 1 + 4
-    assert sum(isinstance(outcome, Pending) for outcome in trial_outcomes) == TRIAL_COUNT - len(lost)
+
+@pytest.mark.parametrize("slots", [1, 4, TRIAL_COUNT])
+def test_repeated_passes_against_an_outage_spare_every_retry_and_lose_no_trial(slots: int) -> None:
+    # without the sparing, 8 passes at 1 slot put 40 timeouts on trials that have 3 retries each
+    asyncio.run(collect_through_outages(passes=8, slots=slots))
 
 
-def test_the_pass_that_loses_the_last_trial_to_unusable_bodies_ends_with_its_circuit_open() -> None:
-    # every trial runs out of retries within TRIAL_COUNT passes; the pass after has nothing left to send
-    passes = [unusable_transport() for _ in range(TRIAL_COUNT + 1)]
+async def collect_through_a_streak_a_reply_ends() -> None:
+    """Four trials time out once, short of the limit, and every later send is answered."""
+    store = FakeLedgerStore()
+    run = (await start_run(compiled_experiment(), store, no_listings(), "nonce", "test")).run_id
+    timeouts = (failed_result(TransportError.TIMEOUT),) * (CIRCUIT_FAILURE_LIMIT - 1)
+    script = ScriptedTransport(timeouts, replied_result("4"), None, None)
 
-    ends, trial_outcomes = asyncio.run(collect_passes(passes, slots=TRIAL_COUNT))
+    end = await collect(run, 1.0, store, slotted_runtimes(script, 4), SilentObserver(), asyncio.Event())
 
-    last_sending = max(index for index, transport in enumerate(passes) if transport.sent)
-    assert all(isinstance(outcome, Lost) for outcome in trial_outcomes)
-    assert ends[: last_sending + 1] == [CollectionEnd.CIRCUITS_OPEN] * (last_sending + 1)
-    assert ends[last_sending + 1 :] == [CollectionEnd.COMPLETE] * (TRIAL_COUNT - last_sending)
+    entries = [entry for trial_entries in (await store.load_entries(run)).values() for entry in trial_entries]
+    events = [recorded.event.kind for recorded in await store.load_events(run)]
+    assert (end, events) == (CollectionEnd.COMPLETE, [RunEventKind.STARTED])
+    assert len(entries) == TRIAL_COUNT + len(timeouts)
+    assert not any(isinstance(entry, Finished) and entry.in_outage for entry in entries)
+    return
+
+
+def test_a_streak_of_timeouts_that_a_reply_ends_opens_no_circuit_and_spares_no_retry() -> None:
+    asyncio.run(collect_through_a_streak_a_reply_ends())
 
 
 async def collect_with_a_missing_model() -> None:

@@ -52,6 +52,14 @@ def test_values_equal_up_to_float_rounding_have_zero_spread() -> None:
     assert zero_mean_p_value(values) == 0.0
 
 
+def test_rounding_residue_around_zero_is_a_zero_mean_with_zero_spread() -> None:
+    values = (1e-17, 0.0, 0.0)
+
+    assert mean_interval(values, level=0.95) == (0.0, 0.0, 0.0)
+    assert standardized_mean(values) is None
+    assert zero_mean_p_value(values) == 1.0
+
+
 def test_a_single_value_has_no_t_statistic() -> None:
     with pytest.raises(TooFewValues, match="at least 2 values, not 1"):
         mean_interval((0.5,), level=0.95)

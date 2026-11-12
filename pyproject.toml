@@ -64,9 +64,19 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
-# mutation testing covers the statistics and the claim gates; run with make mutate
+# mutation testing covers the statistics, the scoring, and the claim gates; run with make mutate.
+# domain/pooling.py is left out until its 21 surviving mutants are judged one by one
 [tool.mutmut]
-source_paths = ["src/compass_bench/domain/stats/", "src/compass_bench/domain/claims.py"]
+source_paths = [
+    "src/compass_bench/domain/stats/",
+    "src/compass_bench/domain/claims.py",
+    "src/compass_bench/domain/inference.py",
+    "src/compass_bench/domain/missing.py",
+    "src/compass_bench/domain/scoring.py",
+    "src/compass_bench/domain/consistency.py",
+    "src/compass_bench/domain/robustness.py",
+    "src/compass_bench/domain/profile.py",
+]
 pytest_add_cli_args_test_selection = ["tests/"]
 also_copy = ["src/", "scripts/", "schema/", "audits/", "docs/", "README.md", "METHODOLOGY.md", "version.lock.json"]
 

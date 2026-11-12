@@ -1,3 +1,4 @@
+import math
 from statistics import fmean, stdev
 
 import pytest
@@ -12,9 +13,14 @@ from compass_bench.domain.inference import (
     NotEstimable,
     axis_position,
     estimate,
+    family_detectable,
+    gap_d_z,
     opposed_gaps,
     pair_axes,
     paired_gaps,
+    power_at_zero_gap,
+    raw_equivalence_p_value,
+    raw_p_value,
 )
 from compass_bench.domain.stats.correlation import pearson
 from compass_bench.domain.stats.student_t import equivalence_p_value, zero_mean_p_value
@@ -41,6 +47,23 @@ def test_a_position_holds_jointly_across_both_axes_and_one_question_is_not_estim
 
     assert isinstance(x.estimate, Bounded) and x.estimate.level == pytest.approx(0.975)
     assert y.estimate == NotEstimable(kind=EstimateKind.NOT_ESTIMABLE, questions=1)
+
+
+def test_two_gaps_are_enough_for_every_figure_of_a_pair() -> None:
+    # gaps 0.2 and 0.4: mean 0.3, standard error 0.1, and one degree of freedom, where Student's t is the Cauchy
+    # distribution, whose upper tail beyond t is 1/2 - atan(t)/pi and whose quantile at q is tan(pi (q - 1/2))
+    gaps = (0.2, 0.4)
+
+    assert gap_d_z(gaps) == pytest.approx(3 / math.sqrt(2))
+    assert opposed_gaps(gaps) == 0
+    assert raw_p_value(gaps) == pytest.approx(1 - 2 * math.atan(3) / math.pi)
+    # the one-sided tests sit at t = 4 and t = 2; the upper one decides
+    assert raw_equivalence_p_value(gaps, 0.1) == pytest.approx(0.5 + math.atan(2) / math.pi)
+    # the critical value tan(0.45 pi) = 6.3 lies far above a noncentrality of 1, so the power is floored at 0
+    assert power_at_zero_gap(gaps, 0.1, 0.95) == 0.0
+    # a family of 2 tests each gap at alpha / 2: the 0.9875 and 0.8 quantiles, times the standard error
+    detectable = (math.tan(0.4875 * math.pi) + math.tan(0.3 * math.pi)) * 0.1
+    assert family_detectable(gaps, 0.95, 2) == pytest.approx(detectable)
 
 
 def test_pairs_come_in_model_id_order_and_an_untestable_gap_enters_holm_at_one() -> None:

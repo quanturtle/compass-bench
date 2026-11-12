@@ -11,7 +11,9 @@ from compass_bench.domain.missing import (
     Bound,
     DroppedQuestion,
     axis_unanswered,
+    clears_negative,
     clears_positive,
+    crossing_fills,
     filled_scores,
     fills,
     gap_bound,
@@ -132,6 +134,44 @@ def test_fills_that_widen_the_interval_across_zero_are_reported_apart_from_the_f
 
     assert result.flip == pytest.approx(0.05)
     assert result.widening_flip == pytest.approx(0.6)
+
+
+def test_a_negative_interval_is_tried_at_every_fill_from_the_high_end_down() -> None:
+    # the mirror of the case above: three questions score -0.25 and the fourth scores the fill
+    records = (
+        *(rated_record("model", question, Polarity.POSITIVE, 3) for question in ("x-00", "x-01", "x-02")),
+        *(rated_record("model", question, Polarity.NEGATIVE, 4) for question in ("x-00", "x-01", "x-02")),
+        *(pending_record("model", "x-03", polarity) for polarity in Polarity),
+    )
+
+    result = unanswered_on("model", records)
+
+    assert result.flip == pytest.approx(-0.05)
+    assert result.widening_flip == pytest.approx(-0.6)
+
+
+def test_the_fills_run_from_the_lowest_score_to_the_highest_in_equal_steps() -> None:
+    assert len(fills()) == 41
+    assert (fills()[0], fills()[-1]) == (-1.0, 1.0)
+    assert fills()[1] - fills()[0] == pytest.approx(0.05)
+
+
+def test_an_interval_that_ends_at_zero_clears_neither_side() -> None:
+    at_zero = {QuestionId("x-00"): 0.0, QuestionId("x-01"): 0.0}
+
+    assert not clears_positive(at_zero, LEVEL)
+    assert not clears_negative(at_zero, LEVEL)
+
+
+def test_the_crossing_fills_are_the_end_of_the_failing_run_and_the_first_failure_after_a_clearing_fill() -> None:
+    ordered = (-1.0, 0.0, 1.0)
+
+    # no fill clears: every fill up to the last breaks the claim
+    assert crossing_fills(ordered, (False, False, False)) == (1.0, None)
+    # the first fill clears: nothing pulls the interval to 0, and the last fill widens it across
+    assert crossing_fills(ordered, (True, True, False)) == (None, 1.0)
+    # only the first fill fails
+    assert crossing_fills(ordered, (False, True, True)) == (-1.0, None)
 
 
 def test_the_flip_is_undefined_when_the_interval_contains_zero_as_it_stands() -> None:

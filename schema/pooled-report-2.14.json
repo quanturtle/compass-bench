@@ -495,6 +495,89 @@
       "title": "AxisPair[Union[OrderingRobustness, NoneType]]",
       "type": "object"
     },
+    "AxisPair_Union_RunReliability__NoneType__": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RunReliability"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "y": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RunReliability"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[Union[RunReliability, NoneType]]",
+      "type": "object"
+    },
+    "AxisPair_Union_float__NoneType__": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "X"
+        },
+        "y": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Y"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[Union[float, NoneType]]",
+      "type": "object"
+    },
+    "AxisPair_bool_": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "title": "X",
+          "type": "boolean"
+        },
+        "y": {
+          "title": "Y",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "AxisPair[bool]",
+      "type": "object"
+    },
     "AxisPosition": {
       "additionalProperties": false,
       "description": "A model on one axis: the mean of its question scores, and the share of its trials there that were answered.",
@@ -2036,6 +2119,66 @@
       "title": "PolarityPair[str]",
       "type": "object"
     },
+    "PooledModel": {
+      "additionalProperties": false,
+      "description": "A model of the pool, the runs its answers come from, in creation order, and how alike its question scores\ncame out across them; `reliability` is None on an axis for a model asked in one run.\n\n`scale_reference` reads a forced-choice pool's model against its native-scale pool; None on a native pool or\nwhen the model has no native-scale pool of the same questionnaire, settings, and system prompt.",
+      "properties": {
+        "model": {
+          "title": "Model",
+          "type": "string"
+        },
+        "runs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Runs",
+          "type": "array"
+        },
+        "reliability": {
+          "$ref": "#/$defs/AxisPair_Union_RunReliability__NoneType__"
+        },
+        "scale_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ScaleReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "model",
+        "runs",
+        "reliability",
+        "scale_reference"
+      ],
+      "title": "PooledModel",
+      "type": "object"
+    },
+    "PooledRun": {
+      "additionalProperties": false,
+      "description": "A run of the pool, the experiment it ran, and its endpoint settings.",
+      "properties": {
+        "run": {
+          "$ref": "#/$defs/RunRecord"
+        },
+        "experiment": {
+          "$ref": "#/$defs/ExperimentSpec"
+        },
+        "endpoints": {
+          "$ref": "#/$defs/Endpoints"
+        }
+      },
+      "required": [
+        "run",
+        "experiment",
+        "endpoints"
+      ],
+      "title": "PooledRun",
+      "type": "object"
+    },
     "Price": {
       "additionalProperties": false,
       "properties": {
@@ -2279,6 +2422,17 @@
       "title": "ReasoningEffort",
       "type": "string"
     },
+    "ReliabilityBand": {
+      "description": "Koo and Li's (2016) bands: below 0.5, 0.5 to 0.75, 0.75 to 0.9, and above 0.9. They read an absolute-agreement\nICC's 95% interval on them; the point estimate of the consistency form is read here.",
+      "enum": [
+        "poor",
+        "moderate",
+        "good",
+        "excellent"
+      ],
+      "title": "ReliabilityBand",
+      "type": "string"
+    },
     "ReportStatus": {
       "enum": [
         "exploratory",
@@ -2361,6 +2515,35 @@
       "title": "RunRecord",
       "type": "object"
     },
+    "RunReliability": {
+      "additionalProperties": false,
+      "description": "How alike a model's question scores on one axis come out across its runs of the pool.\n\n`icc` is ICC(3,1) over the questions every run scored, with the runs as the repeated measures: 1 when the\nruns order the questions alike and differ by at most a shift, 0 when they agree no more than chance, below 0\nwhen they disagree. `band` reads the point estimate on Koo and Li's (2016) bands, which they apply to an\nabsolute-agreement ICC's 95% interval. It needs two scored questions and two runs.",
+      "properties": {
+        "icc": {
+          "title": "Icc",
+          "type": "number"
+        },
+        "band": {
+          "$ref": "#/$defs/ReliabilityBand"
+        },
+        "questions": {
+          "title": "Questions",
+          "type": "integer"
+        },
+        "runs": {
+          "title": "Runs",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "icc",
+        "band",
+        "questions",
+        "runs"
+      ],
+      "title": "RunReliability",
+      "type": "object"
+    },
     "Sampling": {
       "additionalProperties": false,
       "description": "No sampling seed: one fixed seed would let a provider return the same reply for every repetition.",
@@ -2426,6 +2609,29 @@
       ],
       "title": "ScaleChoice",
       "type": "string"
+    },
+    "ScaleReference": {
+      "additionalProperties": false,
+      "description": "A forced-choice pool's model read against the same model's native-scale pool.\n\n`midpoint_share` is the share of the model's native-scale answers at the midpoint, per axis; `forced_not_held`\nis whether that share reaches MIDPOINT_SHARE_FLOOR, so the forced-choice position comes from answers the\nmidpoint would have absorbed. Both are None or False on an axis the native pool did not score.",
+      "properties": {
+        "native_pool": {
+          "title": "Native Pool",
+          "type": "string"
+        },
+        "midpoint_share": {
+          "$ref": "#/$defs/AxisPair_Union_float__NoneType__"
+        },
+        "forced_not_held": {
+          "$ref": "#/$defs/AxisPair_bool_"
+        }
+      },
+      "required": [
+        "native_pool",
+        "midpoint_share",
+        "forced_not_held"
+      ],
+      "title": "ScaleReference",
+      "type": "object"
     },
     "ScaleUse": {
       "additionalProperties": false,
@@ -2676,7 +2882,7 @@
     "Version": {
       "description": "The version a report document carries; reports are derived on demand, so only the current one exists.",
       "enum": [
-        "2.13"
+        "2.14"
       ],
       "title": "Version",
       "type": "string"
@@ -2708,7 +2914,7 @@
     }
   },
   "additionalProperties": false,
-  "description": "`run` is the run the report derives from; the document is built on demand and stored nowhere.\n\n`status` is confirmatory only when the stored spec names a preregistration. `endpoints` are the run's endpoint\nsettings as stored, by the ids `experiment.models` name. `elicitations` say for each pair of models which\nelicitation fields differ between them. `findings` are the warnings the run's model listings raise: a missing\nlisting, a sent parameter the pinned host does not list, or a slug listed shortly before the run.",
+  "description": "One questionnaire's report over every run of a pool: same scale, same analysis settings.\n\nEach model's answers from all its runs pool per question; built on demand and stored nowhere. `status` is\nconfirmatory only when every run names a preregistration. `elicitations` compare each pair of the pool's\nmodels under the settings of the first run that asked each.",
   "properties": {
     "version": {
       "$ref": "#/$defs/Version"
@@ -2716,17 +2922,43 @@
     "status": {
       "$ref": "#/$defs/ReportStatus"
     },
-    "run": {
-      "$ref": "#/$defs/RunRecord"
+    "pool": {
+      "title": "Pool",
+      "type": "string"
     },
     "questionnaire": {
       "$ref": "#/$defs/Questionnaire"
     },
-    "experiment": {
-      "$ref": "#/$defs/ExperimentSpec"
+    "scale": {
+      "$ref": "#/$defs/ScaleChoice"
     },
-    "endpoints": {
-      "$ref": "#/$defs/Endpoints"
+    "analysis": {
+      "$ref": "#/$defs/AnalysisSettings"
+    },
+    "system_prompt": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "System Prompt"
+    },
+    "runs": {
+      "items": {
+        "$ref": "#/$defs/PooledRun"
+      },
+      "title": "Runs",
+      "type": "array"
+    },
+    "models": {
+      "items": {
+        "$ref": "#/$defs/PooledModel"
+      },
+      "title": "Models",
+      "type": "array"
     },
     "elicitations": {
       "items": {
@@ -2749,14 +2981,17 @@
   "required": [
     "version",
     "status",
-    "run",
+    "pool",
     "questionnaire",
-    "experiment",
-    "endpoints",
+    "scale",
+    "analysis",
+    "system_prompt",
+    "runs",
+    "models",
     "elicitations",
     "result",
     "findings"
   ],
-  "title": "ReportDocument",
+  "title": "PooledReportDocument",
   "type": "object"
 }

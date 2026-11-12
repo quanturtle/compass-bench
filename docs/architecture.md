@@ -365,7 +365,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
 | `pool <questionnaire> [--out DIR]` | Pool every run that asked the questionnaire file's questionnaire, one pool per scale and analysis settings, and print each pool's report as text; with `--out`, write each as JSON. No run prints one line and exits 0 |
 | `db migrate` | Run Alembic to head |
 
-`cli.execute` turns a known failure into one stderr line and an exit code. An invalid input exits with the invalid-input code: an experiment or source file, a missing setting, a database URL that does not parse, an unknown run, or an output directory that cannot be written. A database error, such as an unreachable server, exits `FAILED` with the first line of the driver's message.
+`cli.execute` turns a known failure into one stderr line and an exit code. An invalid input exits with the invalid-input code: an experiment or source file, a missing setting, a database URL that does not parse, an unknown run, or an output directory that cannot be written. A database error, such as an unreachable server, exits `FAILED` with the first line of the driver's message. A database error raised while collecting arrives wrapped by the collector's task group; it prints the same line and exits with the resumable code, since the ledger holds what was recorded and `resume` asks the attempts left without a result again.
 
 ## Call paths
 

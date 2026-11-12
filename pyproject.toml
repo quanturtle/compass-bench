@@ -76,6 +76,7 @@ source_paths = [
     "src/compass_bench/domain/consistency.py",
     "src/compass_bench/domain/robustness.py",
     "src/compass_bench/domain/profile.py",
+    "src/compass_bench/domain/pooling.py",
 ]
 pytest_add_cli_args_test_selection = ["tests/"]
 also_copy = ["src/", "scripts/", "schema/", "audits/", "docs/", "README.md", "METHODOLOGY.md", "version.lock.json"]

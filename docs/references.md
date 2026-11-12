@@ -60,6 +60,7 @@ This list covers every work cited in METHODOLOGY.md, docs/questionnaire.md, docs
 - **Röttger et al., ACL 2024**: cited in earlier versions for models reproducing test items from memory. The paper does not discuss memorization; it is now cited only for forced and unforced answers and paraphrases.
 - **Liu, Panwang & Gu, 2025**: earlier versions gave the size of the shift in compass units. The full text could not be read, so the sentence now states only what the abstract does.
 - **Ahn et al., 2026**: v2 (November 2026) changed the title; earlier versions of this file listed "Item-Mean Surrogates: Why Richer Persona Data Fail to Improve LLMs as Human Surrogates".
+- **Akimitsu, 2026**: the paper is about an economics exam; it is cited for its appendix on temperature, which reports that OpenRouter accepted `temperature` for OpenAI reasoning models that do not support it.
 - **Gao, Liang & Guestrin, ICLR 2025**: the venue is taken from the arXiv listing's comment, "ICLR 2025 Camera-Ready".
 - **Helwe, Balalau & Ceolin, ACL 2025** and **Han, Song, Lee & Jo, EACL 2026**: both are in the Findings volumes, not the main proceedings.
 - **Kreutner et al., 2025**: the arXiv preprint is December 2025; the published version is EACL 2026 System Demonstrations.

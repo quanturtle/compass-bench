@@ -2,7 +2,7 @@
 
 Commit a copy of this file, filled in, before a paid run. The commit that `run` records as the code revision then carries the plan, dated by git, before any reply was seen. Preregistering the prompts, decoding settings, output format, and hypotheses blocks most of the choices that would otherwise be made after looking at the results (Thomas, Gligoric & Shah, 2026; listed in `references.md`).
 
-Copy it to `docs/preregistrations/<experiment>-<date>.md`, fill in every field, and set the experiment file's `preregistration` to the copy's path relative to the experiment file. `plan` and `run` refuse a path that names no file, and a report of the run then reads "confirmatory"; without the field it reads "exploratory".
+Copy it to `docs/preregistrations/<experiment>-<date>.md`, fill in every field, and set the experiment file's `preregistration` to the copy's path relative to the experiment file. `plan` and `run` refuse a path that names no file, and a file that git's HEAD commit does not hold exactly as it is on disk: untracked, staged only, or edited since its commit. A report of the run then reads "confirmatory"; without the field it reads "exploratory". The check covers the file at the moment of `plan` and `run`; that the commit predates every reply is read from the git history and the run's recorded code revision, which nothing verifies afterwards.
 
 A data migration can rewrite a stored experiment and move it to a new hash, as revisions 0006 and 0011 did, so the hash `plan` printed can stop matching the one `runs show` prints. Record the questionnaire hash as well, and read the current experiment hash from `runs show` when checking a plan against its run.
 

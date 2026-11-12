@@ -620,7 +620,7 @@
     },
     "AxisUnanswered": {
       "additionalProperties": false,
-      "description": "One model's unanswered trials on one axis: how many, how many declined toward each pole, the questions\nthey drop from the position, the bound they leave on it, and the fill that would flip its side of 0.\n\n`flip` is the fill at which the interval stops clearing 0 on the side it clears with the answers given: for an\ninterval above 0, the highest tried fill at which it no longer lies above 0; for one below 0, the lowest at\nwhich it no longer lies below. None when the interval contains 0 as it stands, when no tried fill moves it\nacross, or when nothing is unanswered. `bound` is None when no question on the axis can be scored.",
+      "description": "One model's unanswered trials on one axis: how many, how many declined toward each pole, the questions\nthey drop from the position, the bound they leave on it, and the fills that would flip its side of 0.\n\n`flip` is the fill that pulls the interval to 0 from the side it clears with the answers given: for an interval\nabove 0, every tried fill at or below it leaves the interval no longer above 0; for one below 0, every fill at\nor above it. `widening_flip` is the nearest fill on the interval's own side that also stops it clearing 0,\nbecause a fill far from the other scores widens the interval. Each is None when no tried fill does so, when\nthe interval contains 0 as it stands, or when nothing is unanswered. `bound` is None when no question on the\naxis can be scored.",
       "properties": {
         "trials": {
           "title": "Trials",
@@ -656,6 +656,17 @@
             }
           ],
           "title": "Flip"
+        },
+        "widening_flip": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Widening Flip"
         }
       },
       "required": [
@@ -663,7 +674,8 @@
         "declined",
         "dropped",
         "bound",
-        "flip"
+        "flip",
+        "widening_flip"
       ],
       "title": "AxisUnanswered",
       "type": "object"
@@ -1203,7 +1215,8 @@
         "runs_far_apart",
         "mixed_elicitations",
         "mixed_routing",
-        "preregistration_missing"
+        "preregistration_missing",
+        "preregistration_uncommitted"
       ],
       "title": "FindingCode",
       "type": "string"
@@ -2869,7 +2882,7 @@
     "Version": {
       "description": "The version a report document carries; reports are derived on demand, so only the current one exists.",
       "enum": [
-        "2.11"
+        "2.12"
       ],
       "title": "Version",
       "type": "string"

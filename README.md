@@ -31,7 +31,7 @@ uv sync
    uv run compass-bench db migrate
    ```
 
-3. Write down what you expect before you pay: copy `docs/preregistration.md`, fill it in, commit it, and name it in the experiment file's `preregistration` field. The run records the commit it ran from, so the plan is dated before any reply was seen, and its report reads "confirmatory". A run without one reads "exploratory".
+3. Write down what you expect before you pay: copy `docs/preregistration.md`, fill it in, commit it, and name it in the experiment file's `preregistration` field. `plan` and `run` refuse a named file that is not committed as it stands. The run records the commit it ran from, so the plan is dated before any reply was seen, and its report reads "confirmatory". A run without one reads "exploratory".
 
 4. Run the experiment under a spending cap. The run id prints first:
 

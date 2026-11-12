@@ -157,15 +157,25 @@ def pinning_findings(endpoints: Mapping[EndpointId, EndpointSettings]) -> tuple[
 
 
 def preregistration_findings(path: PurePath, preregistration: str | None, sources: SourceReader) -> tuple[Finding, ...]:
-    """An error when the experiment names a preregistration file that is not there, relative to the experiment."""
-    if preregistration is None or sources.exists(path.parent / preregistration):
+    """An error when the experiment names a preregistration file, relative to the experiment, that is not there
+    or that version control does not hold as it stands."""
+    if preregistration is None:
         return ()
-    return (
-        model_error(
-            FindingCode.PREREGISTRATION_MISSING,
-            f"preregistration {preregistration!r} is not a file beside the experiment; commit it before the run",
-        ),
-    )
+    if not sources.exists(path.parent / preregistration):
+        return (
+            model_error(
+                FindingCode.PREREGISTRATION_MISSING,
+                f"preregistration {preregistration!r} is not a file beside the experiment; commit it before the run",
+            ),
+        )
+    if not sources.is_committed(path.parent / preregistration):
+        return (
+            model_error(
+                FindingCode.PREREGISTRATION_UNCOMMITTED,
+                f"preregistration {preregistration!r} is not committed as it stands; commit it before the run",
+            ),
+        )
+    return ()
 
 
 def spec_design(design: DesignFile) -> Design:

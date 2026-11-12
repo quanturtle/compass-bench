@@ -48,7 +48,7 @@ from compass_bench.ports.ledger_store import RunLocked, UnknownRun
 from compass_bench.ports.listings import ModelListings
 from compass_bench.ports.sources import InvalidSource
 from compass_bench.ports.transport import Transport
-from compass_bench.settings import MissingSetting, Settings, load_api_keys, load_settings
+from compass_bench.settings import MissingSetting, Settings, is_committed, load_api_keys, load_settings
 
 NONCE_BYTES: Final = 16
 PROGRESS_LOGGER: Final = "compass_bench.progress"
@@ -220,8 +220,8 @@ def parse_command(argv: Sequence[str]) -> Command:
 
 
 def source_files() -> SourceFiles:
-    """Relative input paths resolve against the working directory."""
-    return SourceFiles(Path.cwd())
+    """Relative input paths resolve against the working directory; git says which files are committed."""
+    return SourceFiles(Path.cwd(), is_committed)
 
 
 def run_plan(command: PlanCommand) -> ExitCode:

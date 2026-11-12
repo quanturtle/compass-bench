@@ -5,7 +5,7 @@ from typing import Final
 
 import pytest
 
-from compass_bench.settings import CODE_REVISION_VARIABLE, PACKAGE_NAME, code_revision
+from compass_bench.settings import CODE_REVISION_VARIABLE, PACKAGE_NAME, code_revision, is_committed
 
 GIT_IDENTITY: Final = ("-c", "user.name=Jane Doe", "-c", "user.email=user@example.com", "-c", "commit.gpgsign=false")
 
@@ -53,6 +53,25 @@ def test_a_change_outside_the_package_leaves_the_commit_clean(tmp_path: Path) ->
     (tmp_path / "README.md").write_text("notes\n")
 
     assert code_revision({}, package) == git(tmp_path, "rev-parse", "--short", "HEAD")
+
+
+def test_a_file_is_committed_only_when_the_head_commit_holds_it_as_it_is_on_disk(tmp_path: Path) -> None:
+    package = committed_package(tmp_path)
+    (package / "staged.md").write_text("plan\n")
+    git(tmp_path, "add", "package/staged.md")
+    (package / "untracked.md").write_text("plan\n")
+
+    assert is_committed(package / "__init__.py")
+    assert not is_committed(package / "staged.md")
+    assert not is_committed(package / "untracked.md")
+    (package / "__init__.py").write_text("x = 1\n")
+    assert not is_committed(package / "__init__.py")
+
+
+def test_outside_a_checkout_no_file_is_committed(tmp_path: Path) -> None:
+    (tmp_path / "plan.md").write_text("plan\n")
+
+    assert not is_committed(tmp_path / "plan.md")
 
 
 def test_an_ignored_copy_in_a_checkout_gives_the_package_version(tmp_path: Path) -> None:

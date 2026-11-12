@@ -47,18 +47,21 @@ class Bound(Value):
 
 class AxisUnanswered(Value):
     """One model's unanswered trials on one axis: how many, how many declined toward each pole, the questions
-    they drop from the position, the bound they leave on it, and the fill that would flip its side of 0.
+    they drop from the position, the bound they leave on it, and the fills that would flip its side of 0.
 
-    `flip` is the fill at which the interval stops clearing 0 on the side it clears with the answers given: for an
-    interval above 0, the highest tried fill at which it no longer lies above 0; for one below 0, the lowest at
-    which it no longer lies below. None when the interval contains 0 as it stands, when no tried fill moves it
-    across, or when nothing is unanswered. `bound` is None when no question on the axis can be scored."""
+    `flip` is the fill that pulls the interval to 0 from the side it clears with the answers given: for an interval
+    above 0, every tried fill at or below it leaves the interval no longer above 0; for one below 0, every fill at
+    or above it. `widening_flip` is the nearest fill on the interval's own side that also stops it clearing 0,
+    because a fill far from the other scores widens the interval. Each is None when no tried fill does so, when
+    the interval contains 0 as it stands, or when nothing is unanswered. `bound` is None when no question on the
+    axis can be scored."""
 
     trials: int
     declined: PolarityPair[int]
     dropped: tuple[DroppedQuestion, ...]
     bound: Bound | None
     flip: float | None
+    widening_flip: float | None
 
 
 def is_unanswered(record: TrialRecord) -> bool:
@@ -144,33 +147,38 @@ def clears_negative(scores: Mapping[QuestionId, float], level: float) -> bool:
     return isinstance(bounded, Bounded) and bounded.high < 0
 
 
-def flip_fill(
+def crossing_fills(toward_own_side: Sequence[float], clearing: Sequence[bool]) -> tuple[float | None, float | None]:
+    """(flip, widening_flip) over fills ordered from the far side of 0 to the interval's own, each clearing or not:
+    the last fill of the failing run they start with, and the first failing fill after one that clears."""
+    if not any(clearing):
+        return toward_own_side[-1], None
+    first = clearing.index(True)
+    flip = toward_own_side[first - 1] if first > 0 else None
+    later = zip(toward_own_side[first:], clearing[first:], strict=True)
+    return flip, next((fill for fill, clears in later if not clears), None)
+
+
+def flip_fills(
     model: ModelId,
     axis: AxisKey,
     values: Mapping[PhrasingKey, Sequence[float]],
     unanswered: Sequence[TrialRecord],
     questionnaire: Questionnaire,
     level: float,
-) -> float | None:
-    """AxisUnanswered.flip: `unanswered` are the model's own on the axis, `level` the position interval's."""
+) -> tuple[float | None, float | None]:
+    """AxisUnanswered's (flip, widening_flip): `unanswered` are the model's own on the axis, `level` the
+    position interval's."""
     if not unanswered:
-        return None
+        return None, None
     given = filled_scores(model, axis, values, (), questionnaire, LOW_FILL)
     if clears_positive(given, level):
-        failing = [
-            fill
-            for fill in fills()
-            if not clears_positive(filled_scores(model, axis, values, unanswered, questionnaire, fill), level)
-        ]
-        return max(failing) if failing else None
-    if clears_negative(given, level):
-        failing = [
-            fill
-            for fill in fills()
-            if not clears_negative(filled_scores(model, axis, values, unanswered, questionnaire, fill), level)
-        ]
-        return min(failing) if failing else None
-    return None
+        ordered, clears = fills(), clears_positive
+    elif clears_negative(given, level):
+        ordered, clears = fills()[::-1], clears_negative
+    else:
+        return None, None
+    clearing = [clears(filled_scores(model, axis, values, unanswered, questionnaire, fill), level) for fill in ordered]
+    return crossing_fills(ordered, clearing)
 
 
 def axis_unanswered(
@@ -188,6 +196,7 @@ def axis_unanswered(
     per_question = Counter(record.trial.question for record in unanswered)
     scored = {score.question for score in scores if score.axis is axis}
     asked = {record.trial.question for record in records if record.trial.model == model}
+    flip, widening_flip = flip_fills(model, axis, values, unanswered, questionnaire, level)
     return AxisUnanswered(
         trials=len(unanswered),
         declined=PolarityPair(negative=declined[Polarity.NEGATIVE], positive=declined[Polarity.POSITIVE]),
@@ -197,7 +206,8 @@ def axis_unanswered(
             if question.id in asked and question.id not in scored
         ),
         bound=position_bound(model, axis, values, unanswered, questionnaire),
-        flip=flip_fill(model, axis, values, unanswered, questionnaire, level),
+        flip=flip,
+        widening_flip=widening_flip,
     )
 
 

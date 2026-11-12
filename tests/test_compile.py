@@ -174,6 +174,17 @@ def test_a_named_preregistration_must_be_a_file_beside_the_experiment() -> None:
     assert compile_experiment(EXPERIMENT_PATH, FakeSources(documents)).spec.preregistration is None
 
 
+def test_a_named_preregistration_must_be_committed_as_it_stands() -> None:
+    questionnaire = build_questionnaire(questions_per_axis(10), FIVE_POINT_LABELS)
+    plan = EXPERIMENT_PATH.parent / "../preregistrations/plan.md"
+    experiment = {**experiment_document(models=("free",)), "preregistration": "../preregistrations/plan.md"}
+    documents = {**experiment_documents(questionnaire, models=("free",)), EXPERIMENT_PATH: experiment, plan: {}}
+
+    findings = compile_experiment(EXPERIMENT_PATH, FakeSources(documents, uncommitted=frozenset({plan}))).findings
+
+    assert [(f.severity, f.code) for f in findings] == [(Severity.ERROR, FindingCode.PREREGISTRATION_UNCOMMITTED)]
+
+
 def test_an_experiment_without_models_is_a_finding() -> None:
     questionnaire = build_questionnaire(questions_per_axis(10), FIVE_POINT_LABELS)
     sources = FakeSources(experiment_documents(questionnaire, models=()))

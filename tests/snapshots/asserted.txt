@@ -1,5 +1,5 @@
 compass-bench report: example, run 25b9561af5f3
-status: exploratory; no preregistration is recorded, and the claim rules are those of compass-bench 2.11
+status: exploratory; no preregistration is recorded, and the claim rules are those of compass-bench 2.12
 questionnaire: Example compass, by Jane Doe
 axis x economic: from left (-1) to right (+1)
 axis y social: from libertarian (-1) to authoritarian (+1)
@@ -123,7 +123,7 @@ Provenance
   run 25b9561af5f3, created 2026-01-01T00:00:00+00:00, code revision example
   experiment hash a0bbe3967a6360b6a5342180171943c34deaca518ade47544ff19565029999e8
   questionnaire hash dc181f860453a4ffccd5ae0454001975693db38ef9134c0c1aea2a45410db130
-  compass-bench 2.11
+  compass-bench 2.12
   alpha: listed 2025-10-03; host 'Example' supports temperature, top_p, max_tokens, reasoning, response_format
   beta: listed 2025-10-03; host 'Example' supports temperature, top_p, max_tokens, reasoning, response_format
   warnings:

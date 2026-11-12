@@ -8,7 +8,7 @@ from statistics import fmean, stdev
 from typing import Final
 
 from compass_bench.domain.axis_pair import AxisKey, AxisPair
-from compass_bench.domain.ids import ModelId, QuestionId
+from compass_bench.domain.ids import ModelId
 from compass_bench.domain.instrument.questionnaire import Questionnaire, questions_on
 from compass_bench.domain.instrument.scale import CanonicalRating, Scale, center, points
 from compass_bench.domain.outcome import TrialRecord
@@ -198,7 +198,3 @@ def scale_use(first: RatingProfile, second: RatingProfile) -> ScaleUse:
     defined = [sd for sd in sds if sd is not None and sd > 0]
     differs = len(defined) == 2 and max(defined) >= SCALE_USE_RATIO * min(defined)
     return ScaleUse(sd_first=sds[0], sd_second=sds[1], differs=differs)
-
-
-def question_ids(questionnaire: Questionnaire, axis: AxisKey) -> tuple[QuestionId, ...]:
-    return tuple(question.id for question in questions_on(questionnaire, axis))

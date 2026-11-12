@@ -1,5 +1,7 @@
 """The response profile: use of the scale, the split of question scores, and statement agreement."""
 
+import math
+
 import pytest
 
 from compass_bench.domain.axis_pair import AxisKey, Polarity
@@ -85,6 +87,25 @@ def test_scale_use_differs_when_one_rating_spread_is_one_and_a_half_times_the_ot
     assert scale_use(narrow, middling).differs is False
     assert scale_use(narrow, rating_profile(ratings(3), FIVE)).differs is False
     assert scale_use(narrow, rating_profile(ratings(3, 3, 3), FIVE)).differs is False
+
+
+def test_scale_use_differs_at_exactly_one_and_a_half_times_the_spread() -> None:
+    narrow = RatingProfile(answered=4, shares=(0.0,) * 5, midpoint_share=0.0, ends_share=0.0, rating_sd=1.0)
+    broad = narrow.model_copy(update={"rating_sd": 1.5})
+
+    assert scale_use(narrow, broad).differs is True
+
+
+def test_two_answers_have_a_rating_spread() -> None:
+    # ratings 2 and 4 lie 1 from their mean: the sample standard deviation is the square root of 2
+    assert rating_profile(ratings(2, 4), FIVE).rating_sd == pytest.approx(math.sqrt(2))
+
+
+def test_two_scores_are_both_farthest_from_their_position() -> None:
+    # two scores lie equally far from their mean, so both are named, in questionnaire order
+    farthest = score_split(scores_on(AxisKey.X, (0.25, 0.75)), (), AxisKey.X).farthest
+
+    assert [score.question for score in farthest] == ["x-00", "x-01"]
 
 
 def test_the_facet_balanced_position_is_undefined_while_a_facet_of_the_axis_is_unscored() -> None:

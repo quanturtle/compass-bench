@@ -264,7 +264,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
   - Each endpoint's ready trials are a heap on schedule position, so dispatch follows round order.
   - The collector owns the dispatch queue of pending trials, the circuits, and the `BudgetLedger`.
   - A worker reserves and settles its attempt's cost through the `BudgetLedger`. The collector updates the dispatch queue and the circuits from the worker's report.
-- **Retries.** A retry is a new attempt, so it appears in cost and counts. It is re-queued with a delay, the longer of its backoff and the `Retry-After` the transport returns on `Exchange`. The backoff doubles from 1 s, or from 10 s after a rate limit so that the bundled `max_retries: 3` waits 10, 20 and 40 s, 70 s in all, past a per-minute window; it is capped at 60 s. A retry never sleeps in a worker slot.
+- **Retries.** A retry is a new attempt, so it appears in cost and counts. It is re-queued with a delay, the longer of its backoff and the `Retry-After` the transport returns on `Exchange`. A `Retry-After` that is not a finite number of seconds counts as absent, and one above `RETRY_AFTER_MAX_SECONDS` (300) waits that long. The backoff doubles from 1 s, or from 10 s after a rate limit so that the bundled `max_retries: 3` waits 10, 20 and 40 s, 70 s in all, past a per-minute window; it is capped at 60 s. A retry never sleeps in a worker slot.
 - **Errors.**
   - A per-request 400, 422, or moderation 403 ends that trial as `Lost(request_rejected)`. The model keeps running.
   - A 401, 402, or any other 403, or `CIRCUIT_FAILURE_LIMIT` (5) consecutive retryable failures, opens the endpoint's circuit. Its trials stay pending and resume after the fix.

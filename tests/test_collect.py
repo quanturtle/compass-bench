@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from compass_bench.app.collect import PromptsChanged, collect, retry_delay, start_run
+from compass_bench.app.collect import RETRY_AFTER_MAX_SECONDS, PromptsChanged, collect, retry_delay, start_run
 from compass_bench.domain.ledger import Finished, Orphaned, TransportError
 from compass_bench.domain.outcome import LossReason, Lost, Pending, Replied, TrialOutcome, TrialOutcomeKind
 from compass_bench.domain.run import CollectionEnd, RunEventKind
@@ -181,3 +181,8 @@ def test_the_retry_delay_doubles_from_one_second_or_ten_after_a_rate_limit_unles
     assert retry_delay(0, 7.0, rate_limited=False) == 7.0
     assert retry_delay(0, 7.0, rate_limited=True) == 10.0
     assert retry_delay(9, None, rate_limited=True) == 60.0
+
+
+def test_a_retry_after_longer_than_the_cap_waits_the_cap() -> None:
+    assert retry_delay(0, 86400.0, rate_limited=True) == RETRY_AFTER_MAX_SECONDS
+    assert retry_delay(0, RETRY_AFTER_MAX_SECONDS - 1.0, rate_limited=False) == RETRY_AFTER_MAX_SECONDS - 1.0

@@ -98,6 +98,16 @@ def test_a_rate_limit_is_a_failed_result_carrying_its_retry_after() -> None:
     )
 
 
+@pytest.mark.parametrize("header", ["inf", "1e999", "nan"])
+def test_a_retry_after_that_is_not_a_finite_number_counts_as_absent(header: str) -> None:
+    body = {"error": {"code": 429, "message": "slow down"}}
+    transport = mocked_transport(lambda request: httpx.Response(429, json=body, headers={"Retry-After": header}))
+
+    exchange = asyncio.run(transport.send({"model": "vendor/model"}))
+
+    assert exchange.retry_after_seconds is None
+
+
 def test_a_connection_error_is_a_failed_result_not_an_exception() -> None:
     exchange = asyncio.run(mocked_transport(refuse_connection).send({"model": "vendor/model"}))
 

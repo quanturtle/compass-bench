@@ -16,8 +16,9 @@ from types import MappingProxyType
 from typing import Final
 
 import httpx
+from sqlalchemy.exc import SQLAlchemyError
 
-from compass_bench.adapters.files.export_writer import write_document
+from compass_bench.adapters.files.export_writer import UnwritableExport, write_document
 from compass_bench.adapters.files.source_files import SourceFiles
 from compass_bench.adapters.postgres.connection import InvalidDatabaseUrl, create_engine, upgrade_to_head
 from compass_bench.adapters.postgres.ledger_store import PostgresLedgerStore
@@ -58,6 +59,7 @@ INVALID_INPUT_ERRORS: Final = (
     InvalidDatabaseUrl,
     UnknownRun,
     NoRecordedBudget,
+    UnwritableExport,
 )
 
 
@@ -424,6 +426,10 @@ def execute(command: Command, environ: Mapping[str, str]) -> ExitCode:
         return ExitCode.INVALID_INPUT
     except (RunLocked, ExperimentChanged, PromptsChanged, ModelSettingsDiffer) as error:
         print(f"compass-bench: {error}", file=sys.stderr)
+        return ExitCode.FAILED
+    except SQLAlchemyError as error:
+        # the driver's message runs over several lines; its first says what failed and holds no password
+        print(f"compass-bench: database error: {str(error).splitlines()[0]}", file=sys.stderr)
         return ExitCode.FAILED
 
 

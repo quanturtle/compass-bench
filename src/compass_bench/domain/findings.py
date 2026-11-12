@@ -39,6 +39,7 @@ class FindingCode(StrEnum):
     MIXED_ELICITATIONS = "mixed_elicitations"
     MIXED_ROUTING = "mixed_routing"
     PREREGISTRATION_MISSING = "preregistration_missing"
+    PREREGISTRATION_UNCOMMITTED = "preregistration_uncommitted"
 
 
 class Finding(Value):

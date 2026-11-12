@@ -1,6 +1,7 @@
 """SourceReader over the local filesystem."""
 
 import json
+from collections.abc import Callable
 from pathlib import Path, PurePath
 
 import yaml
@@ -35,10 +36,17 @@ def reject_repeated_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
     return mapping
 
 
+def never_committed(file: Path) -> bool:
+    """The answer of a reader given no version control to ask: no file counts as committed."""
+    return False
+
+
 class SourceFiles:
-    def __init__(self, root: Path) -> None:
-        """Relative paths resolve against `root`; an absolute path stays as it is."""
+    def __init__(self, root: Path, committed: Callable[[Path], bool] = never_committed) -> None:
+        """Relative paths resolve against `root`; an absolute path stays as it is.
+        `committed` says whether version control holds a file as it stands."""
         self.root = root
+        self.committed = committed
         return
 
     def read_yaml(self, path: PurePath) -> str:
@@ -56,6 +64,9 @@ class SourceFiles:
 
     def exists(self, path: PurePath) -> bool:
         return (self.root / path).is_file()
+
+    def is_committed(self, path: PurePath) -> bool:
+        return self.committed((self.root / path).resolve())
 
     def read_json(self, path: PurePath) -> str:
         """The text as it is, once it parses as JSON with no repeated key."""

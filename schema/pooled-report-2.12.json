@@ -1215,7 +1215,8 @@
         "runs_far_apart",
         "mixed_elicitations",
         "mixed_routing",
-        "preregistration_missing"
+        "preregistration_missing",
+        "preregistration_uncommitted"
       ],
       "title": "FindingCode",
       "type": "string"

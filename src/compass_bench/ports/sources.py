@@ -16,5 +16,9 @@ class SourceReader(Protocol):
     def read_json(self, path: PurePath) -> str: ...
 
     def exists(self, path: PurePath) -> bool:
-        """Whether a source file is there to read; the preregistration check needs only that."""
+        """Whether a source file is there to read."""
+        ...
+
+    def is_committed(self, path: PurePath) -> bool:
+        """Whether version control holds the file exactly as it stands; a preregistration must be."""
         ...

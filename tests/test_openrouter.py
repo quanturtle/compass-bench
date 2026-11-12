@@ -3,6 +3,7 @@ import json
 from datetime import UTC, datetime
 
 import httpx
+import pytest
 from pydantic import JsonValue
 
 from compass_bench.adapters.transport.openrouter import NORMALIZER_VERSION
@@ -44,6 +45,26 @@ def test_a_body_without_provenance_fields_leaves_them_unset() -> None:
     assert (reply.response_id, reply.created_at, reply.system_fingerprint) == (None, None, None)
 
 
+@pytest.mark.parametrize("created", [1767225600000, 1e18, -1e18], ids=["milliseconds", "too late", "too early"])
+def test_a_created_outside_the_datetime_range_leaves_the_reply_undated(created: float) -> None:
+    body: dict[str, JsonValue] = {**REPLY_BODY, "created": created}
+    transport = mocked_transport(lambda request: httpx.Response(200, json=body))
+
+    exchange = asyncio.run(transport.send({"model": "vendor/model"}))
+
+    assert isinstance(exchange.result, Completed)
+    assert (exchange.result.reply.text, exchange.result.reply.created_at) == ("4", None)
+
+
+def test_a_reported_cost_too_large_for_a_float_is_no_cost() -> None:
+    body: dict[str, JsonValue] = {**REPLY_BODY, "usage": {"prompt_tokens": 120, "cost": 10**400}}
+    transport = mocked_transport(lambda request: httpx.Response(200, json=body))
+
+    exchange = asyncio.run(transport.send({"model": "vendor/model"}))
+
+    assert isinstance(exchange.result, Completed) and exchange.result.reply.usage.cost_usd is None
+
+
 def test_a_nul_in_the_reply_is_replaced_in_the_text_and_kept_in_the_raw_body() -> None:
     choice = {"finish_reason": "stop", "message": {"role": "assistant", "content": "4\u0000"}}
     transport = mocked_transport(lambda request: httpx.Response(200, json={**REPLY_BODY, "choices": [choice]}))
@@ -75,6 +96,16 @@ def test_a_rate_limit_is_a_failed_result_carrying_its_retry_after() -> None:
         429,
         7.0,
     )
+
+
+@pytest.mark.parametrize("header", ["inf", "1e999", "nan"])
+def test_a_retry_after_that_is_not_a_finite_number_counts_as_absent(header: str) -> None:
+    body = {"error": {"code": 429, "message": "slow down"}}
+    transport = mocked_transport(lambda request: httpx.Response(429, json=body, headers={"Retry-After": header}))
+
+    exchange = asyncio.run(transport.send({"model": "vendor/model"}))
+
+    assert exchange.retry_after_seconds is None
 
 
 def test_a_connection_error_is_a_failed_result_not_an_exception() -> None:

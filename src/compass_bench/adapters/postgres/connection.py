@@ -20,12 +20,21 @@ class InvalidDatabaseUrl(Exception):
     """The database URL is neither a postgresql:// URL nor libpq conninfo."""
 
 
+def parsed_url(url: str) -> str:
+    """The URL once SQLAlchemy parses it; its own error would quote the URL, so the cause is dropped."""
+    try:
+        sqlalchemy.make_url(url)
+    except ValueError, sqlalchemy.exc.ArgumentError:
+        raise InvalidDatabaseUrl("the database URL does not parse; check its host and port") from None
+    return url
+
+
 def driver_arguments(database_url: SecretStr) -> tuple[str, dict[str, object]]:
     """The SQLAlchemy URL and connect arguments; conninfo becomes psycopg's keyword parameters."""
     text = database_url.get_secret_value().strip()
     for scheme in ACCEPTED_SCHEMES:
         if text.startswith(scheme):
-            return DRIVER_SCHEME + text.removeprefix(scheme), {}
+            return parsed_url(DRIVER_SCHEME + text.removeprefix(scheme)), {}
     if "://" in text:
         raise InvalidDatabaseUrl(f"the database URL must start with one of {', '.join(ACCEPTED_SCHEMES)}")
     try:

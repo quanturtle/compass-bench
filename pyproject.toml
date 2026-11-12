@@ -68,7 +68,7 @@ testpaths = ["tests"]
 [tool.mutmut]
 source_paths = ["src/compass_bench/domain/stats/", "src/compass_bench/domain/claims.py"]
 pytest_add_cli_args_test_selection = ["tests/"]
-also_copy = ["src/", "scripts/", "schema/", "audits/", "version.lock.json"]
+also_copy = ["src/", "scripts/", "schema/", "audits/", "docs/", "README.md", "METHODOLOGY.md", "version.lock.json"]
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]

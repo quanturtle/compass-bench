@@ -306,6 +306,16 @@ def test_0009_leaves_the_fields_unset_without_a_body_and_a_failure_untouched() -
     assert migration.with_provenance(failure, b"{}") == failure
 
 
+def test_0009_leaves_a_created_outside_the_datetime_range_unset() -> None:
+    migration = load_migration(PROVENANCE_MIGRATION)
+    body = json.dumps({**REPLY_BODY, "created": 1767225600000}).encode()
+
+    upgraded = ATTEMPT_RESULT.validate_json(json.dumps(migration.with_provenance(stored_result_before_0009(), body)))
+
+    assert isinstance(upgraded, Completed)
+    assert (upgraded.reply.response_id, upgraded.reply.created_at) == ("gen-1", None)
+
+
 def test_0003_refuses_to_downgrade_a_spec_with_its_own_prompt() -> None:
     migration = load_migration(PROMPT_MIGRATION)
     own = stored_spec(PromptSettings(template=STANDARD_TEMPLATE, instruction="Express your view on this statement."))

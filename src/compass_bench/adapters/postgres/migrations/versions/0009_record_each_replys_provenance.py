@@ -39,10 +39,15 @@ def text_or_none(value: object) -> str | None:
 
 
 def timestamp_or_none(value: object) -> str | None:
-    """A Unix timestamp as an ISO 8601 UTC string, as pydantic serializes a datetime; anything else is None."""
+    """A Unix timestamp as an ISO 8601 UTC string, as pydantic serializes a datetime; anything else is None.
+
+    So is a number no datetime holds, such as a timestamp in milliseconds."""
     if isinstance(value, bool) or not isinstance(value, int | float):
         return None
-    return datetime.fromtimestamp(value, UTC).isoformat()
+    try:
+        return datetime.fromtimestamp(value, UTC).isoformat()
+    except ValueError, OverflowError, OSError:
+        return None
 
 
 def with_provenance(result: dict[str, object], raw_body: bytes | None) -> dict[str, object]:

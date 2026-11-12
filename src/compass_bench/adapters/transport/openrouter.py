@@ -90,9 +90,14 @@ def count(section: JsonValue, key: str) -> int:
 
 
 def reported_cost(value: JsonValue) -> float | None:
+    """A finite cost of at least 0; anything else is None, an integer too large for a float included."""
     if isinstance(value, bool) or not isinstance(value, int | float):
         return None
-    return float(value) if math.isfinite(value) and value >= 0 else None
+    try:
+        cost = float(value)
+    except OverflowError:
+        return None
+    return cost if math.isfinite(cost) and cost >= 0 else None
 
 
 def usage(body: Mapping[str, JsonValue]) -> Usage:
@@ -131,10 +136,15 @@ def text_or_none(value: JsonValue) -> str | None:
 
 
 def timestamp_or_none(value: JsonValue) -> datetime | None:
-    """A Unix timestamp as an aware datetime; anything else, a bool included, is None."""
-    if isinstance(value, bool) or not isinstance(value, int | float) or not math.isfinite(value):
+    """A Unix timestamp as an aware datetime; anything else, a bool included, is None.
+
+    So is a number no datetime holds, such as a timestamp in milliseconds."""
+    if isinstance(value, bool) or not isinstance(value, int | float):
         return None
-    return datetime.fromtimestamp(value, UTC)
+    try:
+        return datetime.fromtimestamp(value, UTC)
+    except ValueError, OverflowError, OSError:
+        return None
 
 
 def normalize(body: JsonValue) -> Completed | TransportFailed:

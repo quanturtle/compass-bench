@@ -4,7 +4,14 @@ import asyncio
 
 import pytest
 
-from compass_bench.app.collect import PromptsChanged, collect, retry_delay, start_run
+from compass_bench.app.collect import (
+    CIRCUIT_FAILURE_LIMIT,
+    RETRY_AFTER_MAX_SECONDS,
+    PromptsChanged,
+    collect,
+    retry_delay,
+    start_run,
+)
 from compass_bench.domain.ledger import Finished, Orphaned, TransportError
 from compass_bench.domain.outcome import LossReason, Lost, Pending, Replied, TrialOutcome, TrialOutcomeKind
 from compass_bench.domain.run import CollectionEnd, RunEventKind
@@ -64,6 +71,17 @@ def test_an_unauthorized_endpoint_opens_its_circuit_and_leaves_every_trial_pendi
     assert (end, events) == (CollectionEnd.CIRCUITS_OPEN, [RunEventKind.STARTED, RunEventKind.CIRCUIT_OPENED])
     assert all(isinstance(outcome, Pending) for outcome in trial_outcomes)
     assert len(script.sent) <= 2
+
+
+def test_an_endpoint_answering_only_unusable_bodies_opens_its_circuit_and_leaves_the_rest_pending() -> None:
+    script = ScriptedTransport((), failed_result(TransportError.MALFORMED_BODY), None, None)
+
+    end, events, trial_outcomes = asyncio.run(collect_once(script, budget_usd=1.0))
+
+    assert (end, events) == (CollectionEnd.CIRCUITS_OPEN, [RunEventKind.STARTED, RunEventKind.CIRCUIT_OPENED])
+    assert CIRCUIT_FAILURE_LIMIT <= len(script.sent) <= CIRCUIT_FAILURE_LIMIT + 1
+    assert sum(isinstance(outcome, Lost) for outcome in trial_outcomes) == len(script.sent)
+    assert sum(isinstance(outcome, Pending) for outcome in trial_outcomes) == TRIAL_COUNT - len(script.sent)
 
 
 async def collect_with_a_missing_model() -> None:
@@ -181,3 +199,8 @@ def test_the_retry_delay_doubles_from_one_second_or_ten_after_a_rate_limit_unles
     assert retry_delay(0, 7.0, rate_limited=False) == 7.0
     assert retry_delay(0, 7.0, rate_limited=True) == 10.0
     assert retry_delay(9, None, rate_limited=True) == 60.0
+
+
+def test_a_retry_after_longer_than_the_cap_waits_the_cap() -> None:
+    assert retry_delay(0, 86400.0, rate_limited=True) == RETRY_AFTER_MAX_SECONDS
+    assert retry_delay(0, RETRY_AFTER_MAX_SECONDS - 1.0, rate_limited=False) == RETRY_AFTER_MAX_SECONDS - 1.0

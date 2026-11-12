@@ -36,7 +36,7 @@ from compass_bench.domain.ledger import (
     LedgerEntryKind,
     TransportError,
     TransportFailed,
-    counts_toward_circuit,
+    is_retryable,
     opens_circuit,
     opens_model_circuit,
 )
@@ -230,7 +230,7 @@ def next_attempt(
 
 
 def circuit_after(circuit: Circuit, failure: TransportError | None) -> Circuit:
-    """An endpoint's circuit after one attempt: an endpoint-level error opens it, and a counted one adds to the count.
+    """An endpoint's circuit after one attempt: an endpoint-level error opens it, and a retryable one adds to the count.
 
     Any other result resets the count; an open circuit stays open until the run resumes."""
     match circuit:
@@ -239,7 +239,7 @@ def circuit_after(circuit: Circuit, failure: TransportError | None) -> Circuit:
         case ClosedCircuit(consecutive_failures=failures):
             if failure is not None and opens_circuit(failure):
                 return OpenCircuit(kind=CircuitKind.OPEN, error=failure)
-            if failure is not None and counts_toward_circuit(failure):
+            if failure is not None and is_retryable(failure):
                 if failures + 1 >= CIRCUIT_FAILURE_LIMIT:
                     return OpenCircuit(kind=CircuitKind.OPEN, error=failure)
                 return ClosedCircuit(kind=CircuitKind.CLOSED, consecutive_failures=failures + 1)
@@ -488,7 +488,9 @@ class Collector:
             stop_waiter = group.create_task(self.stop.wait())
             while True:
                 await self.launch(group)
-                sleepers = list(self.delayed) if self.is_dispatching() else []
+                # a retry whose circuit opened while it slept will not be sent, so nothing waits for it
+                due = [sleeper for sleeper, trial in self.delayed.items() if self.is_open_for(trial)]
+                sleepers = due if self.is_dispatching() else []
                 if not self.running and not sleepers:
                     break
                 stop_waiters = [] if stop_waiter.done() else [stop_waiter]
@@ -507,7 +509,9 @@ class Collector:
         planned = self.planned
         if self.taken_over:
             return CollectionEnd.TAKEN_OVER
-        if not pending_trials(planned.trials, self.entries, planned.spec, planned.questionnaire):
+        # a pass whose endpoint failed until its circuit opened is not complete, even with every trial settled
+        endpoint_open = any(circuit.kind is CircuitKind.OPEN for circuit in self.circuits.values())
+        if not endpoint_open and not pending_trials(planned.trials, self.entries, planned.spec, planned.questionnaire):
             return CollectionEnd.COMPLETE
         if self.stop.is_set():
             return CollectionEnd.INTERRUPTED

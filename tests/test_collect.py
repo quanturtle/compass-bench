@@ -1,6 +1,7 @@
 """Collection against the fake ledger and a scripted transport: replies, a 400, an outage, the cap, a retry, a stop."""
 
 import asyncio
+from collections.abc import Sequence
 
 import pytest
 
@@ -22,6 +23,7 @@ from tests.builders.collection import (
     no_listings,
     outcomes,
     runtimes,
+    slotted_runtimes,
     two_model_experiment,
 )
 from tests.builders.fakes import (
@@ -73,15 +75,65 @@ def test_an_unauthorized_endpoint_opens_its_circuit_and_leaves_every_trial_pendi
     assert len(script.sent) <= 2
 
 
-def test_an_endpoint_answering_only_unusable_bodies_opens_its_circuit_and_leaves_the_rest_pending() -> None:
-    script = ScriptedTransport((), failed_result(TransportError.MALFORMED_BODY), None, None)
+async def collect_passes(
+    transports: Sequence[ScriptedTransport], slots: int
+) -> tuple[list[CollectionEnd], tuple[TrialOutcome, ...]]:
+    """One collection pass per transport over one run, each at `slots` slots: how each ended, and the outcomes left."""
+    store = FakeLedgerStore()
+    run = (await start_run(compiled_experiment(), store, no_listings(), "nonce", "test")).run_id
+    ends = [
+        await collect(run, 1.0, store, slotted_runtimes(transport, slots), SilentObserver(), asyncio.Event())
+        for transport in transports
+    ]
+    return ends, await outcomes(store, run)
 
-    end, events, trial_outcomes = asyncio.run(collect_once(script, budget_usd=1.0))
 
-    assert (end, events) == (CollectionEnd.CIRCUITS_OPEN, [RunEventKind.STARTED, RunEventKind.CIRCUIT_OPENED])
-    assert CIRCUIT_FAILURE_LIMIT <= len(script.sent) <= CIRCUIT_FAILURE_LIMIT + 1
-    assert sum(isinstance(outcome, Lost) for outcome in trial_outcomes) == len(script.sent)
-    assert sum(isinstance(outcome, Pending) for outcome in trial_outcomes) == TRIAL_COUNT - len(script.sent)
+def unusable_transport() -> ScriptedTransport:
+    return ScriptedTransport((), failed_result(TransportError.MALFORMED_BODY), None, None)
+
+
+@pytest.mark.parametrize("slots", [1, 2, 4, 16, TRIAL_COUNT])
+def test_an_endpoint_answering_only_unusable_bodies_opens_its_circuit_and_loses_no_trial(slots: int) -> None:
+    script = unusable_transport()
+
+    ends, trial_outcomes = asyncio.run(collect_passes([script], slots))
+
+    assert ends == [CollectionEnd.CIRCUITS_OPEN]
+    assert CIRCUIT_FAILURE_LIMIT <= len(script.sent) <= CIRCUIT_FAILURE_LIMIT - 1 + slots
+    assert all(isinstance(outcome, Pending) for outcome in trial_outcomes)
+
+
+@pytest.mark.parametrize("slots", [1, 2, 4, 16, TRIAL_COUNT])
+def test_resume_asks_again_the_trials_an_unusable_body_answered(slots: int) -> None:
+    working = ScriptedTransport((), replied_result("4"), None, None)
+
+    ends, trial_outcomes = asyncio.run(collect_passes([unusable_transport(), working], slots))
+
+    assert ends == [CollectionEnd.CIRCUITS_OPEN, CollectionEnd.COMPLETE]
+    assert len(working.sent) == TRIAL_COUNT and all(isinstance(outcome, Replied) for outcome in trial_outcomes)
+
+
+def test_four_passes_against_unusable_bodies_never_end_complete_and_lose_only_trials_out_of_retries() -> None:
+    passes = [unusable_transport() for _ in range(4)]
+
+    ends, trial_outcomes = asyncio.run(collect_passes(passes, slots=4))
+
+    lost = [outcome for outcome in trial_outcomes if isinstance(outcome, Lost)]
+    assert ends == [CollectionEnd.CIRCUITS_OPEN] * 4
+    assert len(lost) <= CIRCUIT_FAILURE_LIMIT - 1 + 4
+    assert sum(isinstance(outcome, Pending) for outcome in trial_outcomes) == TRIAL_COUNT - len(lost)
+
+
+def test_the_pass_that_loses_the_last_trial_to_unusable_bodies_ends_with_its_circuit_open() -> None:
+    # every trial runs out of retries within TRIAL_COUNT passes; the pass after has nothing left to send
+    passes = [unusable_transport() for _ in range(TRIAL_COUNT + 1)]
+
+    ends, trial_outcomes = asyncio.run(collect_passes(passes, slots=TRIAL_COUNT))
+
+    last_sending = max(index for index, transport in enumerate(passes) if transport.sent)
+    assert all(isinstance(outcome, Lost) for outcome in trial_outcomes)
+    assert ends[: last_sending + 1] == [CollectionEnd.CIRCUITS_OPEN] * (last_sending + 1)
+    assert ends[last_sending + 1 :] == [CollectionEnd.COMPLETE] * (TRIAL_COUNT - last_sending)
 
 
 async def collect_with_a_missing_model() -> None:

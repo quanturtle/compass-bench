@@ -127,17 +127,13 @@ def opens_model_circuit(error: TransportError) -> bool:
 
 
 def is_retryable(error: TransportError) -> bool:
-    """A transient failure: the trial gets a retry attempt instead of ending."""
+    """A failure that says nothing about the request: the trial is retried, and a run of them opens the circuit.
+
+    A transient one, or a response that is no completion at all, as a wrong base_url or a proxy page answers."""
     return error in {
         TransportError.TIMEOUT,
         TransportError.CONNECTION,
         TransportError.RATE_LIMITED,
         TransportError.SERVER_ERROR,
+        TransportError.MALFORMED_BODY,
     }
-
-
-def counts_toward_circuit(error: TransportError) -> bool:
-    """A failure that opens the endpoint's circuit once it repeats with no other result between.
-
-    A retryable one, or a response that is no completion at all, as a wrong base_url or a proxy page answers."""
-    return is_retryable(error) or error is TransportError.MALFORMED_BODY

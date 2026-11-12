@@ -8,7 +8,7 @@ from enum import StrEnum
 from typing import Final
 
 # pyproject.toml reads the package version from this line
-VERSION: Final = "2.12"
+VERSION: Final = "2.13"
 
 
 class Version(StrEnum):

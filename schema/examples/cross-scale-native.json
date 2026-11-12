@@ -1,18 +1,18 @@
 {
-  "version": "2.12",
+  "version": "2.13",
   "status": "exploratory",
-  "pool": "5acbfd11ad0f",
+  "pool": "0cd1fefbbc16",
   "questionnaire": {
     "title": "Example compass",
     "compass": {
       "axes": {
         "x": {
-          "name": "economic",
+          "name": "left vs right",
           "negative": "left",
           "positive": "right"
         },
         "y": {
-          "name": "social",
+          "name": "libertarian vs authoritarian",
           "negative": "libertarian",
           "positive": "authoritarian"
         }
@@ -31,7 +31,7 @@
       {
         "id": "x-00",
         "axis": "x",
-        "facet": "economic even",
+        "facet": "left vs right even",
         "statements": {
           "negative": "Example statement x-00, phrased toward left.",
           "positive": "Example statement x-00, phrased toward right."
@@ -40,7 +40,7 @@
       {
         "id": "x-01",
         "axis": "x",
-        "facet": "economic odd",
+        "facet": "left vs right odd",
         "statements": {
           "negative": "Example statement x-01, phrased toward left.",
           "positive": "Example statement x-01, phrased toward right."
@@ -49,7 +49,7 @@
       {
         "id": "x-02",
         "axis": "x",
-        "facet": "economic even",
+        "facet": "left vs right even",
         "statements": {
           "negative": "Example statement x-02, phrased toward left.",
           "positive": "Example statement x-02, phrased toward right."
@@ -58,7 +58,7 @@
       {
         "id": "x-03",
         "axis": "x",
-        "facet": "economic odd",
+        "facet": "left vs right odd",
         "statements": {
           "negative": "Example statement x-03, phrased toward left.",
           "positive": "Example statement x-03, phrased toward right."
@@ -67,7 +67,7 @@
       {
         "id": "x-04",
         "axis": "x",
-        "facet": "economic even",
+        "facet": "left vs right even",
         "statements": {
           "negative": "Example statement x-04, phrased toward left.",
           "positive": "Example statement x-04, phrased toward right."
@@ -76,7 +76,7 @@
       {
         "id": "x-05",
         "axis": "x",
-        "facet": "economic odd",
+        "facet": "left vs right odd",
         "statements": {
           "negative": "Example statement x-05, phrased toward left.",
           "positive": "Example statement x-05, phrased toward right."
@@ -85,7 +85,7 @@
       {
         "id": "x-06",
         "axis": "x",
-        "facet": "economic even",
+        "facet": "left vs right even",
         "statements": {
           "negative": "Example statement x-06, phrased toward left.",
           "positive": "Example statement x-06, phrased toward right."
@@ -94,7 +94,7 @@
       {
         "id": "x-07",
         "axis": "x",
-        "facet": "economic odd",
+        "facet": "left vs right odd",
         "statements": {
           "negative": "Example statement x-07, phrased toward left.",
           "positive": "Example statement x-07, phrased toward right."
@@ -103,7 +103,7 @@
       {
         "id": "x-08",
         "axis": "x",
-        "facet": "economic even",
+        "facet": "left vs right even",
         "statements": {
           "negative": "Example statement x-08, phrased toward left.",
           "positive": "Example statement x-08, phrased toward right."
@@ -112,7 +112,7 @@
       {
         "id": "x-09",
         "axis": "x",
-        "facet": "economic odd",
+        "facet": "left vs right odd",
         "statements": {
           "negative": "Example statement x-09, phrased toward left.",
           "positive": "Example statement x-09, phrased toward right."
@@ -121,7 +121,7 @@
       {
         "id": "x-10",
         "axis": "x",
-        "facet": "economic even",
+        "facet": "left vs right even",
         "statements": {
           "negative": "Example statement x-10, phrased toward left.",
           "positive": "Example statement x-10, phrased toward right."
@@ -130,7 +130,7 @@
       {
         "id": "x-11",
         "axis": "x",
-        "facet": "economic odd",
+        "facet": "left vs right odd",
         "statements": {
           "negative": "Example statement x-11, phrased toward left.",
           "positive": "Example statement x-11, phrased toward right."
@@ -139,7 +139,7 @@
       {
         "id": "y-00",
         "axis": "y",
-        "facet": "social even",
+        "facet": "libertarian vs authoritarian even",
         "statements": {
           "negative": "Example statement y-00, phrased toward libertarian.",
           "positive": "Example statement y-00, phrased toward authoritarian."
@@ -148,7 +148,7 @@
       {
         "id": "y-01",
         "axis": "y",
-        "facet": "social odd",
+        "facet": "libertarian vs authoritarian odd",
         "statements": {
           "negative": "Example statement y-01, phrased toward libertarian.",
           "positive": "Example statement y-01, phrased toward authoritarian."
@@ -157,7 +157,7 @@
       {
         "id": "y-02",
         "axis": "y",
-        "facet": "social even",
+        "facet": "libertarian vs authoritarian even",
         "statements": {
           "negative": "Example statement y-02, phrased toward libertarian.",
           "positive": "Example statement y-02, phrased toward authoritarian."
@@ -166,7 +166,7 @@
       {
         "id": "y-03",
         "axis": "y",
-        "facet": "social odd",
+        "facet": "libertarian vs authoritarian odd",
         "statements": {
           "negative": "Example statement y-03, phrased toward libertarian.",
           "positive": "Example statement y-03, phrased toward authoritarian."
@@ -175,7 +175,7 @@
       {
         "id": "y-04",
         "axis": "y",
-        "facet": "social even",
+        "facet": "libertarian vs authoritarian even",
         "statements": {
           "negative": "Example statement y-04, phrased toward libertarian.",
           "positive": "Example statement y-04, phrased toward authoritarian."
@@ -184,7 +184,7 @@
       {
         "id": "y-05",
         "axis": "y",
-        "facet": "social odd",
+        "facet": "libertarian vs authoritarian odd",
         "statements": {
           "negative": "Example statement y-05, phrased toward libertarian.",
           "positive": "Example statement y-05, phrased toward authoritarian."
@@ -193,7 +193,7 @@
       {
         "id": "y-06",
         "axis": "y",
-        "facet": "social even",
+        "facet": "libertarian vs authoritarian even",
         "statements": {
           "negative": "Example statement y-06, phrased toward libertarian.",
           "positive": "Example statement y-06, phrased toward authoritarian."
@@ -202,7 +202,7 @@
       {
         "id": "y-07",
         "axis": "y",
-        "facet": "social odd",
+        "facet": "libertarian vs authoritarian odd",
         "statements": {
           "negative": "Example statement y-07, phrased toward libertarian.",
           "positive": "Example statement y-07, phrased toward authoritarian."
@@ -211,7 +211,7 @@
       {
         "id": "y-08",
         "axis": "y",
-        "facet": "social even",
+        "facet": "libertarian vs authoritarian even",
         "statements": {
           "negative": "Example statement y-08, phrased toward libertarian.",
           "positive": "Example statement y-08, phrased toward authoritarian."
@@ -220,7 +220,7 @@
       {
         "id": "y-09",
         "axis": "y",
-        "facet": "social odd",
+        "facet": "libertarian vs authoritarian odd",
         "statements": {
           "negative": "Example statement y-09, phrased toward libertarian.",
           "positive": "Example statement y-09, phrased toward authoritarian."
@@ -229,7 +229,7 @@
       {
         "id": "y-10",
         "axis": "y",
-        "facet": "social even",
+        "facet": "libertarian vs authoritarian even",
         "statements": {
           "negative": "Example statement y-10, phrased toward libertarian.",
           "positive": "Example statement y-10, phrased toward authoritarian."
@@ -238,7 +238,7 @@
       {
         "id": "y-11",
         "axis": "y",
-        "facet": "social odd",
+        "facet": "libertarian vs authoritarian odd",
         "statements": {
           "negative": "Example statement y-11, phrased toward libertarian.",
           "positive": "Example statement y-11, phrased toward authoritarian."
@@ -258,7 +258,7 @@
     {
       "run": {
         "run_id": "07b8d7da4d11",
-        "experiment": "da19fb9164cd70dd28e5cd912be3dd41c11a4b390044d08a87152060bf7ab10c",
+        "experiment": "826525711194d1cfa5feffdd58f99b62ab4d44d9448a53e00310a65f9d0221b2",
         "nonce": "example-native",
         "code_revision": "example",
         "listings": {
@@ -289,7 +289,7 @@
       },
       "experiment": {
         "name": "example",
-        "questionnaire": "dc181f860453a4ffccd5ae0454001975693db38ef9134c0c1aea2a45410db130",
+        "questionnaire": "ccf53a999f32ef985b4ed192d871f7de905d8f0279e10ec6f9ddacb59c4032fd",
         "models": {
           "alpha": {
             "endpoint": "openrouter",
@@ -537,25 +537,25 @@
         "facets": [
           {
             "axis": "x",
-            "facet": "economic even",
+            "facet": "left vs right even",
             "questions": 6,
             "mean": 0.5
           },
           {
             "axis": "x",
-            "facet": "economic odd",
+            "facet": "left vs right odd",
             "questions": 6,
             "mean": 0.5
           },
           {
             "axis": "y",
-            "facet": "social even",
+            "facet": "libertarian vs authoritarian even",
             "questions": 6,
             "mean": -0.5
           },
           {
             "axis": "y",
-            "facet": "social odd",
+            "facet": "libertarian vs authoritarian odd",
             "questions": 6,
             "mean": -0.5
           }
@@ -1049,25 +1049,25 @@
         "facets": [
           {
             "axis": "x",
-            "facet": "economic even",
+            "facet": "left vs right even",
             "questions": 6,
             "mean": -0.5
           },
           {
             "axis": "x",
-            "facet": "economic odd",
+            "facet": "left vs right odd",
             "questions": 6,
             "mean": -0.5
           },
           {
             "axis": "y",
-            "facet": "social even",
+            "facet": "libertarian vs authoritarian even",
             "questions": 6,
             "mean": -0.5
           },
           {
             "axis": "y",
-            "facet": "social odd",
+            "facet": "libertarian vs authoritarian odd",
             "questions": 6,
             "mean": -0.5
           }

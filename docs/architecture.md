@@ -167,7 +167,7 @@ One import breaks the table: `contract/schema.py` imports `pooled_documents` fro
 - `Attempt(trial, seq, prompt, reserved_usd)`. Its key is `attempt_id(trial, seq)`, computed where needed and never stored beside them. `reserved_usd` is the estimated cost the budget reserved before the send.
   - A trial has one attempt in flight at a time. Seq 0 asks, and every later seq retries the one before it, so no purpose is stored.
 - `AttemptResult = Completed(Reply) | TransportFailed(error: TransportError, http_status, message)`.
-  - `is_retryable(error)`, `counts_toward_circuit(error)`, `opens_circuit(error)`, and `opens_model_circuit(error)` in `domain/ledger.py` derive the collector's response from the error alone.
+  - `is_retryable(error)`, `opens_circuit(error)`, and `opens_model_circuit(error)` in `domain/ledger.py` derive the collector's response from the error alone.
   - `Reply` has text, reasoning, finish, usage, served model, served provider, and the provenance the body carried: the response id, the provider's `created` timestamp, the system fingerprint, and the native finish reason, each or None. Normalizer version 3 reads them; migration 0009 read them from stored raw bodies.
   - `EndpointSettings(base_url, api_key_env, max_concurrency, timeout_seconds, provider_order, allow_fallbacks, require_parameters, quantizations)` in `domain/design/endpoint.py` says how an endpoint routes across OpenRouter's hosts. `quantizations` is sent as `provider.quantizations` when non-empty; OpenRouter does not report the precision served. `app/compile.pinning_findings` warns (`UNPINNED_ENDPOINT`) on a used endpoint with no provider order or with fallbacks on, since a run should ask one host throughout. Migration 0008 gave stored runs' endpoints an empty filter.
   - `FinishReason` and `TransportError` are Enums.
@@ -185,6 +185,7 @@ One import breaks the table: `contract/schema.py` imports `pooled_documents` fro
   - A reply that finished with `host_error` is `Lost(host_error)`.
   - Only retryable failures use up `max_retries`. An orphan, or a failure that opens an endpoint or model circuit, leaves the trial pending, so a crash, a bad key, or a missing model loses no trial.
   - An outage shows up as timeouts, connection errors, or 5xx responses, which are retryable. Each trial the outage hits before `CIRCUIT_FAILURE_LIMIT` opens the circuit uses up retries, and a trial whose retries run out is `Lost(retries_exhausted)`. Resume does not ask it again. A larger `max_retries` makes this rarer; it does not prevent it.
+  - An unusable body (`malformed_body`) is retryable too, and a trial whose retries run out on one is `Lost(no_completion)`. Up to version 2.12 the first one lost the trial. The fold reads a stored ledger by the current rule, so a stored trial with fewer than `max_retries + 1` such failures is pending again, and `resume` asks it.
 
 ### Scoring and inference
 
@@ -271,8 +272,9 @@ No table stores reports. `analyze` and `export` derive the document from the led
 - **Retries.** A retry is a new attempt, so it appears in cost and counts. It is re-queued with a delay, the longer of its backoff and the `Retry-After` the transport returns on `Exchange`. A `Retry-After` that is not a finite number of seconds counts as absent, and one above `RETRY_AFTER_MAX_SECONDS` (300) waits that long. The backoff doubles from 1 s, or from 10 s after a rate limit so that the bundled `max_retries: 3` waits 10, 20 and 40 s, 70 s in all, past a per-minute window; it is capped at 60 s. A retry never sleeps in a worker slot.
 - **Errors.**
   - A per-request 400, 422, or moderation 403 ends that trial as `Lost(request_rejected)`. The model keeps running.
-  - A 401, 402, or any other 403, or `CIRCUIT_FAILURE_LIMIT` (5) consecutive counted failures, opens the endpoint's circuit. Its trials stay pending and resume after the fix. A counted failure (`counts_toward_circuit`) is a retryable one or an unusable body.
-  - An unusable body (`malformed_body`) is a 2xx response that is no completion, as a wrong `base_url` or a proxy page answers. It ends its trial as `Lost`, and resume does not ask that trial again. An endpoint that answers nothing else therefore loses the trials sent before the circuit opens, 5 plus those in flight, and the rest stay pending.
+  - A 401, 402, or any other 403, or `CIRCUIT_FAILURE_LIMIT` (5) consecutive counted failures, opens the endpoint's circuit. Its trials stay pending and resume after the fix. A counted failure is a retryable one (`is_retryable`).
+  - An unusable body (`malformed_body`) is a 2xx response that is no completion, as a wrong `base_url` or a proxy page answers. It is retryable: the trial is asked again after the backoff, and each such body may be billed. An endpoint that answers nothing else opens its circuit after at most 4 plus its `max_concurrency` sends, and every trial stays pending for the resume. Resuming against the same fault uses up one retry of the trials it sends each time.
+  - A pass in which an endpoint's circuit opened ends as `circuits_open`, never as `complete`, also when its last trials ran out of retries. A retry whose circuit opened while it waited is not sent, and the pass does not wait for it.
   - A 404 means OpenRouter serves no route for one model's slug, so it opens that model's circuit (`opens_model_circuit`) and writes `model_circuit_opened`. The model's trials stay pending; the endpoint's other models continue.
   - Any result that neither opens a circuit nor is counted resets the endpoint's failure count: a reply, a per-request rejection, a 404, or a 2xx response without message content.
   - An open circuit stays open until the run resumes. `runs show` lists the endpoint and model circuits opened since the latest `started` or `resumed` event.
@@ -301,7 +303,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
 
 ## Report contract
 
-- **Source of truth.** The pydantic `ReportDocument` and `PooledReportDocument` in `contract/v2.py` (`version: "2.12"`).
+- **Source of truth.** The pydantic `ReportDocument` and `PooledReportDocument` in `contract/v2.py` (`version: "2.13"`).
   - It composes domain values directly. A domain change that alters the schema fails the schema diff in `tests/test_schema.py`.
   - Every union is a named `type` alias, so the schema and the generated TypeScript types use its name.
   - Each union's variant tags come from one `StrEnum` named after it, such as `ReasonKind`. Pydantic requires a tag field typed `Literal[ReasonKind.CROSSES_MIDPOINT]`; no tag is a bare string.
@@ -310,7 +312,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
 - **Construction.** `analyze_run` in `app/analyze.py` loads the run, its endpoint settings, and its ledger, and `report_document` in `contract/v2.py` builds the document from the run, both snapshots, the endpoints, the `AnalysisResult`, and the version. The document carries `endpoints` and `elicitations`: `domain/design/configuration.pair_elicitations` compares every pair of models on `ELICITATION_FIELDS` (answer type, temperature, top_p, max_tokens, reasoning, host order, precision filter) and lists each differing field with both values (`PairElicitation(first, second, differs)`); `elicitation_findings` gives `plan` a `MIXED_ELICITATIONS` warning per field that differs across the experiment's models. A pooled document compares each model under the first run that asked it (`PooledRun.endpoints`).
 - **Pooled report.** `PooledReportDocument` in `contract/v2.py` is one pool's report: its `pool` id, the questionnaire, the scale, the analysis settings, each run with its experiment (`PooledRun`), each model with the runs its answers come from and its reliability between them (`PooledModel`; `RunReliability(icc, band, questions, runs)` is ICC(3,1) over the questions every run scored, None for a model asked once), and the `AnalysisResult` over the pooled answers. A forced-choice pool's `PooledModel` also carries a `ScaleReference(native_pool, midpoint_share, forced_not_held)` when a native-scale pool of the same questionnaire, settings, and system prompt holds the model: `pooling.scale_references` pairs the pools, and `forced_not_held` is whether the native midpoint share reaches `MIDPOINT_SHARE_FLOOR`. `app/pool.pooled_documents` builds every pool's document from `pooling.pooled_analyses` so the pairing sees them all; the examples `cross-scale-native` and `cross-scale-forced_choice` cover it.
 - **Generated files.**
-  - `make schema` generates `schema/report-2.12.json` and `schema/pooled-report-2.12.json`, named after the version, and `schema/examples/*.json`.
+  - `make schema` generates `schema/report-2.13.json` and `schema/pooled-report-2.13.json`, named after the version, and `schema/examples/*.json`.
   - An example's floats are written and hashed at 10 significant digits (`example_json` in `contract/schema.py`), because platforms differ in a float's last digits. An exported report keeps full precision.
   - The examples cover an asserted claim, a withheld claim, a partial run, a confirmatory run with asserted equivalences and listing warnings (`preregistered`), a pool of two runs 30 days apart in which one model draws on both, and a native and a forced-choice pool under a system prompt. `tests/test_schema.py` checks that the examples hold both statuses, an asserted equivalence, run warnings, and a pool warning, and that no two pooled examples share a pool id.
   - The schema carries a `$comment` saying it is generated. The examples carry no header, because the schema forbids extra keys and they must validate against it.
@@ -433,7 +435,7 @@ compass-bench-v2/
 │   ├── preregistration.md       the template to fill in and commit before a paid run
 │   ├── references.md            every cited work with a DOI or URL
 │   └── reference/               planned, generated: config schema, CLI help
-├── schema/                      generated: report-2.12.json, pooled-report-2.12.json, examples/
+├── schema/                      generated: report-2.13.json, pooled-report-2.13.json, examples/
 ├── scripts/
 │   ├── generate_schema.py       writes schema/ from the contract models
 │   ├── update_lock.py           records version.lock.json under VERSION
@@ -532,3 +534,4 @@ Each story is one PR and ends in something runnable.
 12. **Version 2.10** (done). Follow-ups from the frontend: the farthest question scores and the wide-range threshold carried in the report rather than computed by the text view; examples with a confirmatory status, an asserted equivalence, run and pool warnings, and a pool id of their own each; the architecture's field lists matched to the schema, and every stored run of the retired questionnaire named.
 13. **Version 2.11** (done). The example reports written and hashed at 10 significant digits, so the checked-in examples and the version lock hold on macOS and Linux alike.
 14. **Version 2.12** (done). The fill that flips a position's side of 0 found on the side the fills fail from, with a note when fills at both ends fail; gaps equal up to float rounding read as zero spread; a confirmatory status only for a preregistration file committed and unmodified in git; the reason-first experiment asked under a token limit that holds two sentences and the number; no rating read from a free-text reply that offers a range, negates its number, or declines before it.
+15. **Version 2.13** (done). A trial answered only by unusable bodies asked again on resume, up to its retries, and a pass whose circuit opened never ending as complete; a spread below rounding read as zero at any magnitude; the synthetic example's axes named after their poles.

@@ -52,6 +52,11 @@ def runtimes(transport: Transport) -> dict[EndpointId, EndpointRuntime]:
     return {ENDPOINT_ID: EndpointRuntime(transport=transport, slots=asyncio.Semaphore(2))}
 
 
+def slotted_runtimes(transport: Transport, slots: int) -> dict[EndpointId, EndpointRuntime]:
+    """The one endpoint, with `slots` slots."""
+    return {ENDPOINT_ID: EndpointRuntime(transport=transport, slots=asyncio.Semaphore(slots))}
+
+
 def no_listings() -> dict[EndpointId, ModelListings]:
     """The one endpoint's provider, listing nothing."""
     return {ENDPOINT_ID: FakeModelListings({})}

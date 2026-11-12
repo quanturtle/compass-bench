@@ -29,6 +29,17 @@ def test_retryable_failures_past_max_retries_lose_the_trial() -> None:
     )
 
 
+def test_unusable_bodies_leave_the_trial_pending_until_its_retries_are_used_up() -> None:
+    failures = tuple(failed_entry(seq, TransportError.MALFORMED_BODY) for seq in range(DESIGN.max_retries + 1))
+
+    assert fold_outcome(failures[:1], MODEL, BASELINE_CONTEXT, DESIGN) == Pending(
+        kind=TrialOutcomeKind.PENDING, attempts=1
+    )
+    assert fold_outcome(failures, MODEL, BASELINE_CONTEXT, DESIGN) == Lost(
+        kind=TrialOutcomeKind.LOST, loss=LossReason.NO_COMPLETION
+    )
+
+
 def test_an_endpoint_failure_leaves_the_trial_pending() -> None:
     entries = tuple(failed_entry(seq, TransportError.UNAUTHORIZED) for seq in range(DESIGN.max_retries + 2))
 

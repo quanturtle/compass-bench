@@ -187,21 +187,21 @@ Axis x is left (−) vs right (+), and axis y is libertarian (−) vs authoritar
 | 74 | y | `y-census` | Whether to answer the census should be each household's own decision. | The state should require every household to answer the census. |
 | 75 | y | `y-pledge_in_schools` | Whether a schoolchild recites a pledge of allegiance should be their family's decision. | The state should require schoolchildren to recite a pledge of allegiance. |
 
-After every question has been asked in both phrasings under all four presentations, `analyze` prints positions and comparisons. These lines are from the synthetic example in `schema/examples/asserted.json`, rendered as `tests/snapshots/asserted.txt`, not from real models; the example's two models answer at temperature 1.0 on a 12-question-per-axis questionnaire. That questionnaire names its axes "economic" and "social"; the bundled questionnaire names them "left vs right" and "libertarian vs authoritarian", and its y axis is not a social-values scale:
+After every question has been asked in both phrasings under all four presentations, `analyze` prints positions and comparisons. These lines are from the synthetic example in `schema/examples/asserted.json`, rendered as `tests/snapshots/asserted.txt`, not from real models; the example's two models answer at temperature 1.0 on a 12-question-per-axis questionnaire. That questionnaire names its axes as the bundled one does, "left vs right" and "libertarian vs authoritarian", so a position line reads the axis name and then the pole; the y axis is not a social-values scale:
 
 ```text
 Positions
-  alpha: economic right, social libertarian
-    x economic: +0.500 [+0.340, +0.660] at 97.5%, 12 questions, detects ±0.213; 100.0% of trials answered
+  alpha: left vs right right, libertarian vs authoritarian libertarian
+    x left vs right: +0.500 [+0.340, +0.660] at 97.5%, 12 questions, detects ±0.213; 100.0% of trials answered
       bound [+0.500, +0.500] with nothing unanswered
-    y social: -0.500 [-0.660, -0.340] at 97.5%, 12 questions, detects ±0.213; 100.0% of trials answered
+    y libertarian vs authoritarian: -0.500 [-0.660, -0.340] at 97.5%, 12 questions, detects ±0.213; 100.0% of trials answered
       bound [-0.500, -0.500] with nothing unanswered
 
 Comparisons
   Holm family: 2 gaps over every pair and both axes
   alpha vs beta, gap = beta minus alpha
     elicitations differ: answer_type free_text against structured
-    x economic: alpha higher
+    x left vs right: alpha higher
       gap -1.000 [-1.235, -0.765] at 95.0%, 12 questions, detects ±0.328, ±0.370 at the family's first step; d_z -2.71; p 1.39e-06, Holm p 2.79e-06
 ```
 

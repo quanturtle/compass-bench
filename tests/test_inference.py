@@ -3,6 +3,7 @@ from statistics import fmean, stdev
 import pytest
 
 from compass_bench.domain.axis_pair import AxisKey
+from compass_bench.domain.claims import significance_reasons
 from compass_bench.domain.design.experiment import AnalysisSettings
 from compass_bench.domain.ids import ModelId
 from compass_bench.domain.inference import (
@@ -50,6 +51,24 @@ def test_pairs_come_in_model_id_order_and_an_untestable_gap_enters_holm_at_one()
     assert pair == (ModelId("first"), ModelId("second"))
     assert (y.p_raw, y.p_holm) == (1.0, 1.0)
     assert x.p_holm == pytest.approx(min(1.0, 2 * x.p_raw))
+
+
+def test_scores_equal_in_exact_arithmetic_but_averaged_from_other_cells_do_not_pass_the_ordering_gate() -> None:
+    # both are -5/6 on a 4-point scale's values, averaged as the scoring does; the floats differ in the last digit
+    third = 1 / 3
+    one_way = fmean((fmean((-1.0, -1.0, -1.0, -1.0)), fmean((-1.0, -1.0, -1.0, third))))
+    other_way = fmean((fmean((-1.0, -1.0, -1.0, -third)), fmean((-1.0, -1.0, -1.0, -third))))
+    level = scores_on(AxisKey.Y, (0.0, 0.0))
+    first = scores_on(AxisKey.X, (one_way,) * 20) + level
+    second = scores_on(AxisKey.X, (other_way,) * 10 + (one_way,) * 10) + level
+
+    pairs = pair_axes({ModelId("first"): first, ModelId("second"): second}, SETTINGS)
+
+    (pair,) = pairs
+    x = pairs[pair].x
+    assert one_way != other_way
+    assert (x.p_raw, x.p_holm, x.d_z) == (1.0, 1.0, None)
+    assert significance_reasons(x, AxisKey.X, alpha=0.05) != ()
 
 
 def test_a_pairs_d_z_is_its_mean_gap_over_the_gaps_standard_deviation_and_undefined_below_two_gaps() -> None:

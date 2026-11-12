@@ -9,6 +9,8 @@ from scipy import stats
 
 # a deviation at or below this share of the largest |value| comes from float rounding, not from the values
 ROUNDING_SPREAD: Final = 1e-12
+# scores and gaps lie within [-2, 2], where rounding leaves about 1e-16; no deviation this small is a measured one
+ROUNDING_FLOOR: Final = 1e-12
 
 
 class TooFewValues(Exception):
@@ -17,12 +19,14 @@ class TooFewValues(Exception):
 
 def spread(values: Sequence[float]) -> tuple[float, float]:
     """The mean and the sample standard deviation; raises TooFewValues below two values.
-    A deviation within ROUNDING_SPREAD of the largest |value| is float rounding and reads as 0."""
+    A deviation float rounding explains reads as 0, and so does the mean of such values within ROUNDING_FLOOR of 0."""
     if len(values) < 2:
         raise TooFewValues(f"a t statistic needs at least 2 values, not {len(values)}")
-    deviation = stdev(values)
+    mean, deviation = fmean(values), stdev(values)
     largest = max(abs(value) for value in values)
-    return fmean(values), deviation if deviation > ROUNDING_SPREAD * largest else 0.0
+    if deviation > max(ROUNDING_SPREAD * largest, ROUNDING_FLOOR):
+        return mean, deviation
+    return (mean if abs(mean) > ROUNDING_FLOOR else 0.0), 0.0
 
 
 def t_quantile(level: float, degrees: int) -> float:
@@ -74,7 +78,7 @@ def equivalence_power(values: Sequence[float], margin: float, alpha: float) -> f
 
     1 minus twice the noncentral t's mass below the one-sided critical value, with noncentrality margin over the
     standard error: exact when the standard error is at most the margin over the critical value, else a lower
-    bound, floored at 0 (Lakens, 2017). 1 with zero spread."""
+    bound, floored at 0; Lakens (2017) gives a normal approximation for the same tests. 1 with zero spread."""
     _, deviation = spread(values)
     if deviation == 0:
         return 1.0

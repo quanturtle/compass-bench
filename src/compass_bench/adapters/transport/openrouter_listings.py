@@ -12,12 +12,13 @@ ENDPOINTS_PATH: Final = "/models/{slug}/endpoints"
 
 
 def host_parameters(data: dict[str, JsonValue], host: str | None) -> tuple[str, ...] | None:
-    """The supported parameters of the endpoint whose provider name is `host`; None without a match."""
+    """The supported parameters of the endpoint whose `tag` is `host`; None without a match.
+    The tag is the routing slug a provider order names; `provider_name` is a display name several tags share."""
     endpoints = data.get("endpoints")
     if host is None or not isinstance(endpoints, list):
         return None
     for endpoint in endpoints:
-        if isinstance(endpoint, dict) and endpoint.get("provider_name") == host:
+        if isinstance(endpoint, dict) and endpoint.get("tag") == host:
             parameters = endpoint.get("supported_parameters")
             if isinstance(parameters, list):
                 return tuple(parameter for parameter in parameters if isinstance(parameter, str))

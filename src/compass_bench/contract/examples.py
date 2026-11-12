@@ -153,8 +153,8 @@ DELTA: Final = ScriptedModel(
 def example_questionnaire() -> Questionnaire:
     compass = Compass(
         axes=AxisPair(
-            x=Axis(name="economic", negative="left", positive="right"),
-            y=Axis(name="social", negative="libertarian", positive="authoritarian"),
+            x=Axis(name="left vs right", negative="left", positive="right"),
+            y=Axis(name="libertarian vs authoritarian", negative="libertarian", positive="authoritarian"),
         )
     )
     questions = tuple(

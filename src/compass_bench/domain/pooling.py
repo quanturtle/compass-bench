@@ -62,7 +62,8 @@ class RunReliability(Value):
 
     `icc` is ICC(3,1) over the questions every run scored, with the runs as the repeated measures: 1 when the
     runs order the questions alike and differ by at most a shift, 0 when they agree no more than chance, below 0
-    when they disagree. `band` reads it as Koo and Li (2016) do. It needs two scored questions and two runs."""
+    when they disagree. `band` reads the point estimate on Koo and Li's (2016) bands, which they apply to an
+    absolute-agreement ICC's 95% interval. It needs two scored questions and two runs."""
 
     icc: float
     band: ReliabilityBand

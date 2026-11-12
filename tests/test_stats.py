@@ -52,6 +52,14 @@ def test_values_equal_up_to_float_rounding_have_zero_spread() -> None:
     assert zero_mean_p_value(values) == 0.0
 
 
+def test_rounding_residue_around_zero_is_a_zero_mean_with_zero_spread() -> None:
+    values = (1e-17, 0.0, 0.0)
+
+    assert mean_interval(values, level=0.95) == (0.0, 0.0, 0.0)
+    assert standardized_mean(values) is None
+    assert zero_mean_p_value(values) == 1.0
+
+
 def test_a_single_value_has_no_t_statistic() -> None:
     with pytest.raises(TooFewValues, match="at least 2 values, not 1"):
         mean_interval((0.5,), level=0.95)
@@ -146,6 +154,17 @@ def test_icc_consistency_ignores_a_shift_between_columns_and_needs_two_rows_and_
     assert icc_consistency([[0.1], [0.5]]) is None
     assert icc_consistency([[0.1, 0.3], [0.5]]) is None
     assert icc_consistency([[0.5, 0.5], [0.5, 0.5]]) is None
+
+
+def test_icc_consistency_matches_the_two_way_anova_computed_from_the_residual_matrix() -> None:
+    # (MSR - MSE) / (MSR + (k - 1) MSE), with MSE from the cell residuals x - row mean - column mean + grand mean
+    rows = [[0.1, 0.9, 0.2], [0.5, -0.5, 0.4], [-0.2, 0.3, 0.1], [0.8, 0.6, 0.9]]
+
+    assert icc_consistency(rows) == pytest.approx(0.166056, abs=1e-6)
+    assert icc_consistency([[value * 1e-9 for value in row] for row in rows]) == pytest.approx(0.166056, abs=1e-6)
+    assert icc_consistency([[0.1, 0.9], [0.5, -0.5]]) == pytest.approx(-0.528302, abs=1e-6)
+    # the runs reverse every question, and the questions do not differ: all variance is residual
+    assert icc_consistency([[0.0, 1.0], [1.0, 0.0], [0.0, 1.0], [1.0, 0.0]]) == pytest.approx(-1.0)
 
 
 def test_icc_consistency_is_undefined_when_every_row_holds_the_same_values() -> None:

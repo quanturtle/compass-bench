@@ -66,7 +66,7 @@ Seven steps take a questionnaire to positions and comparisons. The code for each
 
 ```mermaid
 flowchart LR
-  F[questionnaire.json + experiment.yaml + models.yaml] --> P[compile]
+  F[questionnaire.json + experiment.yaml + catalog.yaml] --> P[compile]
   P --> S[(snapshots + run + trials)]
   S --> C[collect: async I/O]
   C <--> M[provider adapters]
@@ -89,14 +89,18 @@ flowchart LR
 | Package | May import |
 |---|---|
 | `domain/` | `domain/` |
-| `contract/` | `domain/` |
+| `contract/` | `domain/`, `version.py` |
 | `ports/` | `domain/`, `contract/` |
 | `app/` | `domain/`, `contract/`, `ports/` |
-| `adapters/` | `domain/`, `contract/`, `ports/`, and I/O libraries such as httpx, SQLAlchemy, and PyYAML |
+| `adapters/` | `domain/`, `contract/`, `ports/`, `version.py`, and I/O libraries such as httpx, SQLAlchemy, and PyYAML |
+| `version.py` | nothing from the package |
+| `version_lock.py` | `domain/`, `contract/`, `adapters/files/`, `version.py`. Only `scripts/update_lock.py` and the tests import it. |
 | `settings.py` | nothing from the package |
 | `cli.py` | everything. It is the composition root and the only module that names a concrete adapter. |
 
 Each package may also import from itself, the standard library, and pydantic. `domain/stats/student_t.py` also imports `scipy.stats`, for the t distribution.
+
+One import breaks the table: `contract/schema.py` imports `pooled_documents` from `app/pool.py`, to build the pooled example documents. Moving the example builders out of `contract/` would remove it.
 
 ### Component patterns
 
@@ -147,7 +151,7 @@ Each package may also import from itself, the standard library, and pydantic. `d
 - `Sampling(temperature, top_p, max_tokens, reasoning)` has no seed. One fixed seed would let a provider return the same reply for every repetition, and repetitions must be independent draws.
 - The pre-flight checks (`plan_findings`) need no key. `plan` runs them, and `run` runs them before it creates the run. A presentation factor with fewer than two levels draws an `unvaried_factor` warning, because the lean it counters then does not cancel, and a design with one instruction wording draws a `single_wording` warning, because a model's shift with the wording then stays in.
 - `AnalysisSettings(confidence_level, coverage_floor, equivalence_margin)`. Fields that change the experiment have no defaults. The alpha for pair claims is 1 − `confidence_level` (`significance_level`). `equivalence_margin` is the largest gap, in score units, that counts as no difference; migration 0006 wrote the standard 0.1 into specs stored before it and moved their runs.
-- `ExperimentSpec.preregistration` is the path of the filled preregistration, relative to the experiment file, or None. `app/compile.preregistration_findings` makes a named file that is not there an error (`PREREGISTRATION_MISSING`), through `SourceReader.exists`. `domain/design/preregistration.run_status` is confirmatory only when the spec names one, `pool_status` only when every run does, and each document carries its `status`. Migration 0011 wrote `null` into specs stored before the field and moved their runs, so every earlier run is exploratory.
+- `ExperimentSpec.preregistration` is the path of the filled preregistration, relative to the experiment file, or None. `app/compile.preregistration_findings` makes a named file that is not there an error (`PREREGISTRATION_MISSING`), through `SourceReader.exists`, and one that git's HEAD commit does not hold as it is on disk another (`PREREGISTRATION_UNCOMMITTED`), through `SourceReader.is_committed`; `cli.py` gives the reader `settings.is_committed`, which asks git. `domain/design/preregistration.run_status` is confirmatory only when the spec names one, `pool_status` only when every run does, and each document carries its `status`. Migration 0011 wrote `null` into specs stored before the field and moved their runs, so every earlier run is exploratory.
 - `ExperimentSpec(name, questionnaire, models, design, analysis, preregistration)` is content-hashed.
 - `Trial(key, model, question, polarity, condition, repetition, position)`. `polarity` picks the phrasing, and the repetition index is the round.
 - The schedule, `build_schedule`'s tuple of trials, runs one round per repetition. Each round is a seeded shuffle of models × questions × phrasings × conditions. Dispatch follows round order, so a stopped run's finished trials sit mostly in early rounds.
@@ -163,7 +167,7 @@ Each package may also import from itself, the standard library, and pydantic. `d
 - `Attempt(trial, seq, prompt, reserved_usd)`. Its key is `attempt_id(trial, seq)`, computed where needed and never stored beside them. `reserved_usd` is the estimated cost the budget reserved before the send.
   - A trial has one attempt in flight at a time. Seq 0 asks, and every later seq retries the one before it, so no purpose is stored.
 - `AttemptResult = Completed(Reply) | TransportFailed(error: TransportError, http_status, message)`.
-  - `is_retryable(error)`, `opens_circuit(error)`, and `opens_model_circuit(error)` in `domain/ledger.py` derive the collector's response from the error alone.
+  - `is_retryable(error)`, `counts_toward_circuit(error)`, `opens_circuit(error)`, and `opens_model_circuit(error)` in `domain/ledger.py` derive the collector's response from the error alone.
   - `Reply` has text, reasoning, finish, usage, served model, served provider, and the provenance the body carried: the response id, the provider's `created` timestamp, the system fingerprint, and the native finish reason, each or None. Normalizer version 3 reads them; migration 0009 read them from stored raw bodies.
   - `EndpointSettings(base_url, api_key_env, max_concurrency, timeout_seconds, provider_order, allow_fallbacks, require_parameters, quantizations)` in `domain/design/endpoint.py` says how an endpoint routes across OpenRouter's hosts. `quantizations` is sent as `provider.quantizations` when non-empty; OpenRouter does not report the precision served. `app/compile.pinning_findings` warns (`UNPINNED_ENDPOINT`) on a used endpoint with no provider order or with fallbacks on, since a run should ask one host throughout. Migration 0008 gave stored runs' endpoints an empty filter.
   - `FinishReason` and `TransportError` are Enums.
@@ -196,7 +200,7 @@ Each package may also import from itself, the standard library, and pydantic. `d
 
 ### Claims
 
-- `AxisUnanswered(trials, declined, dropped, bound, flip)`: one model's unanswered trials on one axis, from `domain/missing.py`. `declined` counts the declines toward each pole's statement, and `dropped` the questions left unscored by an unanswered statement, each as `DroppedQuestion(question, unanswered)`. `Bound(low, high, filled)` is the position with every unanswered trial filled at −1 and at +1, dropped questions scored; a `PairResult` carries the same bound per axis for its gap, filling the two models in opposite directions. `flip` is the fill at which the interval stops clearing 0 on the side it clears, over 41 fills from −1 to +1, or None. Nothing here gates a claim.
+- `AxisUnanswered(trials, declined, dropped, bound, flip, widening_flip)`: one model's unanswered trials on one axis, from `domain/missing.py`. `declined` counts the declines toward each pole's statement, and `dropped` the questions left unscored by an unanswered statement, each as `DroppedQuestion(question, unanswered)`. `Bound(low, high, filled)` is the position with every unanswered trial filled at −1 and at +1, dropped questions scored; a `PairResult` carries the same bound per axis for its gap, filling the two models in opposite directions. `flip` is the fill that pulls the interval to 0 from the side it clears, over 41 fills from −1 to +1, or None; `widening_flip` is the nearest fill on the interval's own side that widens it across 0, or None. Nothing here gates a claim.
 - `AxisProfile(ratings, scores, statements)`: one model's response profile on one axis, from `domain/profile.py`. `RatingProfile(answered, shares, midpoint_share, ends_share, rating_sd)` is how the scale's points are used; `ScoreSplit(positive, negative, zero, mean_absolute, opposing_facets, facet_balanced, farthest)` how the question scores split around 0, with the mean of the facet means beside the item-weighted position and the `FARTHEST_SHOWN` question scores farthest from it; `StatementAgreement(one_sided, identical, wide, wide_range, statements, icc)` how far each statement's answers agree across the layouts and wordings: `identical` counts statements rated the same in every cell and `wide` those whose ratings span `wide_range` (`WIDE_RANGE`, 2) or more points, with ICC(1) from `domain/stats/icc.py`. The report carries these values, thresholds included, so a reader shows them without computing anything. These numbers gate no claim.
 - `OrderingRobustness(cells, same_sign)` in `domain/robustness.py`: over the cells in which both models score two or more shared questions, how many have a mean gap on the headline gap's side of 0; None when the headline gap is not estimable or 0. A `PairResult` carries one per axis, beside a `ScaleUse(sd_first, sd_second, differs)` from `domain/profile.py`: the two models' rating spreads on the axis, `differs` when the larger is `SCALE_USE_RATIO` times the smaller. `ModelResult.review_after` is `REVIEW_AFTER_DAYS` after the model's last reply, computed from stored timestamps so the report stays a pure function of the ledger; `pooling.span_findings` warns at the same span.
 - `Claim[T] = Asserted(value) | Withheld(reasons)`. `reasons` holds at least one `Reason`. Each claim is stored beside its evidence: a `ModelResult` holds the model's `AxisPosition`s, and a `PairResult` holds the pair's `PairAxis`es. `NotEquivalent` carries the margin and `PairAxis.equivalence_power`, the two one-sided tests' power at a true gap of 0 given the observed spread (`stats/student_t.equivalence_power`, the noncentral t), None when the gap is not estimable. A `PairResult` also stores each axis's `PairOutcome`, the reading of the ordering and the equivalence together: different and not equivalent, different and equivalent, equivalent and not different, or undetermined.
@@ -264,12 +268,13 @@ No table stores reports. `analyze` and `export` derive the document from the led
   - Each endpoint's ready trials are a heap on schedule position, so dispatch follows round order.
   - The collector owns the dispatch queue of pending trials, the circuits, and the `BudgetLedger`.
   - A worker reserves and settles its attempt's cost through the `BudgetLedger`. The collector updates the dispatch queue and the circuits from the worker's report.
-- **Retries.** A retry is a new attempt, so it appears in cost and counts. It is re-queued with a delay, the longer of its backoff and the `Retry-After` the transport returns on `Exchange`. The backoff doubles from 1 s, or from 10 s after a rate limit so that the bundled `max_retries: 3` waits 10, 20 and 40 s, 70 s in all, past a per-minute window; it is capped at 60 s. A retry never sleeps in a worker slot.
+- **Retries.** A retry is a new attempt, so it appears in cost and counts. It is re-queued with a delay, the longer of its backoff and the `Retry-After` the transport returns on `Exchange`. A `Retry-After` that is not a finite number of seconds counts as absent, and one above `RETRY_AFTER_MAX_SECONDS` (300) waits that long. The backoff doubles from 1 s, or from 10 s after a rate limit so that the bundled `max_retries: 3` waits 10, 20 and 40 s, 70 s in all, past a per-minute window; it is capped at 60 s. A retry never sleeps in a worker slot.
 - **Errors.**
   - A per-request 400, 422, or moderation 403 ends that trial as `Lost(request_rejected)`. The model keeps running.
-  - A 401, 402, or any other 403, or `CIRCUIT_FAILURE_LIMIT` (5) consecutive retryable failures, opens the endpoint's circuit. Its trials stay pending and resume after the fix.
+  - A 401, 402, or any other 403, or `CIRCUIT_FAILURE_LIMIT` (5) consecutive counted failures, opens the endpoint's circuit. Its trials stay pending and resume after the fix. A counted failure (`counts_toward_circuit`) is a retryable one or an unusable body.
+  - An unusable body (`malformed_body`) is a 2xx response that is no completion, as a wrong `base_url` or a proxy page answers. It ends its trial as `Lost`, and resume does not ask that trial again. An endpoint that answers nothing else therefore loses the trials sent before the circuit opens, 5 plus those in flight, and the rest stay pending.
   - A 404 means OpenRouter serves no route for one model's slug, so it opens that model's circuit (`opens_model_circuit`) and writes `model_circuit_opened`. The model's trials stay pending; the endpoint's other models continue.
-  - Any result that neither opens a circuit nor is retryable resets the endpoint's failure count: a reply, a per-request rejection, a 404, or an unusable body.
+  - Any result that neither opens a circuit nor is counted resets the endpoint's failure count: a reply, a per-request rejection, a 404, or a 2xx response without message content.
   - An open circuit stays open until the run resumes. `runs show` lists the endpoint and model circuits opened since the latest `started` or `resumed` event.
 - **Budget.** A `BudgetLedger` (one owner) reserves the estimated cost before each send and reconciles it with the actual cost afterwards. The reservation is stored with the attempt.
   - Prices come from the model catalog and are reconciled against reported cost.
@@ -296,7 +301,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
 
 ## Report contract
 
-- **Source of truth.** The pydantic `ReportDocument` and `PooledReportDocument` in `contract/v2.py` (`version: "2.11"`).
+- **Source of truth.** The pydantic `ReportDocument` and `PooledReportDocument` in `contract/v2.py` (`version: "2.12"`).
   - It composes domain values directly. A domain change that alters the schema fails the schema diff in `tests/test_schema.py`.
   - Every union is a named `type` alias, so the schema and the generated TypeScript types use its name.
   - Each union's variant tags come from one `StrEnum` named after it, such as `ReasonKind`. Pydantic requires a tag field typed `Literal[ReasonKind.CROSSES_MIDPOINT]`; no tag is a bare string.
@@ -305,7 +310,7 @@ No table stores reports. `analyze` and `export` derive the document from the led
 - **Construction.** `analyze_run` in `app/analyze.py` loads the run, its endpoint settings, and its ledger, and `report_document` in `contract/v2.py` builds the document from the run, both snapshots, the endpoints, the `AnalysisResult`, and the version. The document carries `endpoints` and `elicitations`: `domain/design/configuration.pair_elicitations` compares every pair of models on `ELICITATION_FIELDS` (answer type, temperature, top_p, max_tokens, reasoning, host order, precision filter) and lists each differing field with both values (`PairElicitation(first, second, differs)`); `elicitation_findings` gives `plan` a `MIXED_ELICITATIONS` warning per field that differs across the experiment's models. A pooled document compares each model under the first run that asked it (`PooledRun.endpoints`).
 - **Pooled report.** `PooledReportDocument` in `contract/v2.py` is one pool's report: its `pool` id, the questionnaire, the scale, the analysis settings, each run with its experiment (`PooledRun`), each model with the runs its answers come from and its reliability between them (`PooledModel`; `RunReliability(icc, band, questions, runs)` is ICC(3,1) over the questions every run scored, None for a model asked once), and the `AnalysisResult` over the pooled answers. A forced-choice pool's `PooledModel` also carries a `ScaleReference(native_pool, midpoint_share, forced_not_held)` when a native-scale pool of the same questionnaire, settings, and system prompt holds the model: `pooling.scale_references` pairs the pools, and `forced_not_held` is whether the native midpoint share reaches `MIDPOINT_SHARE_FLOOR`. `app/pool.pooled_documents` builds every pool's document from `pooling.pooled_analyses` so the pairing sees them all; the examples `cross-scale-native` and `cross-scale-forced_choice` cover it.
 - **Generated files.**
-  - `make schema` generates `schema/report-2.11.json` and `schema/pooled-report-2.11.json`, named after the version, and `schema/examples/*.json`.
+  - `make schema` generates `schema/report-2.12.json` and `schema/pooled-report-2.12.json`, named after the version, and `schema/examples/*.json`.
   - An example's floats are written and hashed at 10 significant digits (`example_json` in `contract/schema.py`), because platforms differ in a float's last digits. An exported report keeps full precision.
   - The examples cover an asserted claim, a withheld claim, a partial run, a confirmatory run with asserted equivalences and listing warnings (`preregistered`), a pool of two runs 30 days apart in which one model draws on both, and a native and a forced-choice pool under a system prompt. `tests/test_schema.py` checks that the examples hold both statuses, an asserted equivalence, run warnings, and a pool warning, and that no two pooled examples share a pool id.
   - The schema carries a `$comment` saying it is generated. The examples carry no header, because the schema forbids extra keys and they must validate against it.
@@ -359,6 +364,8 @@ No table stores reports. `analyze` and `export` derive the document from the led
 | `export <run>... --out DIR` | Derive each run's report and write it as the published JSON document |
 | `pool <questionnaire> [--out DIR]` | Pool every run that asked the questionnaire file's questionnaire, one pool per scale and analysis settings, and print each pool's report as text; with `--out`, write each as JSON. No run prints one line and exits 0 |
 | `db migrate` | Run Alembic to head |
+
+`cli.execute` turns a known failure into one stderr line and an exit code. An invalid input exits with the invalid-input code: an experiment or source file, a missing setting, a database URL that does not parse, an unknown run, or an output directory that cannot be written. A database error, such as an unreachable server, exits `FAILED` with the first line of the driver's message.
 
 ## Call paths
 
@@ -415,8 +422,8 @@ compass-bench-v2/
 ├── uv.lock                      uv lockfile; run every tool through `uv run`
 ├── LICENSE                      Apache-2.0
 ├── README.md                    product copy: what it is, install, run, an example
-├── METHODOLOGY.md               estimand, estimators, gates, missing-data policy, calibration, limits
-├── Makefile                     check, schema, lock, audit, mutate
+├── METHODOLOGY.md               estimand, estimators, gates, missing-data policy, calibration, related work, limits
+├── Makefile                     check, schema, lock, audit, audit-check, schema-check, replicate, mutate
 ├── version.lock.json            generated: each locked component's digest under VERSION
 ├── .github/workflows/ci.yml     make check against Postgres 18 and a stale-schema check; weekly audit and mutate
 ├── audits/                      generated: statistical-audit.json, the latest calibration results
@@ -426,7 +433,7 @@ compass-bench-v2/
 │   ├── preregistration.md       the template to fill in and commit before a paid run
 │   ├── references.md            every cited work with a DOI or URL
 │   └── reference/               planned, generated: config schema, CLI help
-├── schema/                      generated: report-2.11.json, pooled-report-2.11.json, examples/
+├── schema/                      generated: report-2.12.json, pooled-report-2.12.json, examples/
 ├── scripts/
 │   ├── generate_schema.py       writes schema/ from the contract models
 │   ├── update_lock.py           records version.lock.json under VERSION
@@ -440,7 +447,9 @@ compass-bench-v2/
 │   │   ├── axis_pair.py         AxisKey, Polarity, AxisPair[T], PolarityPair[T]
 │   │   ├── findings.py          Finding, Severity, FindingCode
 │   │   ├── instrument/          compass.py, scale.py, questionnaire.py
-│   │   ├── design/              factors.py, conditions.py, experiment.py, endpoint.py, schedule.py, preflight.py
+│   │   ├── design/              factors.py, conditions.py, experiment.py, endpoint.py, schedule.py, preflight.py,
+│   │   │                        configuration.py (the elicitation two models share or not),
+│   │   │                        preregistration.py (confirmatory or exploratory)
 │   │   ├── elicitation/         prompts.py, answer_types.py (Strategy)
 │   │   ├── ledger.py            Attempt, AttemptResult, Reply, Usage, LedgerEntry, TransportError
 │   │   ├── listing.py           ModelListing, the parameters a model sends, listing_findings
@@ -451,7 +460,8 @@ compass-bench-v2/
 │   │   │                        RunOverview
 │   │   ├── scoring.py           question scores and axis coverage
 │   │   ├── consistency.py       pole balance, pair consistency, spread and marginals across cells
-│   │   ├── stats/               student_t.py, corrections.py, correlation.py, seeds.py
+│   │   ├── stats/               student_t.py, corrections.py, correlation.py, seeds.py,
+│   │   │                        icc.py (ICC(1) and ICC(3,1)), agreement.py (Cohen's κ)
 │   │   ├── inference.py         positions and pair gaps
 │   │   ├── missing.py           unanswered trials, dropped questions, bounds, and flips
 │   │   ├── profile.py           use of the scale, split of question scores, statement agreement
@@ -461,11 +471,12 @@ compass-bench-v2/
 │   │   ├── pooling.py           PoolKey, pools, model settings check, pooled_analyses()
 │   │   └── budget.py            Price, estimates, BudgetLedger
 │   ├── contract/                v2.py (ReportDocument), schema.py, examples.py (synthetic runs with
-│   │                            scripted replies: the schema examples, which the version lock holds)
+│   │                            scripted replies: the schema examples, which the version lock holds),
+│   │                            corpus.py (corpus rows, shared by the tests and the reader sample)
 │   ├── ports/                   transport.py, ledger_store.py (ledger), listings.py, sources.py,
 │   │                            run_observer.py
 │   ├── app/                     compile.py, collect.py (circuit state), analyze.py,
-│   │                            runs.py, export.py, pool.py
+│   │                            runs.py, export.py, pool.py, reader_sample.py (the second reader's sample)
 │   ├── adapters/
 │   │   ├── transport/           openrouter.py (wire mapping and transport), openrouter_listings.py,
 │   │   │                        errors.py (HTTP → TransportError)
@@ -499,14 +510,14 @@ compass-bench-v2/
 - **Fault injection.** The collector gets a 400, a 429 with `Retry-After`, a database outage, and SIGTERM.
 - **End to end.** A run is killed partway, then resumed. The test asserts no duplicate attempts, no lost results, and the same report as an uninterrupted run with the same nonce.
 - **Calibration and mutation.** The calibration suite, `scripts/statistical_audit.py`, runs with `make audit` and writes `audits/statistical-audit.json`. `tests/test_statistical_audit.py` checks its arithmetic and that a simulated lean toward the first-listed choice cancels exactly without noise; `tests/test_methodology_table.py` checks that METHODOLOGY's calibration table repeats the committed JSON row for row, as `scripts/statistical_audit.py --table` prints it. The audit computes each scenario's population position exactly from its integer effects and the clamping (`population_position`), measures coverage against it and against the stance, and counts the ordering and equivalence assertions; its scenarios run on every core (`--workers`). `make mutate` mutation-tests `stats/` and `claims.py` with mutmut, and a surviving mutant is a missing test.
-- **Replication.** `make replicate` is what a reviewer can rebuild from the repository alone: `schema-check` regenerates the schema and examples and fails when the checked-in files or the version lock differ, and `audit-check` re-runs every scenario of the committed audit with its stored seed, capped at 2,000 runs, and fails when a rate moved by more than three combined Monte Carlo errors (the cap adds sampling noise the combined error allows for; a full re-run with `--check-runs` omitted is deterministic, so any move is a changed simulator). CI runs `schema-check` on every push and `audit-check` weekly; the full audit takes about 3.3 CPU-hours, 22 minutes on 14 cores. Reports cannot be replicated from the repository: they derive from the user's ledger, which is not committed.
+- **Replication.** `make replicate` is what a reviewer can rebuild from the repository alone: `schema-check` regenerates the schema and examples and fails when the checked-in files differ (the version lock is held by `tests/test_version_lock.py`, not by this target), and `audit-check` re-runs every scenario of the committed audit with its stored seed, capped at 2,000 runs, and fails when a rate moved by more than three combined Monte Carlo errors (the cap adds sampling noise the combined error allows for; a full re-run with `--check-runs` omitted is deterministic, so any move is a changed simulator). CI runs `schema-check` on every push and `audit-check` weekly; the full audit takes about 3.3 CPU-hours, 22 minutes on 14 cores. Reports cannot be replicated from the repository: they derive from the user's ledger, which is not committed.
 - **Assertions.** Tests assert on contract documents. Text output has a few snapshots and no substring assertions.
 
 ## Delivery order
 
 Each story is one PR and ends in something runnable.
 
-0. **Foundation** (done). The signature skeleton, the uv lockfile, the Makefile, and CI with Postgres (`.github/workflows/ci.yml`). The workflow runs once the repository has a GitHub remote.
+0. **Foundation** (done). The signature skeleton, the uv lockfile, the Makefile, and CI with Postgres (`.github/workflows/ci.yml`). The workflow runs on every push and pull request of the GitHub repository, and weekly.
 1. **Instrument and design** (done). Parse the questionnaire, experiment, and catalog. Add `compile` and `plan`, with the cost estimate. No database or key needed.
 2. **Ledger and collection** (done). Postgres schema, migrations, budget, and the OpenRouter transport. Add `run`, `resume`, and `runs`. The circuit breaker from story 5 landed here, since collection needs it.
 3. **Reading and scoring** (done). Reader, corpus, and outcomes (ahead of story 2, whose `run` and `runs` fold outcomes). `analyze` prints the report.
@@ -520,3 +531,4 @@ Each story is one PR and ends in something runnable.
 11. **Version 2.9** (done). The release review of 2.8 resolved: the questions' sampling frame stated as fixed facets with a facet-balanced position beside the item-weighted one; a label on each pair whose models use the scale unequally or were asked under different elicitations, with the pinned host and precision filter in the report; a `preregistration` field in the experiment and an exploratory or confirmatory status on every report, with migration 0011; consistent questions split three ways, the gap's detectable effect at the Holm family's first step, and the equivalence test's power at a zero gap; the political questionnaire rebuilt with five contradictory pairs per facet; the audit extended past the null with per-run Monte Carlo errors; and the document corrections, references, and terminology.
 12. **Version 2.10** (done). Follow-ups from the frontend: the farthest question scores and the wide-range threshold carried in the report rather than computed by the text view; examples with a confirmatory status, an asserted equivalence, run and pool warnings, and a pool id of their own each; the architecture's field lists matched to the schema, and every stored run of the retired questionnaire named.
 13. **Version 2.11** (done). The example reports written and hashed at 10 significant digits, so the checked-in examples and the version lock hold on macOS and Linux alike.
+14. **Version 2.12** (done). The fill that flips a position's side of 0 found on the side the fills fail from, with a note when fills at both ends fail; gaps equal up to float rounding read as zero spread; a confirmatory status only for a preregistration file committed and unmodified in git; the reason-first experiment asked under a token limit that holds two sentences and the number; no rating read from a free-text reply that offers a range, negates its number, or declines before it.

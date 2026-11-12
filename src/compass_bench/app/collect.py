@@ -36,7 +36,7 @@ from compass_bench.domain.ledger import (
     LedgerEntryKind,
     TransportError,
     TransportFailed,
-    is_retryable,
+    counts_toward_circuit,
     opens_circuit,
     opens_model_circuit,
 )
@@ -72,6 +72,8 @@ BACKOFF_FIRST_SECONDS: Final = 1.0
 # the bundled max_retries of 3 then waits 10, 20 and 40 s, 70 s in all, past a per-minute window
 RATE_LIMIT_FIRST_SECONDS: Final = 10.0
 BACKOFF_MAX_SECONDS: Final = 60.0
+# a host's Retry-After is honoured up to five minutes, so one header cannot stall the run
+RETRY_AFTER_MAX_SECONDS: Final = 300.0
 
 
 class ExperimentChanged(Exception):
@@ -228,7 +230,7 @@ def next_attempt(
 
 
 def circuit_after(circuit: Circuit, failure: TransportError | None) -> Circuit:
-    """An endpoint's circuit after one attempt: an endpoint-level error opens it, and a retryable one adds to the count.
+    """An endpoint's circuit after one attempt: an endpoint-level error opens it, and a counted one adds to the count.
 
     Any other result resets the count; an open circuit stays open until the run resumes."""
     match circuit:
@@ -237,7 +239,7 @@ def circuit_after(circuit: Circuit, failure: TransportError | None) -> Circuit:
         case ClosedCircuit(consecutive_failures=failures):
             if failure is not None and opens_circuit(failure):
                 return OpenCircuit(kind=CircuitKind.OPEN, error=failure)
-            if failure is not None and is_retryable(failure):
+            if failure is not None and counts_toward_circuit(failure):
                 if failures + 1 >= CIRCUIT_FAILURE_LIMIT:
                     return OpenCircuit(kind=CircuitKind.OPEN, error=failure)
                 return ClosedCircuit(kind=CircuitKind.CLOSED, consecutive_failures=failures + 1)
@@ -265,12 +267,12 @@ def actual_cost(result: AttemptResult) -> float | None:
 
 
 def retry_delay(seq: int, retry_after_seconds: float | None, rate_limited: bool) -> float:
-    """Exponential backoff from the attempt's seq, capped, or the Retry-After when it is longer.
+    """Exponential backoff from the attempt's seq, capped, or the Retry-After, capped too, when it is longer.
 
     A rate limit starts from a longer first delay, so the retries outlast the provider's window."""
     first = RATE_LIMIT_FIRST_SECONDS if rate_limited else BACKOFF_FIRST_SECONDS
     backoff = min(first * 2.0**seq, BACKOFF_MAX_SECONDS)
-    return max(backoff, retry_after_seconds or 0.0)
+    return max(backoff, min(retry_after_seconds or 0.0, RETRY_AFTER_MAX_SECONDS))
 
 
 async def dispatch_attempt(

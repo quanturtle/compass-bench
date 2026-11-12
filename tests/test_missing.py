@@ -119,6 +119,21 @@ def test_the_flip_is_the_highest_fill_at_which_a_positive_interval_no_longer_cle
     assert clears_positive(above_flip, LEVEL)
 
 
+def test_fills_that_widen_the_interval_across_zero_are_reported_apart_from_the_flip() -> None:
+    # three questions score +0.25 and the fourth is unanswered on both statements, so it scores the fill:
+    # a fill at or below +0.05 pulls the interval to 0, and one at or above +0.60 widens it across 0
+    records = (
+        *(rated_record("model", question, Polarity.POSITIVE, 4) for question in ("x-00", "x-01", "x-02")),
+        *(rated_record("model", question, Polarity.NEGATIVE, 3) for question in ("x-00", "x-01", "x-02")),
+        *(pending_record("model", "x-03", polarity) for polarity in Polarity),
+    )
+
+    result = unanswered_on("model", records)
+
+    assert result.flip == pytest.approx(0.05)
+    assert result.widening_flip == pytest.approx(0.6)
+
+
 def test_the_flip_is_undefined_when_the_interval_contains_zero_as_it_stands() -> None:
     records = (*answered("model", 3, ("x-00", "x-01", "x-02")), pending_record("model", "x-03", Polarity.POSITIVE))
 

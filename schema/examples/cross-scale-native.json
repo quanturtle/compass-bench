@@ -1,5 +1,5 @@
 {
-  "version": "2.11",
+  "version": "2.12",
   "status": "exploratory",
   "pool": "5acbfd11ad0f",
   "questionnaire": {
@@ -760,7 +760,8 @@
               "high": 0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           },
           "y": {
             "trials": 0,
@@ -774,7 +775,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           }
         },
         "profile": {
@@ -1270,7 +1272,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           },
           "y": {
             "trials": 0,
@@ -1284,7 +1287,8 @@
               "high": -0.5,
               "filled": 0
             },
-            "flip": null
+            "flip": null,
+            "widening_flip": null
           }
         },
         "profile": {

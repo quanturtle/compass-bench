@@ -27,10 +27,10 @@ class Settings(BaseModel):
 
 
 def git_output(directory: Path, *arguments: str) -> str | None:
-    """Stdout of a git command run in `directory`, or None when git is not installed or the command fails."""
+    """Stdout of a git command run in `directory`; None without git, without the directory, or when it fails."""
     try:
         completed = subprocess.run(["git", *arguments], cwd=directory, capture_output=True, text=True, check=False)
-    except FileNotFoundError:
+    except FileNotFoundError, NotADirectoryError:
         return None
     return completed.stdout.strip() if completed.returncode == 0 else None
 
@@ -53,6 +53,14 @@ def code_revision(environ: Mapping[str, str], package_directory: Path = PACKAGE_
     return (
         environ.get(CODE_REVISION_VARIABLE, "").strip() or checkout_revision(package_directory) or version(PACKAGE_NAME)
     )
+
+
+def is_committed(file: Path) -> bool:
+    """Whether git's HEAD commit holds `file` exactly as it is on disk.
+    False for a staged, modified, or untracked file, outside a checkout, and without git."""
+    tracked = git_output(file.parent, "ls-files", "--error-unmatch", "--", file.name)
+    changes = git_output(file.parent, "status", "--porcelain", "--", file.name)
+    return tracked is not None and changes == ""
 
 
 def load_settings(environ: Mapping[str, str]) -> Settings:

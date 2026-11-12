@@ -1,5 +1,6 @@
 """HTTP failures mapped to TransportError."""
 
+import math
 from collections.abc import Mapping
 from typing import Final
 
@@ -53,11 +54,12 @@ def classify_exception(error: httpx.HTTPError) -> TransportError:
 
 
 def retry_after_seconds(headers: httpx.Headers) -> float | None:
-    """A Retry-After given in seconds; an HTTP date would need the clock, so it counts as absent."""
+    """A Retry-After given in finite seconds; an HTTP date would need the clock, so it counts as absent."""
     raw = headers.get("Retry-After")
     if raw is None:
         return None
     try:
-        return max(0.0, float(raw))
+        seconds = float(raw)
     except ValueError:
         return None
+    return max(0.0, seconds) if math.isfinite(seconds) else None

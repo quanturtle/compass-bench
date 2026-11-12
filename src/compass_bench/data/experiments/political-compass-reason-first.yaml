@@ -3,6 +3,7 @@
 # numbers do not count. Positions from this arm are not comparable with the direct runs, and the template is part
 # of the pool key, so its runs never pool with them (METHODOLOGY.md, "Elicitation").
 # Free-text models only: a structured reply schema allows nothing but the rating, so it cannot carry an explanation.
+# Its catalog entries allow 200 tokens, since the direct entries' limit cuts a reply off before its number.
 # One wording, so `plan` warns that a wording shift does not average out; the arm compares one cell against the
 # same cell of a direct run. Four presentations: 4 x 75 x 2 x 4 = 2400 trials. Paths resolve against this file's directory.
 
@@ -11,10 +12,10 @@ questionnaire: ../questionnaires/left-vs-right__authoritarian-vs-libertarian.jso
 catalog: ../catalog.yaml
 preregistration: null
 models:
-  - claude-haiku-4.5-free-text
-  - deepseek-v4-flash-free-text
-  - grok-4.3-free-text
-  - kimi-k2.6-free-text
+  - claude-haiku-4.5-reason-first
+  - deepseek-v4-flash-reason-first
+  - grok-4.3-reason-first
+  - kimi-k2.6-reason-first
 
 design:
   factors:

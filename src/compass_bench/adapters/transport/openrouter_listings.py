@@ -1,21 +1,14 @@
 """OpenRouter's model listing: `GET /models/{slug}/endpoints`, which needs no key."""
 
-from datetime import UTC, datetime
 from typing import Final
 
 import httpx
 from pydantic import JsonValue
 
+from compass_bench.adapters.transport.openrouter import timestamp_or_none
 from compass_bench.domain.listing import ModelListing
 
 ENDPOINTS_PATH: Final = "/models/{slug}/endpoints"
-
-
-def listed_at(data: dict[str, JsonValue]) -> datetime | None:
-    created = data.get("created")
-    if isinstance(created, bool) or not isinstance(created, int | float):
-        return None
-    return datetime.fromtimestamp(created, UTC)
 
 
 def host_parameters(data: dict[str, JsonValue], host: str | None) -> tuple[str, ...] | None:
@@ -36,7 +29,8 @@ def parse_listing(body: JsonValue, host: str | None) -> ModelListing | None:
     data = body.get("data") if isinstance(body, dict) else None
     if not isinstance(data, dict):
         return None
-    return ModelListing(listed_at=listed_at(data), host=host, supported_parameters=host_parameters(data, host))
+    listed_at = timestamp_or_none(data.get("created"))
+    return ModelListing(listed_at=listed_at, host=host, supported_parameters=host_parameters(data, host))
 
 
 class OpenRouterListings:

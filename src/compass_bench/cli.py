@@ -16,8 +16,9 @@ from types import MappingProxyType
 from typing import Final
 
 import httpx
+from sqlalchemy.exc import SQLAlchemyError
 
-from compass_bench.adapters.files.export_writer import write_document
+from compass_bench.adapters.files.export_writer import UnwritableExport, write_document
 from compass_bench.adapters.files.source_files import SourceFiles
 from compass_bench.adapters.postgres.connection import InvalidDatabaseUrl, create_engine, upgrade_to_head
 from compass_bench.adapters.postgres.ledger_store import PostgresLedgerStore
@@ -47,7 +48,7 @@ from compass_bench.ports.ledger_store import RunLocked, UnknownRun
 from compass_bench.ports.listings import ModelListings
 from compass_bench.ports.sources import InvalidSource
 from compass_bench.ports.transport import Transport
-from compass_bench.settings import MissingSetting, Settings, load_api_keys, load_settings
+from compass_bench.settings import MissingSetting, Settings, is_committed, load_api_keys, load_settings
 
 NONCE_BYTES: Final = 16
 PROGRESS_LOGGER: Final = "compass_bench.progress"
@@ -58,6 +59,7 @@ INVALID_INPUT_ERRORS: Final = (
     InvalidDatabaseUrl,
     UnknownRun,
     NoRecordedBudget,
+    UnwritableExport,
 )
 
 
@@ -218,8 +220,8 @@ def parse_command(argv: Sequence[str]) -> Command:
 
 
 def source_files() -> SourceFiles:
-    """Relative input paths resolve against the working directory."""
-    return SourceFiles(Path.cwd())
+    """Relative input paths resolve against the working directory; git says which files are committed."""
+    return SourceFiles(Path.cwd(), is_committed)
 
 
 def run_plan(command: PlanCommand) -> ExitCode:
@@ -424,6 +426,10 @@ def execute(command: Command, environ: Mapping[str, str]) -> ExitCode:
         return ExitCode.INVALID_INPUT
     except (RunLocked, ExperimentChanged, PromptsChanged, ModelSettingsDiffer) as error:
         print(f"compass-bench: {error}", file=sys.stderr)
+        return ExitCode.FAILED
+    except SQLAlchemyError as error:
+        # the driver's message runs over several lines; its first says what failed and holds no password
+        print(f"compass-bench: database error: {str(error).splitlines()[0]}", file=sys.stderr)
         return ExitCode.FAILED
 
 

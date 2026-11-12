@@ -3,8 +3,12 @@
 import math
 from collections.abc import Sequence
 from statistics import fmean, stdev
+from typing import Final
 
 from scipy import stats
+
+# a deviation at or below this share of the largest |value| comes from float rounding, not from the values
+ROUNDING_SPREAD: Final = 1e-12
 
 
 class TooFewValues(Exception):
@@ -12,10 +16,13 @@ class TooFewValues(Exception):
 
 
 def spread(values: Sequence[float]) -> tuple[float, float]:
-    """The mean and the sample standard deviation; raises TooFewValues below two values."""
+    """The mean and the sample standard deviation; raises TooFewValues below two values.
+    A deviation within ROUNDING_SPREAD of the largest |value| is float rounding and reads as 0."""
     if len(values) < 2:
         raise TooFewValues(f"a t statistic needs at least 2 values, not {len(values)}")
-    return fmean(values), stdev(values)
+    deviation = stdev(values)
+    largest = max(abs(value) for value in values)
+    return fmean(values), deviation if deviation > ROUNDING_SPREAD * largest else 0.0
 
 
 def t_quantile(level: float, degrees: int) -> float:

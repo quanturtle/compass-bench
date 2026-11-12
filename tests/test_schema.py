@@ -1,6 +1,7 @@
 """The checked-in schema/ is what scripts/generate_schema.py writes, and its examples validate against it."""
 
 import json
+import math
 from pathlib import Path
 from typing import Final
 
@@ -21,10 +22,42 @@ from compass_bench.domain.design.preregistration import ReportStatus
 
 SCHEMA_DIRECTORY: Final = Path(__file__).parent.parent / "schema"
 REGENERATE: Final = "schema/ is stale; run make schema"
+# below this magnitude a nonzero float is the residue of a cancellation, not a value the analysis reports
+NEAR_ZERO: Final = 1e-9
 
 
 def checked_in_example(name: str) -> object:
     return json.loads((SCHEMA_DIRECTORY / "examples" / f"{name}.json").read_text())
+
+
+def floats(value: object) -> list[float]:
+    """Every float in a parsed JSON document, at any depth."""
+    if isinstance(value, float):
+        return [value]
+    if isinstance(value, list):
+        return [number for item in value for number in floats(item)]
+    if isinstance(value, dict):
+        return [number for item in value.values() for number in floats(item)]
+    return []
+
+
+ALL_EXAMPLES: Final = {**example_documents(), **pooled_example_documents()}
+
+
+@pytest.mark.parametrize("name", sorted(ALL_EXAMPLES))
+def test_no_example_holds_a_float_that_rounding_cannot_make_portable(name: str) -> None:
+    # a cancellation leaves 1e-17 on one platform and 0.0, or -0.0, on another; significant digits keep both
+    numbers = floats(checked_in_example(name))
+
+    assert [number for number in numbers if 0 < abs(number) < NEAR_ZERO] == []
+    assert [number for number in numbers if number == 0 and math.copysign(1.0, number) < 0] == []
+
+
+@pytest.mark.parametrize("name", sorted(ALL_EXAMPLES))
+def test_each_rounded_example_validates_under_its_model(name: str) -> None:
+    document = ALL_EXAMPLES[name]
+
+    type(document).model_validate_json(json.dumps(checked_in_example(name)), strict=True)
 
 
 def test_the_checked_in_schemas_are_current() -> None:

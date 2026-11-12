@@ -18,10 +18,12 @@ QUESTIONNAIRE_NAME: Final = "questionnaire.json"
 
 
 class FakeSources:
-    """SourceReader serving each document's JSON text by path, for YAML and JSON alike."""
+    """SourceReader serving each document's JSON text by path, for YAML and JSON alike.
+    Every document counts as committed except those in `uncommitted`."""
 
-    def __init__(self, documents: Mapping[PurePath, JsonValue]) -> None:
+    def __init__(self, documents: Mapping[PurePath, JsonValue], uncommitted: frozenset[PurePath] = frozenset()) -> None:
         self.documents = documents
+        self.uncommitted = uncommitted
         return
 
     def read_yaml(self, path: PurePath) -> str:
@@ -32,6 +34,9 @@ class FakeSources:
 
     def exists(self, path: PurePath) -> bool:
         return path in self.documents
+
+    def is_committed(self, path: PurePath) -> bool:
+        return path in self.documents and path not in self.uncommitted
 
 
 def experiment_document(models: tuple[str, ...]) -> dict[str, JsonValue]:

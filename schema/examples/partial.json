@@ -1,5 +1,5 @@
 {
-  "version": "2.11",
+  "version": "2.12",
   "status": "exploratory",
   "run": {
     "run_id": "bc39d5e6e3cb",
@@ -747,7 +747,8 @@
               "high": 0.671875,
               "filled": 33
             },
-            "flip": -0.5
+            "flip": -0.5,
+            "widening_flip": null
           },
           "y": {
             "trials": 39,
@@ -766,7 +767,8 @@
               "high": 0.1041666667,
               "filled": 39
             },
-            "flip": 0.4
+            "flip": 0.4,
+            "widening_flip": null
           }
         },
         "profile": {
@@ -1290,7 +1292,8 @@
               "high": 0.171875,
               "filled": 43
             },
-            "flip": 0.4
+            "flip": 0.4,
+            "widening_flip": null
           },
           "y": {
             "trials": 39,
@@ -1304,7 +1307,8 @@
               "high": 0.09375,
               "filled": 39
             },
-            "flip": 0.3
+            "flip": 0.3,
+            "widening_flip": null
           }
         },
         "profile": {

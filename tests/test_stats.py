@@ -45,6 +45,13 @@ def test_the_standardized_mean_is_the_mean_over_the_standard_deviation_and_undef
     assert standardized_mean((0.5, 0.5)) is None
 
 
+def test_values_equal_up_to_float_rounding_have_zero_spread() -> None:
+    values = (0.3, 0.1 + 0.2, 0.3)
+
+    assert standardized_mean(values) is None
+    assert zero_mean_p_value(values) == 0.0
+
+
 def test_a_single_value_has_no_t_statistic() -> None:
     with pytest.raises(TooFewValues, match="at least 2 values, not 1"):
         mean_interval((0.5,), level=0.95)
@@ -72,7 +79,7 @@ def test_the_equivalence_p_value_is_the_larger_of_the_two_one_sided_tests() -> N
 
 
 def test_the_equivalence_power_at_a_zero_gap_is_the_noncentral_t_mass_the_two_tests_leave() -> None:
-    # 33 gaps spread 0.19, the spread METHODOLOGY names for 80% power at the 0.1 margin
+    # 33 gaps spread 0.19 give about 80% power at the 0.1 margin; METHODOLOGY quotes about 0.20 for 35 questions
     quantiles = [float(stats.norm.ppf((index + 0.5) / 33)) for index in range(33)]
     gaps = [quantile * 0.19 / stdev(quantiles) for quantile in quantiles]
 

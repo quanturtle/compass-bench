@@ -5,7 +5,7 @@ This file is the datasheet for the questionnaires under `src/compass_bench/data/
 ## Provenance
 
 - All four files were written by hand for compass-bench v2. Their `author` field reads "compass-bench v2".
-- No item is taken verbatim from the Political Compass Test, 8values, SapplyValues, the Political Coordinates Test, or any published psychological inventory. Language models have been shown to reproduce those instruments' items and their scoring keys from memory (Han, Song, Lee & Jo, EACL 2026; Röttger et al., ACL 2024), so bundled items stay author-written. Whether a model can nonetheless reproduce these items has not been measured; a contamination probe is a listed follow-up.
+- No item is taken verbatim from the Political Compass Test, 8values, SapplyValues, the Political Coordinates Test, or any published psychological inventory. Language models know how widely used psychological inventories are scored: across 21 models and four inventories, item-to-dimension mapping reached an average F1 of 0.94, while their reproduction of the item text stayed near the baseline (Han, Song, Lee & Jo, EACL 2026). The same has not been shown for the political tests. Bundled items stay author-written as a precaution. Whether a model can reproduce these items has not been measured; a contamination probe is a listed follow-up.
 - Every item is a pair of statements, one leaning toward each pole, written to the pair rules below. Agreeing with the negative-pole statement pulls toward the negative pole; the two are averaged after sign flipping, so a general lean toward agreeing cancels when it is equal on both statements (METHODOLOGY.md, "How a question is scored").
 - The left-right and libertarian-authoritarian questionnaire holds 35 items on x and 40 on y, five in each facet. The collectivist-progress and texting questionnaires hold 4 per axis and exist for trying the tool. The pineapple and cereal questionnaire holds 33 per axis of questions with no political content, for exercising the pipeline at full size.
 - Every item names a `facet`, the part of its axis it covers. The report shows a model's mean score per facet and the facet-balanced position beside the item-weighted one. Facets carry no interval and gate no claim.
@@ -58,7 +58,11 @@ Every facet holds five items, so each facet of x carries one seventh of the x po
 
 ## Item-writing audit
 
-The 150 statements were read against the pair rules and against Krosnick and Presser's rules for questionnaire design (Krosnick & Presser, 2010): simple words, simple syntax, no ambiguous words, specific and concrete wording, one thing at a time, no leading or loaded wording, no negations. Two further checks come from the literature on balanced scales: the two statements of a pair should be equally extreme, or their average does not cancel a lean toward agreeing (Krosnick & Presser, 2010), and wording that codes one pole as harm avoidance makes aligned models land there by construction (Hagendorff, 2025). The checks were made by one reader, the author of the items; a second reader, in particular for double-barreled and socially desirable wording, is the step the literature says a language-model reviewer cannot replace (Sturgis, Roberts & Robinson, 2026), and the review of the retired revision's pairs that prompted the rewrite was itself a one-reader sample.
+The 150 statements were read against the pair rules and against Krosnick and Presser's rules for questionnaire design (Krosnick & Presser, 2010): simple words, simple syntax, no ambiguous words, specific and concrete wording, one thing at a time, no leading or loaded wording, no negations. Two further checks were made. The two statements of a pair should be equally extreme, or their average does not cancel a lean toward agreeing (Krosnick & Presser, 2010). No statement should code one pole as harm avoidance: aligned models are argued to side with harm avoidance by construction (Hagendorff, 2025), so such wording would decide the answer; that inference is this datasheet's, not the paper's.
+
+The same chapter recommends against the format used here. It advises avoiding agree/disagree questions altogether, and it notes that balanced pairs place acquiescent respondents at the midpoint, where most do not belong (Krosnick & Presser, 2010).
+
+The checks were made by one reader, the author of the items. A second human reader is the missing step. Language-model reviewers detected double-barrelled questions almost always, but no configuration detected more than 50% of sensitivity problems, presupposition was the hardest type to detect without an explicit cue, and the authors judge such review unlikely to replace skilled cognitive interviewing (Sturgis, Roberts & Robinson, 2026). The review of the retired revision's pairs that prompted the rewrite was itself a one-reader sample.
 
 ### Negations
 
@@ -83,7 +87,7 @@ None found by the rule: each pair carries the same quantifier on both sides. Two
 ### Construct questions
 
 - `x-import_tariffs`, `x-corporate_bailouts`, `x-farm_subsidies`, and `x-foreign_ownership_limits` are items where the populist right and the interventionist left agree; they are on the axis as defined, the state against the market, and may show low agreement with the rest of x under a partisan reading.
-- `y-entry_control`, `y-work_status_checks`, and `y-deportation` concern the state's reach over movement and work and still touch national identity; the GAL-TAN dimension of the Chapel Hill Expert Survey treats immigration as its own component.
+- `y-entry_control`, `y-work_status_checks`, and `y-deportation` concern the state's reach over movement and work and still touch national identity; the Chapel Hill Expert Survey asks immigration policy as an item of its own, separate from its GAL-TAN placement.
 - `y-service_refusal_on_religious_grounds` follows the axis definition against the usual cultural coding, as the axis definitions say.
 
 ### Vague wording
@@ -109,7 +113,7 @@ No second reader has labelled a sample yet. When one has, the table goes here:
 
 ## What has not been done
 
-- No human respondents have answered these items, so no reliability coefficient, factor structure, or human norm exists for them (METHODOLOGY.md, "Limits"). With one respondent per configuration, no reliability coefficient or dimensionality test can be computed from the runs either.
+- No human respondents have answered these items, so no reliability coefficient, factor structure, or human norm exists for them (METHODOLOGY.md, "Limits"). The runs hold one respondent per configuration, and the report computes no reliability coefficient or dimensionality test from them. Other work computes such coefficients by treating prompt variants as respondents (Serapio-García et al., 2023); compass-bench does not, for the reason METHODOLOGY.md gives under "Reliability".
 - The current revision has not been run. Its first run should be preregistered (`docs/preregistration.md`) and will be the first confirmatory report.
 - No contamination probe has been run. The listed follow-up asks each model to complete an item from its first half and to name an item's axis, on the Political Compass Test as a positive control and on these items.
 - No second reader has audited the statements, and none has labelled a reply sample (see "Reader agreement").

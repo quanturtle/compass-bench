@@ -25,7 +25,7 @@ def test_kappa_is_one_on_identical_labels_zero_at_chance_and_matches_a_hand_comp
 def test_kappa_is_undefined_without_items_or_when_both_readers_use_one_label() -> None:
     assert cohen_kappa([], []) is None
     assert cohen_kappa(["a", "a"], ["a", "a"]) is None
-    with pytest.raises(UnpairedLabels):
+    with pytest.raises(UnpairedLabels, match="1 labels are paired with 2"):
         cohen_kappa(["a"], ["a", "b"])
 
 
